@@ -27,7 +27,7 @@ void setup() {
   scomm.addCommand("stop_blinking", command_stop_blinking); // args: []
   scomm.addDefaultHandler(command_unknown);
   
-  Serial.println("ready");
+  Serial.println("ready"); 
 }
 
 void loop() {
@@ -65,7 +65,11 @@ void command_start_blinking() {
   blink = 1;
   
   while (blink) {
-    scomm.readSerial(); // Because this is infinite, we need to keep checking the serial to see if we need to stop
+    // scomm.readSerial(); // Because this is infinite, we need to keep checking the serial to see if we need to stop
+    if (Serial.available() > 0) {
+      return;
+    }
+    
     digitalWrite(boardLED, HIGH);
     delay(blinkDelay);
     digitalWrite(boardLED, LOW);
