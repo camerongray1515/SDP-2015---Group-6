@@ -1,4 +1,5 @@
 from serial import Serial
+import time
 
 class RobotAPI():
     def __init__(self, device_path, baud_rate):
@@ -21,3 +22,8 @@ class RobotAPI():
 
     def led_off(self):
         self._write_serial("led_off")
+
+    def on_for_n_seconds(self, on_time):
+        self.led_on()
+        time.sleep(on_time)
+        self.led_off()
