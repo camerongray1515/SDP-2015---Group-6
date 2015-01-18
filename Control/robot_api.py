@@ -26,5 +26,5 @@ class RobotAPI():
 
     def on_for_n_seconds(self, on_time):
         self.led_on()
-        timer = Timer(on_time, led_off)
+        timer = Timer(on_time, self.led_off)
         timer.start()
