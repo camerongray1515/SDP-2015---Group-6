@@ -19,17 +19,17 @@ if __name__ == "__main__":
             input = queue.get()
             #print input #uncomment this to print keycodes for debugging
             
-            if(input == 97):
+            if(input == 97): # W
                 robot.turn_left()
-            if(input == 115):
+            if(input == 115): # S
                 robot.go_backward()
-            if(input == 100):
+            if(input == 100): # D
                 robot.turn_right()
-            if(input == 119):
+            if(input == 119): # W
                 robot.go_forward()
-            if(input == 32):
+            if(input == 32): # Spacebar
                 robot.kick()
-            if(input == 27):
+            if(input == 27): # Esc
                 robot.stop()
 
     process.join()
