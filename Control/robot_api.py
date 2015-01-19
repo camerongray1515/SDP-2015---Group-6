@@ -3,8 +3,10 @@ from threading import Timer
 import time
 
 class RobotAPI():
-    def __init__(self, device_path, baud_rate):
-        self.serial = Serial(device_path, baud_rate)
+    def __init__(self, device_path=None, baud_rate=None):
+        #check if there are valid parameters
+        if (device_path is not None and baud_rate is not None):
+            self.serial = Serial(device_path, baud_rate)
 
     def _write_serial(self, data):
         data_bytes = str.encode(data)
@@ -28,3 +30,21 @@ class RobotAPI():
         self.led_on()
         timer = Timer(on_time, self.led_off)
         timer.start()
+
+    def go_forward(self):
+        print "Going forward"
+
+    def go_backward(self):
+        print "Going backward"
+
+    def turn_left(self):
+        print "Turning left"
+
+    def turn_right(self):
+        print "Turning right"
+
+    def kick(self):
+        print "Kicking"
+
+    def stop(self):
+        print "All stop"
