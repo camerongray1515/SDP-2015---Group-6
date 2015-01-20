@@ -25,12 +25,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Control\robot_api.py" />
+    <Compile Include="Control\__init__.py" />
     <Compile Include="main.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Utility\Getch.py" />
+    <Compile Include="Utility\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Control" />
+    <Folder Include="Utility\" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />

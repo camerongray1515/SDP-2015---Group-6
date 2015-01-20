@@ -1,29 +1,16 @@
-#from multiprocessing import Process, Queue
-#from msvcrt import getch
-
 from Control.robot_api import RobotAPI
 from Utility.Getch import _Getch
-
-def getInput(q):
-     while True:
-        q.put(ord(getch()))
-
-
-
 
 getch = _Getch()
 
 if __name__ == "__main__":
     robot = RobotAPI()
-    #queue = Queue()
-    #process = Process(target = getInput, args = (queue,))
-    #process.start()
 
     #main loop
     run = True
     while run:
         input = ord(getch())
-        print input #uncomment this to print keycodes for debugging
+        #print input #uncomment this to print keycodes for debugging
             
         if(input == 97): # A
             robot.turn_left()
