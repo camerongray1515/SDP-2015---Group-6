@@ -1,3 +1,5 @@
+# Borrowed from answer on stack overflow
+# http://stackoverflow.com/questions/510357/python-read-a-single-character-from-the-user
 
 class _Getch:
     """Gets a single character from standard input.  Does not echo to the
