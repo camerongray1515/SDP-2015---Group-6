@@ -15,7 +15,7 @@ from gui import GUI
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
-class Controller:
+class Main:
     """
     Primary source of robot control. Ties vision and planning together.
     """
@@ -157,8 +157,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     if args.nocomms:
-        c = Controller(
+        c = Main(
             pitch=int(args.pitch), color=args.color, our_side=args.side, comms=0).wow()
     else:
-        c = Controller(
+        c = Main(
             pitch=int(args.pitch), color=args.color, our_side=args.side).wow()
