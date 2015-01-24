@@ -81,8 +81,8 @@ class Main:
         counter = 1L
         timer = time.clock()
         try:
-            c = True
-            while c != 27:  # the ESC key
+            key = -1
+            while key != 27:  # the ESC key
 
                 frame = self.camera.get_frame()
                 pre_options = self.preprocessing.options
@@ -118,15 +118,15 @@ class Main:
                 defenderState = (self.planner.defender_state, self.planner.defender_strat_state)
 
                 # Use 'y', 'b', 'r' to change color.
-                c = waitKey(2) & 0xFF
-                actions = []
+                key = waitKey(delay=2)  # Returns -1 if no keypress detected
+                gui_actions = []
                 fps = float(counter) / (time.clock() - timer)
-                # Draw vision content and actions
 
+                # Draw vision content and actions
                 self.GUI.draw(
-                    frame, model_positions, actions, regular_positions, fps, attackerState,
+                    frame, model_positions, gui_actions, regular_positions, fps, attackerState,
                     defenderState, attacker_actions, defender_actions, grabbers,
-                    our_color=self.color, our_side=self.side, key=c, preprocess=pre_options)
+                    our_color=self.color, our_side=self.side, key=key, preprocess=pre_options)
                 counter += 1
 
         except:

@@ -63,7 +63,7 @@ class CalibrationGUI(object):
 
     def show(self, frame, key=None):
 
-        if key != 255:
+        if key != -1:
             try:
                 self.change_color(KEYS[key])
             except:
