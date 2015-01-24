@@ -3,8 +3,12 @@ from Utility.Getch import _Getch
 
 getch = _Getch()
 
+
+
 if __name__ == "__main__":
+
     robot = RobotAPI()
+    robot.go_forward_for(5)
 
     #main loop
     run = True
@@ -26,6 +30,7 @@ if __name__ == "__main__":
             robot.stop()
         elif(input == 113): # Q
             run = False
+
 
 
 

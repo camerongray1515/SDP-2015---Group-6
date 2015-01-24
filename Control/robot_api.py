@@ -2,6 +2,8 @@ from serial import Serial
 from threading import Timer
 import time
 
+speed = 5  # speed in cm/s, this is a constant we should calibrate when we get the motors working
+
 class RobotAPI():
     def __init__(self, device_path=None, baud_rate=None):
         #check if there are valid parameters
@@ -46,5 +48,15 @@ class RobotAPI():
     def kick(self):
         print "Kicking"
 
+    def open_kicker(self):  # This may be needed if we remove side bars from the robot
+                            # It closes grabber just a bit so we can collect the ball without kicker in the way
+        print "Opening kicker"
+
     def stop(self):
         print "All stop"
+
+    def go_forward_for(self, distance):  # distance is in centimeters
+        move_time = distance / speed
+        self.go_forward()
+        time.sleep(move_time)
+        self.stop()
