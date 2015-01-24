@@ -12,6 +12,28 @@ class Robot_Controller(object):
         self.api = RobotAPI()
         self.current_speed = 0
 
+    def execute(self, action):
+        """
+        Execute robot action.
+        """
+        # print "Attacker actions = ", action
+
+        if action['left_motor'] > action['right_motor']:
+            self.api.turn_left()
+        elif action['right_motor'] > action['left_motor']:
+            self.api.turn_right()
+        elif action['left_motor'] == action['right_motor'] and action['left_motor'] > 0:
+            self.api.go_forward()
+        elif action['left_motor'] == action['right_motor'] and action['left_motor'] < 0:
+            self.api.go_forward()
+        elif action['left_motor'] == action['right_motor'] and action['left_motor'] ==  0:
+            self.api.stop()
+
+        if action['catcher'] > 0:
+            self.api.grab()
+        if action['kicker'] > 0:
+            self.api.kick()
+
     def shutdown(self, comm):
         # TO DO
             pass
@@ -28,14 +50,6 @@ class Defender_Controller(Robot_Controller):
         """
         super(Defender_Controller, self).__init__()
 
-    def execute(self, action):
-        """
-        Execute robot action.
-        Actions come in form {}
-        """
-        print "Actions = ", action
-
-
     def shutdown(self):
         print "shutdown"
 
@@ -50,15 +64,6 @@ class Attacker_Controller(Robot_Controller):
         Do the same setup as the Robot class, as well as anything specific to the Attacker.
         """
         super(Attacker_Controller, self).__init__()
-
-    def execute(self, action):
-        """
-        Execute robot action.
-        """
-        print "Actions = ", action
-
-        #if 'turn_90' in action:
-
 
     def shutdown(self,):
         print "shutdown"
