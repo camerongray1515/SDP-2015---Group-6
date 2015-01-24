@@ -70,9 +70,13 @@ class Main:
         self.attacker = Attacker_Controller()
         self.defender = Defender_Controller()
 
-    def wow(self):
+    def control_loop(self):
         """
-        Ready your sword, here be dragons.
+        The main loop for the control system. Runs until ESC is pressed.
+
+        Takes a frame from the camera; processes it, gets the world state;
+        gets the actions for the robots to perform;  passes it to the robot
+        controlers before finally updating the GUI.
         """
         counter = 1L
         timer = time.clock()
@@ -140,12 +144,6 @@ class Main:
             if self.defender is not None:
                 self.defender.shutdown()
 
-
-
-
-
-
-
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
@@ -158,7 +156,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.nocomms:
         c = Main(
-            pitch=int(args.pitch), color=args.color, our_side=args.side, comms=0).wow()
+            pitch=int(args.pitch), color=args.color, our_side=args.side, comms=0).control_loop()
     else:
         c = Main(
-            pitch=int(args.pitch), color=args.color, our_side=args.side).wow()
+            pitch=int(args.pitch), color=args.color, our_side=args.side).control_loop()
