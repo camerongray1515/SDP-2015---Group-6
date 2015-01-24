@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="daf82cf7-4419-49c9-a5f7-4115fc44b8bf" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Control/robot_api.py" afterPath="$PROJECT_DIR$/Control/robot_api.py" />
     </list>
     <ignored path="sdp-group-6-2015.iws" />
@@ -39,8 +38,8 @@
       <file leaf-file-name="robot_api.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Control/robot_api.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6911197" vertical-offset="183" max-vertical-offset="990">
-              <caret line="50" column="31" selection-start-line="50" selection-start-column="31" selection-end-line="50" selection-end-column="31" />
+            <state vertical-scroll-proportion="0.76833975" vertical-offset="183" max-vertical-offset="1035">
+              <caret line="54" column="19" selection-start-line="54" selection-start-column="19" selection-end-line="54" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -414,8 +413,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Control/robot_api.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6911197" vertical-offset="183" max-vertical-offset="990">
-          <caret line="50" column="31" selection-start-line="50" selection-start-column="31" selection-end-line="50" selection-end-column="31" />
+        <state vertical-scroll-proportion="0.76833975" vertical-offset="183" max-vertical-offset="1035">
+          <caret line="54" column="19" selection-start-line="54" selection-start-column="19" selection-end-line="54" selection-end-column="19" />
           <folding />
         </state>
       </provider>

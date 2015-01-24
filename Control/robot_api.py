@@ -48,9 +48,12 @@ class RobotAPI():
     def kick(self):
         print "Kicking"
 
-    def open_kicker(self):  # This may be needed if we remove side bars from the robot
+    def prepare_grab(self):  # This may be needed if we remove side bars from the robot
                             # It closes grabber just a bit so we can collect the ball without kicker in the way
-        print "Opening kicker"
+        print "Preparing grabber"
+
+    def grab(self):
+        print "Grabbing"
 
     def stop(self):
         print "All stop"
