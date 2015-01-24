@@ -1,4 +1,4 @@
-from vision.vision import Vision, Camera, GUI
+from vision.vision import Vision, Camera
 from planning.planner import Planner
 from postprocessing.postprocessing import Postprocessing
 from preprocessing.preprocessing import Preprocessing
@@ -8,8 +8,8 @@ import cv2
 import serial
 import warnings
 import time
-from arduinoT7 import Arduino
 from controller import Robot_Controller, Attacker_Controller, Defender_Controller
+from gui import GUI
 
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -41,9 +41,6 @@ class Controller:
 
         self.pitch = pitch
 
-        # Set up the Arduino communications
-        self.arduino = Arduino(comm_port, 115200, 1, comms)
-
         # Set up camera for frames
         self.camera = Camera(port=video_port, pitch=self.pitch)
         frame = self.camera.get_frame()
@@ -63,7 +60,7 @@ class Controller:
         self.planner = Planner(our_side=our_side, pitch_num=self.pitch)
 
         # Set up GUI
-        self.GUI = GUI(calibration=self.calibration, arduino=self.arduino, pitch=self.pitch)
+        self.GUI = GUI(calibration=self.calibration, arduino=None, pitch=self.pitch)
 
         self.color = color
         self.side = our_side
@@ -102,9 +99,9 @@ class Controller:
                 defender_actions = self.planner.plan('defender')
 
                 if self.attacker is not None:
-                    self.attacker.execute(self.arduino, attacker_actions)
+                    self.attacker.execute(attacker_actions)
                 if self.defender is not None:
-                    self.defender.execute(self.arduino, defender_actions)
+                    self.defender.execute(defender_actions)
 
                 # Information about the grabbers from the world
                 grabbers = {
@@ -130,18 +127,18 @@ class Controller:
 
         except:
             if self.defender is not None:
-                self.defender.shutdown(self.arduino)
+                self.defender.shutdown()
             if self.attacker is not None:
-                self.attacker.shutdown(self.arduino)
+                self.attacker.shutdown()
             raise
 
         finally:
             # Write the new calibrations to a file.
             tools.save_colors(self.pitch, self.calibration)
             if self.attacker is not None:
-                self.attacker.shutdown(self.arduino)
+                self.attacker.shutdown()
             if self.defender is not None:
-                self.defender.shutdown(self.arduino)
+                self.defender.shutdown()
 
 
 

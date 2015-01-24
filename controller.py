@@ -1,3 +1,5 @@
+from Control.robot_api import  RobotAPI
+
 class Robot_Controller(object):
     """
     Robot_Controller superclass for robot control.
@@ -7,6 +9,7 @@ class Robot_Controller(object):
         """
         Connect to Brick and setup Motors/Sensors.
         """
+        self.api = RobotAPI()
         self.current_speed = 0
 
     def shutdown(self, comm):
@@ -25,39 +28,16 @@ class Defender_Controller(Robot_Controller):
         """
         super(Defender_Controller, self).__init__()
 
-    def execute(self, comm, action):
+    def execute(self, action):
         """
         Execute robot action.
+        Actions come in form {}
         """
+        print "Actions = ", action
 
-        if 'turn_90' in action:
-            comm.write('D_RUN_ENGINE %d %d\n' % (0, 0))
-            time.sleep(0.2)
-            comm.write('D_RUN_SHOOT %d\n' % int(action['turn_90']))
-            time.sleep(2.2)
 
-        #print action
-        left_motor = int(action['left_motor'])
-        right_motor = int(action['right_motor'])
-        speed = action['speed']
-
-        comm.write('D_SET_ENGINE %d %d\n' % (speed, speed))
-        comm.write('D_RUN_ENGINE %d %d\n' % (left_motor, right_motor))
-        if action['kicker'] != 0:
-            try:
-                comm.write('D_RUN_KICK\n')
-                time.sleep(0.5)
-            except StandardError:
-                pass
-        elif action['catcher'] != 0:
-            try:
-                comm.write('D_RUN_CATCH\n')
-            except StandardError:
-                pass
-
-    def shutdown(self, comm):
-        comm.write('D_RUN_KICK\n')
-        comm.write('D_RUN_ENGINE %d %d\n' % (0, 0))
+    def shutdown(self):
+        print "shutdown"
 
 
 class Attacker_Controller(Robot_Controller):
@@ -71,32 +51,14 @@ class Attacker_Controller(Robot_Controller):
         """
         super(Attacker_Controller, self).__init__()
 
-    def execute(self, comm, action):
+    def execute(self, action):
         """
         Execute robot action.
         """
-        if 'turn_90' in action:
-            comm.write('A_RUN_ENGINE %d %d\n' % (0, 0))
-            time.sleep(0.2)
-            comm.write('A_RUN_SHOOT %d\n' % int(action['turn_90']))
-            # time.sleep(1.2)
-        else:
-            left_motor = int(action['left_motor'])
-            right_motor = int(action['right_motor'])
-            speed = int(action['speed'])
-            comm.write('A_SET_ENGINE %d %d\n' % (speed, speed))
-            comm.write('A_RUN_ENGINE %d %d\n' % (left_motor, right_motor))
-            if action['kicker'] != 0:
-                try:
-                    comm.write('A_RUN_KICK\n')
-                except StandardError:
-                    pass
-            elif action['catcher'] != 0:
-                try:
-                    comm.write('A_RUN_CATCH\n')
-                except StandardError:
-                    pass
+        print "Actions = ", action
 
-    def shutdown(self, comm):
-        comm.write('A_RUN_KICK\n')
-        comm.write('A_RUN_ENGINE %d %d\n' % (0, 0))
+        #if 'turn_90' in action:
+
+
+    def shutdown(self,):
+        print "shutdown"
