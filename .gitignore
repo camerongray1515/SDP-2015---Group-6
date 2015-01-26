@@ -2,3 +2,4 @@
 *.suo
 *.pyc
 .DS_Store
+.idea
