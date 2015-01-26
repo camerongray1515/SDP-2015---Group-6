@@ -34,6 +34,9 @@ void setup() {
   scomm.addCommand("stop", command_stop);
   scomm.addCommand("turn_right", command_turn_right);
   scomm.addCommand("turn_left", command_turn_left);
+  scomm.addCommand("kicker_catch", command_kicker_catch);
+  scomm.addCommand("kicker_kick", command_kicker_kick);
+  scomm.addCommand("kicker_stop", command_kicker_stop);
   scomm.addCommand("led_on", command_led_on); // args: []
   scomm.addCommand("led_off", command_led_off); // args: []
   scomm.addCommand("blink_n_times", command_blink_n_times); // args: [n]
@@ -72,6 +75,18 @@ void command_turn_right() {
 void command_turn_left() {
   motorForward(rightMotor, 100);
   motorBackward(leftMotor, 100);
+}
+
+void command_kicker_kick() {
+  motorForward(kicker, 100); 
+}
+
+void command_kicker_catch() {
+  motorBackward(kicker, 50); 
+}
+
+void command_kicker_stop() {
+  motorStop(kicker); 
 }
 
 void command_led_on() {

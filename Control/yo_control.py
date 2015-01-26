@@ -19,6 +19,8 @@ def yo_received():
         robot.turn_right()
     elif method == 'left':
         robot.turn_left()
+    elif method == "kick":
+        robot.kick()
     elif method == 'stop':
         robot.stop()
 

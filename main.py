@@ -3,11 +3,11 @@ from Utility.Getch import _Getch
 
 getch = _Getch()
 
-
+has_ball = False
 
 if __name__ == "__main__":
 
-    robot = RobotAPI()
+    robot = RobotAPI('/dev/ttyACM0', 115200)
     robot.go_forward_for(5)
 
     #main loop
@@ -25,7 +25,12 @@ if __name__ == "__main__":
         elif(input == 119): # W
             robot.go_forward()
         elif(input == 32): # Spacebar
-            robot.kick()
+            if has_ball: 
+                robot.kick()
+                has_ball = False
+            else:
+                robot.catch()
+                has_ball = True
         elif(input == 27): # Esc
             robot.stop()
         elif(input == 113): # Q

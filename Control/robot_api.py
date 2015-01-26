@@ -2,7 +2,7 @@ from serial import Serial
 from threading import Timer
 import time
 
-speed = 5  # speed in cm/s, this is a constant we should calibrate when we get the motors working
+speed = 17.5 # speed in cm/s, this is a constant we should calibrate when we get the motors working
 
 class RobotAPI():
     def __init__(self, device_path=None, baud_rate=None):
@@ -46,14 +46,20 @@ class RobotAPI():
         self._write_serial("turn_right")
 
     def kick(self):
-        print "Kicking"
+        self._write_serial("kicker_kick")
+        time.sleep(1)
+        self._write_serial("kicker_stop")
 
-    def prepare_grab(self):  # This may be needed if we remove side bars from the robot
+    def prepare_catch(self):  # This may be needed if we remove side bars from the robot
                             # It closes grabber just a bit so we can collect the ball without kicker in the way
-        print "Preparing grabber"
+        self._write_serial("kicker_catch")
+        time.sleep(0.2)
+        self._write_serial("kicker_stop")
 
-    def grab(self):
-        print "Grabbing"
+    def catch(self):
+        self._write_serial("kicker_catch")
+        time.sleep(1)
+        self._write_serial("kicker_stop")
 
     def stop(self):
         self._write_serial("stop")
