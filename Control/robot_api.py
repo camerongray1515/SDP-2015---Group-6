@@ -32,19 +32,19 @@ class RobotAPI():
         timer.start()
 
     def go_forward(self):
-        print "Going forward"
+        self._write_serial("forward")
 
     def go_backward(self):
-        print "Going backward"
+        self._write_serial("reverse")
 
     def turn_left(self):
-        print "Turning left"
+        self._write_serial("turn_left")
 
     def turn_right(self):
-        print "Turning right"
+        self._write_serial("turn_right")
 
     def kick(self):
         print "Kicking"
 
     def stop(self):
-        print "All stop"
+        self._write_serial("stop")

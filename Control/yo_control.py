@@ -12,9 +12,15 @@ def yo_received():
     print("Yo received! Method: {0}".format(method))
     
     if method == 'forward':
-        robot.led_on()
+        robot.go_forward()
+    elif method == 'reverse':
+        robot.go_backward()
+    elif method == 'right':
+        robot.turn_right()
+    elif method == 'left':
+        robot.turn_left()
     elif method == 'stop':
-        robot.led_off()
+        robot.stop()
 
     return ''
 
