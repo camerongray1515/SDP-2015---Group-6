@@ -11,8 +11,7 @@ if __name__ == "__main__":
     robot.go_forward_for(5)
 
     #main loop
-    run = True
-    while run:
+    while input != 27:
         input = ord(getch())
         #print input #uncomment this to print keycodes for debugging
             
