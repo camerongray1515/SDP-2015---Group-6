@@ -28,15 +28,16 @@ def main():
           screen.addstr(10, 4, "7 - Catch")
           screen.addstr(11, 4, "8 - Kick")
           screen.addstr(12, 4, "9 - Go forward n centimeters")
+          screen.addstr(13, 4, "0 - Go forward for n seconds")
 
-          screen.addstr(14, 4, "s - Set motor speed")
-          screen.addstr(15, 4, "q - Quit")
+          screen.addstr(15, 4, "s - Set motor speed")
+          screen.addstr(17, 4, "q - Quit")
 
-          screen.addstr(17, 2, "Please pick an option...")
-          screen.addstr(19, 2, "System Information")
-          screen.addstr(20, 2, "------------------")
-          screen.addstr(21, 2, "Serial Port: {0}".format(serial_port))
-          screen.addstr(22, 2, "Motor Speed: {0}".format(motor_speed))
+          screen.addstr(19, 2, "Please pick an option...")
+          screen.addstr(20, 2, "System Information")
+          screen.addstr(21, 2, "------------------")
+          screen.addstr(22, 2, "Serial Port: {0}".format(serial_port))
+          screen.addstr(23, 2, "Motor Speed: {0}".format(motor_speed))
           screen.refresh()
 
           x = screen.getch()
@@ -60,6 +61,9 @@ def main():
           if x == ord('9'):
                num_cm = get_param("Enter distance in centimeters")
                robot.go_forward_for(int(num_cm))
+          if x == ord('0'):
+               num_seconds = get_param("Enter number of seconds to drive for")
+               robot.forward_n_seconds(int(num_seconds))
           if x == ord('s'):
                motor_speed = int(get_param("Enter speed for motor from 1 to 100"))
 
