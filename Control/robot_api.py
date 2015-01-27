@@ -2,18 +2,22 @@ from serial import Serial
 from threading import Timer
 import time
 
-speed = 17.5 # speed in cm/s, this is a constant we should calibrate when we get the motors working
+speed = 17.5  # speed in cm/s, this is a constant we should calibrate when we get the motors working
 
 class RobotAPI():
-    def __init__(self, device_path=None, baud_rate=None):
-        #check if there are valid parameters
+    def __init__(self, device_path=None, baud_rate=None, test_mode=False):
+        self.test_mode = test_mode
+        # check if there are valid parameters
         if (device_path is not None and baud_rate is not None):
             self.serial = Serial(device_path, baud_rate)
 
     def _write_serial(self, data):
-        data_bytes = str.encode(data)
-        data_bytes += '\r'
-        self.serial.write(data_bytes)
+        if self.test_mode is True:
+            print data
+        else:
+            data_bytes = str.encode(data)
+            data_bytes += '\r'
+            self.serial.write(data_bytes)
 
     def blink_led(self, delay=500):
         command = "blink {0}".format(delay)

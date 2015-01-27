@@ -9,7 +9,7 @@ class Robot_Controller(object):
         """
         Connect to Brick and setup Motors/Sensors.
         """
-        self.api = RobotAPI()
+        self.api = RobotAPI(test_mode=True)
         self.current_speed = 0
 
     def execute(self, action):
