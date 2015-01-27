@@ -5,11 +5,12 @@ class Robot_Controller(object):
     Robot_Controller superclass for robot control.
     """
 
-    def __init__(self):
+    def __init__(self, test_mode=False):
         """
         Connect to Brick and setup Motors/Sensors.
         """
-        self.api = RobotAPI(test_mode=True)
+        
+        self.api = RobotAPI(test_mode=test_mode)
         self.current_speed = 0
 
     def execute(self, action):
@@ -44,11 +45,11 @@ class Defender_Controller(Robot_Controller):
     Defender implementation.
     """
 
-    def __init__(self):
+    def __init__(self, test_mode=False):
         """
         Do the same setup as the Robot class, as well as anything specific to the Defender.
         """
-        super(Defender_Controller, self).__init__()
+        super(Defender_Controller, self).__init__(test_mode)
 
     def shutdown(self):
         print "shutdown"
@@ -59,11 +60,11 @@ class Attacker_Controller(Robot_Controller):
     Attacker implementation.
     """
 
-    def __init__(self):
+    def __init__(self, test_mode=False):
         """
         Do the same setup as the Robot class, as well as anything specific to the Attacker.
         """
-        super(Attacker_Controller, self).__init__()
+        super(Attacker_Controller, self).__init__(test_mode)
 
     def shutdown(self,):
         print "shutdown"

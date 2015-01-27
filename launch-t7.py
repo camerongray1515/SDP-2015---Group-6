@@ -20,7 +20,7 @@ class Main:
     Primary source of robot control. Ties vision and planning together.
     """
 
-    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyUSB0', comms=1):
+    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyUSB0', comms=1, test_mode=False):
         """
         Entry point for the SDP system.
 
@@ -67,8 +67,8 @@ class Main:
 
         self.preprocessing = Preprocessing()
 
-        self.attacker = Attacker_Controller()
-        self.defender = Defender_Controller()
+        self.attacker = Attacker_Controller(test_mode=test_mode)
+        self.defender = Defender_Controller(test_mode=test_mode)
 
     def control_loop(self):
         """
@@ -151,12 +151,12 @@ if __name__ == '__main__':
     parser.add_argument("side", help="The side of our defender ['left', 'right'] allowed.")
     parser.add_argument("color", help="The color of our team - ['yellow', 'blue'] allowed.")
     parser.add_argument(
-        "-n", "--nocomms", help="Disables sending commands to the robot.", action="store_true")
+        "-n", "--test", help="Disables sending commands to the robot.", action="store_true")
 
     args = parser.parse_args()
-    if args.nocomms:
+    if args.test:
         c = Main(
-            pitch=int(args.pitch), color=args.color, our_side=args.side, comms=0).control_loop()
+            pitch=int(args.pitch), color=args.color, our_side=args.side, comms=0, test_mode=True).control_loop()
     else:
         c = Main(
-            pitch=int(args.pitch), color=args.color, our_side=args.side).control_loop()
+            pitch=int(args.pitch), color=args.color, our_side=args.side, test_mode=False).control_loop()
