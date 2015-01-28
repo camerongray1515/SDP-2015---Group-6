@@ -70,6 +70,12 @@ class RobotAPI():
         time.sleep(move_time)
         self.stop()
 
+    def go_backward_for(self, distance):  # distance is in centimeters
+        move_time = distance / speed
+        self.go_backward()
+        time.sleep(move_time)
+        self.stop()
+
     def forward_n_seconds(self, num_seconds):
         self.go_forward()
         time.sleep(num_seconds)
