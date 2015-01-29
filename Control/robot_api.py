@@ -1,4 +1,4 @@
-from serial import Serial
+from serial import Serial, SerialException
 from threading import Timer
 import time
 
@@ -8,7 +8,16 @@ class RobotAPI():
     def __init__(self, device_path=None, baud_rate=None):
         #check if there are valid parameters
         if (device_path is not None and baud_rate is not None):
-            self.serial = Serial(device_path, baud_rate)
+            try:
+                self.serial = Serial(device_path, baud_rate)
+            except SerialException:
+                print "Error in initalizing serial connection. Is the path correct?"
+                #alias the _write_serial function so we don't throw errors
+                self._write_serial = self._write_serial_debug
+    
+    #debug/error function if we're not using serial
+    def _write_serial_debug(self, data):
+        print data
 
     def _write_serial(self, data):
         data_bytes = str.encode(data)

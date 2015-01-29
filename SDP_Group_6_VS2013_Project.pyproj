@@ -5,14 +5,15 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2b0ce381-ca6f-4c44-ae6f-750fc50158c3}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>main.py</StartupFile>
-    <SearchPath>.;Control\</SearchPath>
+    <StartupFile>Control\control_ui.py</StartupFile>
+    <SearchPath>.</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <InterpreterId />
     <InterpreterVersion />
+    <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
@@ -21,10 +22,14 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Arduino\robot-arduino\robot-arduino.ino" />
+    <Content Include="README" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Control\control_ui.py" />
     <Compile Include="Control\robot_api.py" />
+    <Compile Include="Control\yo_control.py" />
     <Compile Include="Control\__init__.py" />
     <Compile Include="main.py">
       <SubType>Code</SubType>
@@ -33,6 +38,8 @@
     <Compile Include="Utility\__init__.py" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Arduino\" />
+    <Folder Include="Arduino\robot-arduino\" />
     <Folder Include="Control" />
     <Folder Include="Utility\" />
   </ItemGroup>
