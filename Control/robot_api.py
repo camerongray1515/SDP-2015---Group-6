@@ -2,7 +2,8 @@ from serial import Serial
 from threading import Timer
 import time
 
-speed = 17.5  # speed in cm/s, this is a constant we should calibrate when we get the motors working
+
+speed = 19.5 # speed in cm/s, this is a constant we should calibrate when we get the motors working
 
 class RobotAPI():
     def __init__(self, device_path=None, baud_rate=None, test_mode=False):
@@ -37,31 +38,31 @@ class RobotAPI():
         timer = Timer(on_time, self.led_off)
         timer.start()
 
-    def go_forward(self):
-        self._write_serial("forward")
+    def go_forward(self, speed=100):
+        self._write_serial("forward {0}".format(speed))
 
-    def go_backward(self):
-        self._write_serial("reverse")
+    def go_backward(self, speed=100):
+        self._write_serial("reverse {0}".format(speed))
 
-    def turn_left(self):
-        self._write_serial("turn_left")
+    def turn_left(self, speed=100):
+        self._write_serial("turn_left {0}".format(speed))
 
-    def turn_right(self):
-        self._write_serial("turn_right")
+    def turn_right(self, speed=100):
+        self._write_serial("turn_right {0}".format(speed))
 
-    def kick(self):
-        self._write_serial("kicker_kick")
+    def kick(self, speed=100):
+        self._write_serial("kicker_kick {0}".format(speed))
         time.sleep(1)
         self._write_serial("kicker_stop")
 
     def prepare_catch(self):  # This may be needed if we remove side bars from the robot
                             # It closes grabber just a bit so we can collect the ball without kicker in the way
-        self._write_serial("kicker_catch")
+        self._write_serial("kicker_catch 50")
         time.sleep(0.2)
         self._write_serial("kicker_stop")
 
-    def catch(self):
-        self._write_serial("kicker_catch")
+    def catch(self, speed=100):
+        self._write_serial("kicker_catch {0}".format(speed))
         time.sleep(1)
         self._write_serial("kicker_stop")
 
@@ -72,4 +73,15 @@ class RobotAPI():
         move_time = distance / speed
         self.go_forward()
         time.sleep(move_time)
+        self.stop()
+
+    def go_backward_for(self, distance):  # distance is in centimeters
+        move_time = distance / speed
+        self.go_backward()
+        time.sleep(move_time)
+        self.stop()
+
+    def forward_n_seconds(self, num_seconds):
+        self.go_forward()
+        time.sleep(num_seconds)
         self.stop()

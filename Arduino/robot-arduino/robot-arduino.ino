@@ -53,13 +53,19 @@ void loop() {
 
 // Command callback functions
 void command_forward() {
-  motorForward(leftMotor, 100);
-  motorForward(rightMotor, 100); 
+  char *arg = scomm.next();
+  int motorSpeed = atoi(arg);
+  
+  motorForward(leftMotor, motorSpeed);
+  motorForward(rightMotor, motorSpeed); 
 }
 
 void command_reverse() {
-  motorBackward(leftMotor, 100);
-  motorBackward(rightMotor, 100);
+  char *arg = scomm.next();
+  int motorSpeed = atoi(arg);
+  
+  motorBackward(leftMotor, motorSpeed);
+  motorBackward(rightMotor, motorSpeed);
 }
 
 void command_stop() {
@@ -68,21 +74,33 @@ void command_stop() {
 }
 
 void command_turn_right() {
-  motorForward(leftMotor, 100);
-  motorBackward(rightMotor, 100);
+  char *arg = scomm.next();
+  int motorSpeed = atoi(arg);
+  
+  motorForward(leftMotor, motorSpeed);
+  motorBackward(rightMotor, motorSpeed);
 }
 
 void command_turn_left() {
-  motorForward(rightMotor, 100);
-  motorBackward(leftMotor, 100);
+  char *arg = scomm.next();
+  int motorSpeed = atoi(arg);
+  
+  motorForward(rightMotor, motorSpeed);
+  motorBackward(leftMotor, motorSpeed);
 }
 
 void command_kicker_kick() {
-  motorForward(kicker, 100); 
+  char *arg = scomm.next();
+  int motorSpeed = atoi(arg);
+  
+  motorForward(kicker, motorSpeed); 
 }
 
 void command_kicker_catch() {
-  motorBackward(kicker, 50); 
+  char *arg = scomm.next();
+  int motorSpeed = atoi(arg);
+  
+  motorBackward(kicker, motorSpeed); 
 }
 
 void command_kicker_stop() {
