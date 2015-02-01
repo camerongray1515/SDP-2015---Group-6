@@ -1,5 +1,6 @@
 *~
 *.suo
 *.pyc
+*.pyproj.user
 .DS_Store
 .idea
