@@ -10,6 +10,7 @@ import warnings
 import time
 from controller import Robot_Controller, Attacker_Controller, Defender_Controller
 from gui import GUI
+import pdb
 
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -70,7 +71,7 @@ class Main:
         self.attacker = Attacker_Controller(test_mode=test_mode)
         self.defender = Defender_Controller(test_mode=test_mode)
 
-    def control_loop(self):
+    def control_loop(self, verbose=False):
         """
         The main loop for the control system. Runs until ESC is pressed.
 
@@ -96,6 +97,8 @@ class Main:
 
                 model_positions, regular_positions = self.vision.locate(frame)
                 model_positions = self.postprocessing.analyze(model_positions)
+                if verbose:
+                	print model_positions
 
                 # Find appropriate action
                 self.planner.update_world(model_positions)
@@ -152,11 +155,6 @@ if __name__ == '__main__':
     parser.add_argument("color", help="The color of our team - ['yellow', 'blue'] allowed.")
     parser.add_argument(
         "-n", "--test", help="Disables sending commands to the robot.", action="store_true")
-
+    parser.add_argument("-v", "--verbose", help="Verbose mode - print more stuff", action="store_true")
     args = parser.parse_args()
-    if args.test:
-        c = Main(
-            pitch=int(args.pitch), color=args.color, our_side=args.side, comms=0, test_mode=True).control_loop()
-    else:
-        c = Main(
-            pitch=int(args.pitch), color=args.color, our_side=args.side, test_mode=False).control_loop()
+    c = Main(pitch=int(args.pitch), color=args.color, our_side=args.side, comms=0, test_mode=args.test).control_loop(verbose=args.verbose)
