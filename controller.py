@@ -10,7 +10,7 @@ class Robot_Controller(object):
         Connect to Brick and setup Motors/Sensors.
         """
         
-        self.api = RobotAPI(test_mode=test_mode)
+        self.api = RobotAPI("/dev/ttyACM0",115200)
         self.current_speed = 0
 
     def execute(self, action):
@@ -31,13 +31,13 @@ class Robot_Controller(object):
             self.api.stop()
 
         if action['catcher'] > 0:
-            self.api.grab()
+            self.api.catch()
         if action['kicker'] > 0:
             self.api.kick()
 
     def shutdown(self, comm):
         # TO DO
-            pass
+        pass
 
 
 class Defender_Controller(Robot_Controller):

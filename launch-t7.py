@@ -104,8 +104,10 @@ class Main:
                 self.planner.update_world(model_positions)
                 attacker_actions = self.planner.plan('attacker')
                 defender_actions = self.planner.plan('defender')
-
+                print(attacker_actions)
+                print(defender_actions)
                 if self.attacker is not None:
+                    print("hello")
                     self.attacker.execute(attacker_actions)
                 if self.defender is not None:
                     self.defender.execute(defender_actions)
@@ -157,4 +159,4 @@ if __name__ == '__main__':
         "-n", "--test", help="Disables sending commands to the robot.", action="store_true")
     parser.add_argument("-v", "--verbose", help="Verbose mode - print more stuff", action="store_true")
     args = parser.parse_args()
-    c = Main(pitch=int(args.pitch), color=args.color, our_side=args.side, comms=0, test_mode=args.test).control_loop(verbose=args.verbose)
+    c = Main(pitch=int(args.pitch), color=args.color, our_side=args.side, comms="/dev/ttyACM0", test_mode=args.test).control_loop(verbose=args.verbose)
