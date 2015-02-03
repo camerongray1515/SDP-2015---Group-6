@@ -17,24 +17,29 @@ class Robot_Controller(object):
         """
         Execute robot action.
         """
-        # print "Attacker actions = ", action
+        print "Attacker actions = ", action
 
         if action['left_motor'] > action['right_motor']:
-            self.api.turn_left()
+            self.api.turn_left(50)
+            print("left")
         elif action['right_motor'] > action['left_motor']:
-            self.api.turn_right()
+            self.api.turn_right(50)
+            print("right")
         elif action['left_motor'] == action['right_motor'] and action['left_motor'] > 0:
             self.api.go_forward()
+            print("forward")
         elif action['left_motor'] == action['right_motor'] and action['left_motor'] < 0:
-            self.api.go_forward()
+            self.api.go_backward()
+            print("forward?")
         elif action['left_motor'] == action['right_motor'] and action['left_motor'] ==  0:
             self.api.stop()
+            print("stop")
 
         if action['catcher'] > 0:
             self.api.catch()
         if action['kicker'] > 0:
             self.api.kick()
-
+	
     def shutdown(self, comm):
         # TO DO
         pass

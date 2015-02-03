@@ -69,7 +69,7 @@ class Main:
         self.preprocessing = Preprocessing()
 
         self.attacker = Attacker_Controller(test_mode=test_mode)
-        self.defender = Defender_Controller(test_mode=test_mode)
+        self.defender = None #Defender_Controller(test_mode=test_mode)
 
     def control_loop(self, verbose=False):
         """
@@ -104,10 +104,7 @@ class Main:
                 self.planner.update_world(model_positions)
                 attacker_actions = self.planner.plan('attacker')
                 defender_actions = self.planner.plan('defender')
-                print(attacker_actions)
-                print(defender_actions)
                 if self.attacker is not None:
-                    print("hello")
                     self.attacker.execute(attacker_actions)
                 if self.defender is not None:
                     self.defender.execute(defender_actions)
