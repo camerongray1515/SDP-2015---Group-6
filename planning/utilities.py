@@ -2,7 +2,7 @@ from math import tan, pi, hypot, log
 from planning.models import Robot
 
 DISTANCE_MATCH_THRESHOLD = 15
-ANGLE_MATCH_THRESHOLD = pi/4
+ANGLE_MATCH_THRESHOLD = pi/10
 BALL_ANGLE_THRESHOLD = pi/20
 MAX_DISPLACEMENT_SPEED = 690
 MAX_ANGLE_SPEED = 50
@@ -123,6 +123,7 @@ def calculate_motor_speed(displacement, angle, backwards_ok=False, careful=False
     if backwards_ok and abs(angle) > pi/2:
         angle = (-pi + angle) if angle > 0 else (pi + angle)
         moving_backwards = True
+
 
     if not (displacement is None):
 
