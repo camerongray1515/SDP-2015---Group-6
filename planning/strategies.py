@@ -450,6 +450,7 @@ class AttackerGrab(Strategy):
         self.ball = self.world.ball
 
     def prepare(self):
+        print("its here")
         self.current_state = self.GO_TO_BALL
         if self.our_attacker.catcher == 'closed':
             self.our_attacker.catcher = 'open'
@@ -509,6 +510,7 @@ class DefenderGrab(Strategy):
         return do_nothing()
 
     def position(self):
+        print("its here")
         displacement, angle = self.our_defender.get_direction_to_point(self.ball.x, self.ball.y)
         if self.our_defender.can_catch_ball(self.ball):
             self.current_state = self.GRAB_BALL

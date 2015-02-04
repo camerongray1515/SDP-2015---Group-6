@@ -10,34 +10,39 @@ class Robot_Controller(object):
         Connect to Brick and setup Motors/Sensors.
         """
         
-        self.api = RobotAPI(test_mode=test_mode)
+        self.api = RobotAPI("/dev/ttyACM0",115200)
         self.current_speed = 0
 
     def execute(self, action):
         """
         Execute robot action.
         """
-        # print "Attacker actions = ", action
+        print "Attacker actions = ", action
 
-        if action['left_motor'] > action['right_motor']:
-            self.api.turn_left()
-        elif action['right_motor'] > action['left_motor']:
-            self.api.turn_right()
+        if action['left_motor'] < action['right_motor']:
+            self.api.turn_left(50)
+            print("left")
+        elif action['right_motor'] < action['left_motor']:
+            self.api.turn_right(50)
+            print("right")
         elif action['left_motor'] == action['right_motor'] and action['left_motor'] > 0:
             self.api.go_forward()
+            print("forward")
         elif action['left_motor'] == action['right_motor'] and action['left_motor'] < 0:
-            self.api.go_forward()
+            self.api.go_backward()
+            print("forward?")
         elif action['left_motor'] == action['right_motor'] and action['left_motor'] ==  0:
             self.api.stop()
+            print("stop")
 
         if action['catcher'] > 0:
-            self.api.grab()
+            self.api.catch()
         if action['kicker'] > 0:
             self.api.kick()
-
+	
     def shutdown(self, comm):
         # TO DO
-            pass
+        pass
 
 
 class Defender_Controller(Robot_Controller):

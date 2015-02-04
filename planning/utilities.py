@@ -119,10 +119,11 @@ def calculate_motor_speed(displacement, angle, backwards_ok=False, careful=False
     moving_backwards = False
     general_speed = 95 if careful else 300
     angle_thresh = BALL_ANGLE_THRESHOLD if careful else ANGLE_MATCH_THRESHOLD
-
+    print(angle)
     if backwards_ok and abs(angle) > pi/2:
         angle = (-pi + angle) if angle > 0 else (pi + angle)
         moving_backwards = True
+
 
     if not (displacement is None):
 
