@@ -11,7 +11,7 @@ import time
 from controller import Robot_Controller, Attacker_Controller, Defender_Controller
 from gui import GUI
 import pdb
-
+from visionwrapper import VisionWrapper
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -21,7 +21,7 @@ class Main:
     Primary source of robot control. Ties vision and planning together.
     """
 
-    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyUSB0', comms=1, test_mode=False):
+    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyACM0', comms=1, test_mode=False):
         """
         Entry point for the SDP system.
 
@@ -36,38 +36,16 @@ class Main:
             *[Robot_Controller] defender    Robot controller object - Defender Robot has a YELLOW
                                             power wire
         """
-        assert pitch in [0, 1]
-        assert color in ['yellow', 'blue']
-        assert our_side in ['left', 'right']
 
-        self.pitch = pitch
+        self.vision = VisionWrapper(pitch, color, our_side, video_port)
 
-        # Set up camera for frames
-        self.camera = Camera(port=video_port, pitch=self.pitch)
-        frame = self.camera.get_frame()
-        center_point = self.camera.get_adjusted_center(frame)
-
-        # Set up vision
-        self.calibration = tools.get_colors(pitch)
-        self.vision = Vision(
-            pitch=pitch, color=color, our_side=our_side,
-            frame_shape=frame.shape, frame_center=center_point,
-            calibration=self.calibration)
-
-        # Set up postprocessing for vision
-        self.postprocessing = Postprocessing()
 
         # Set up main planner
-        self.planner = Planner(our_side=our_side, pitch_num=self.pitch)
+        self.planner = Planner(our_side=our_side, pitch_num=pitch)
 
         # Set up GUI
-        self.GUI = GUI(calibration=self.calibration, pitch=self.pitch)
-
-        self.color = color
-        self.side = our_side
-
-        self.preprocessing = Preprocessing()
-
+        self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)
+        
         self.attacker = Attacker_Controller(test_mode=test_mode)
         self.defender = None #Defender_Controller(test_mode=test_mode)
 
@@ -85,23 +63,10 @@ class Main:
             key = -1
             while key != 27:  # the ESC key
 
-                frame = self.camera.get_frame()
-                pre_options = self.preprocessing.options
-                # Apply preprocessing methods toggled in the UI
-                preprocessed = self.preprocessing.run(frame, pre_options)
-                frame = preprocessed['frame']
-                if 'background_sub' in preprocessed:
-                    cv2.imshow('bg sub', preprocessed['background_sub'])
-                # Find object positions
-                # model_positions have their y coordinate inverted
-
-                model_positions, regular_positions = self.vision.locate(frame)
-                model_positions = self.postprocessing.analyze(model_positions)
-                if verbose:
-                	print model_positions
-
+                #update the vision system with the next frame
+                self.vision.update()
                 # Find appropriate action
-                self.planner.update_world(model_positions)
+                self.planner.update_world(self.vision.model_positions)
                 attacker_actions = self.planner.plan('attacker')
                 defender_actions = self.planner.plan('defender')
                 if self.attacker is not None:
@@ -125,10 +90,9 @@ class Main:
                 fps = float(counter) / (time.clock() - timer)
 
                 # Draw vision content and actions
-                self.GUI.draw(
-                    frame, model_positions, gui_actions, regular_positions, fps, attackerState,
-                    defenderState, attacker_actions, defender_actions, grabbers,
-                    our_color=self.color, our_side=self.side, key=key, preprocess=pre_options)
+                self.GUI.draw( self.vision,
+                     gui_actions, fps, attackerState,
+                    defenderState, attacker_actions, defender_actions, grabbers, key=key)
                 counter += 1
 
         except:
@@ -140,7 +104,7 @@ class Main:
 
         finally:
             # Write the new calibrations to a file.
-            tools.save_colors(self.pitch, self.calibration)
+            self.vision.saveCalibrations()
             if self.attacker is not None:
                 self.attacker.shutdown()
             if self.defender is not None:

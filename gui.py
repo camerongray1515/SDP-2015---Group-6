@@ -18,10 +18,9 @@ class GUI(object):
     def nothing(self, x):
         pass
 
-    def __init__(self, calibration, arduino, pitch):
+    def __init__(self, calibration, pitch):
         self.zones = None
         self.calibration_gui = CalibrationGUI(calibration)
-        self.arduino = arduino
         self.pitch = pitch
 
         cv2.namedWindow(self.VISION)
@@ -59,62 +58,62 @@ class GUI(object):
     def cast_binary(self, x):
         return x == 1
 
-    def draw(self, frame, model_positions, actions, regular_positions, fps,
-             aState, dState, a_action, d_action, grabbers, our_color, our_side,
-             key=None, preprocess=None):
+    def draw(self, vision, actions, fps,
+             aState, dState, a_action, d_action, grabbers,
+             key=None):
         """
         Draw information onto the GUI given positions from the vision and post processing.
 
-        NOTE: model_positions contains coordinates with y coordinate reversed!
+        NOTE: vision.model_positions contains coordinates with y coordinate reversed!
         """
         # Get general information about the frame
-        frame_height, frame_width, channels = frame.shape
+        frame_height, frame_width, channels = vision.frame.shape
 
         # Draw the calibration gui
-        self.calibration_gui.show(frame, key)
+        self.calibration_gui.show(vision.frame, key)
         # Draw dividors for the zones
-        self.draw_zones(frame, frame_width, frame_height)
+        self.draw_zones(vision.frame, frame_width, frame_height)
 
-        their_color = list(TEAM_COLORS - set([our_color]))[0]
+        their_color = list(TEAM_COLORS - set([vision.color]))[0]
 
         key_color_pairs = zip(
             ['our_defender', 'their_defender', 'our_attacker', 'their_attacker'],
-            [our_color, their_color]*2)
+            [vision.color, their_color]*2)
 
-        self.draw_ball(frame, regular_positions['ball'])
+        self.draw_ball(vision.frame, vision.regular_positions['ball'])
 
         for key, color in key_color_pairs:
-            self.draw_robot(frame, regular_positions[key], color)
+            self.draw_robot(vision.frame, vision.regular_positions[key], color)
 
         # Draw fps on the canvas
         if fps is not None:
-            self.draw_text(frame, 'FPS: %.1f' % fps, 0, 10, BGR_COMMON['green'], 1)
+            self.draw_text(vision.frame, 'FPS: %.1f' % fps, 0, 10, BGR_COMMON['green'], 1)
 
-        if preprocess is not None:
-            preprocess['normalize'] = self.cast_binary(
+        if vision.preprocessed is not None:
+            vision.preprocessed['normalize'] = self.cast_binary(
                 cv2.getTrackbarPos(self.NORMALIZE, self.VISION))
-            preprocess['background_sub'] = self.cast_binary(
+            vision.preprocessed['background_sub'] = self.cast_binary(
                 cv2.getTrackbarPos(self.BG_SUB, self.VISION))
 
         if grabbers:
-            self.draw_grabbers(frame, grabbers, frame_height)
+            self.draw_grabbers(vision.frame, grabbers, frame_height)
 
         # Extend image downwards and draw states.
-        blank = np.zeros_like(frame)[:200, :, :]
-        frame_with_blank = np.vstack((frame, blank))
+        blank = np.zeros_like(vision.frame)[:200, :, :]
+        frame_with_blank = np.vstack((vision.frame, blank))
         self.draw_states(frame_with_blank, aState, dState, (frame_width, frame_height))
 
-        if model_positions and regular_positions:
+        if vision.model_positions and vision.regular_positions:
             for key in ['ball', 'our_defender', 'our_attacker', 'their_defender', 'their_attacker']:
-                if model_positions[key] and regular_positions[key]:
+                if vision.model_positions[key] and vision.regular_positions[key]:
                     self.data_text(
-                        frame_with_blank, (frame_width, frame_height), our_side, key,
-                        model_positions[key].x, model_positions[key].y,
-                        model_positions[key].angle, model_positions[key].velocity, a_action, d_action)
+                        frame_with_blank, (frame_width, frame_height), vision.side, key,
+                        vision.model_positions[key].x, vision.model_positions[key].y,
+                        vision.model_positions[key].angle, vision.model_positions[key].velocity, a_action, d_action)
                     self.draw_velocity(
                         frame_with_blank, (frame_width, frame_height),
-                        model_positions[key].x, model_positions[key].y,
-                        model_positions[key].angle, model_positions[key].velocity)
+                        vision.model_positions[key].x, vision.model_positions[key].y,
+                        vision.model_positions[key].angle, vision.model_positions[key].velocity)
 
         # Draw center of uncroppped frame (test code)
         # cv2.circle(frame_with_blank, (266,147), 1, BGR_COMMON['black'], 1)
