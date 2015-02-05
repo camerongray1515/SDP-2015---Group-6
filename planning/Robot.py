@@ -73,7 +73,7 @@ class Robot(PitchObject):
         assert -pi <= theta <= pi
         return theta
 
-    def get_displacement_to_point(self, x, y):
+    def get_euclidean_distance_to_point(self, x, y):
         '''
         This method returns the displacement between the robot and the (x, y) coordinate.
         '''
@@ -86,7 +86,7 @@ class Robot(PitchObject):
         '''
         This method returns the displacement and angle to coordinate x, y.
         '''
-        return self.get_displacement_to_point(x, y), self.get_rotation_to_point(x, y)
+        return self.get_euclidean_distance_to_point(x, y), self.get_rotation_to_point(x, y)
 
     def get_pass_path(self, target):
         '''

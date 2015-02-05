@@ -1,5 +1,5 @@
 from vision.vision import Vision, Camera
-from planning.planner import Planner
+from planning.planning import Planning
 from postprocessing.postprocessing import Postprocessing
 from preprocessing.preprocessing import Preprocessing
 import vision.tools as tools
@@ -12,7 +12,7 @@ from controller import Robot_Controller, Attacker_Controller, Defender_Controlle
 from gui import GUI
 import pdb
 from visionwrapper import VisionWrapper
-
+from Control.dict_control import Controller
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
@@ -41,13 +41,14 @@ class Main:
 
 
         # Set up main planner
-        self.planner = Planner(our_side=our_side, pitch_num=pitch)
+        self.planner = Planning(our_side, pitch)
 
         # Set up GUI
         self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)
-        
-        self.attacker = Attacker_Controller(test_mode=test_mode)
-        self.defender = None #Defender_Controller(test_mode=test_mode)
+
+        self.controller = Controller(comm_port)
+        self.control_loop()
+
 
     def control_loop(self, verbose=False):
         """
@@ -66,23 +67,18 @@ class Main:
                 #update the vision system with the next frame
                 self.vision.update()
                 # Find appropriate action
-                self.planner.update_world(self.vision.model_positions)
-                attacker_actions = self.planner.plan('attacker')
-                defender_actions = self.planner.plan('defender')
-                if self.attacker is not None:
-                    self.attacker.execute(attacker_actions)
-                if self.defender is not None:
-                    self.defender.execute(defender_actions)
+                self.planner.update(self.vision.model_positions)
+
 
                 # Information about the grabbers from the world
                 grabbers = {
-                    'our_defender': self.planner._world.our_defender.catcher_area,
-                    'our_attacker': self.planner._world.our_attacker.catcher_area
+                    'our_defender': self.planner.world.our_defender.catcher_area,
+                    'our_attacker': self.planner.world.our_attacker.catcher_area
                 }
 
                 # Information about states
-                attackerState = (self.planner.attacker_state, self.planner.attacker_strat_state)
-                defenderState = (self.planner.defender_state, self.planner.defender_strat_state)
+                attackerState = ""
+                defenderState = ""
 
                 # Use 'y', 'b', 'r' to change color.
                 key = waitKey(delay=2)  # Returns -1 if no keypress detected
@@ -92,23 +88,16 @@ class Main:
                 # Draw vision content and actions
                 self.GUI.draw( self.vision,
                      gui_actions, fps, attackerState,
-                    defenderState, attacker_actions, defender_actions, grabbers, key=key)
+                    defenderState, "", "", grabbers, key=key)
                 counter += 1
 
         except:
-            if self.defender is not None:
-                self.defender.shutdown()
-            if self.attacker is not None:
-                self.attacker.shutdown()
-            raise
+            pass
 
         finally:
             # Write the new calibrations to a file.
             self.vision.saveCalibrations()
-            if self.attacker is not None:
-                self.attacker.shutdown()
-            if self.defender is not None:
-                self.defender.shutdown()
+
 
 if __name__ == '__main__':
     import argparse
