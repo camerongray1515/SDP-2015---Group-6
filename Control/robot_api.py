@@ -6,8 +6,7 @@ import time
 speed = 19.5 # speed in cm/s, this is a constant we should calibrate when we get the motors working
 
 class RobotAPI():
-    def __init__(self, device_path=None, baud_rate=None, test_mode=False):
-        self.test_mode = test_mode
+    def __init__(self, device_path=None, baud_rate=None):
         # check if there are valid parameters
         if (device_path is not None and baud_rate is not None):
             try:
@@ -22,12 +21,10 @@ class RobotAPI():
         print data
 
     def _write_serial(self, data):
-        if self.test_mode is True:
-            print data
-        else:
-            data_bytes = str.encode(data)
-            data_bytes += '\r'
-            self.serial.write(data_bytes)
+
+        data_bytes = str.encode(data)
+        data_bytes += '\r'
+        self.serial.write(data_bytes)
 
     def blink_led(self, delay=500):
         command = "blink {0}".format(delay)
