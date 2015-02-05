@@ -61,7 +61,7 @@ class Main:
         self.planner = Planner(our_side=our_side, pitch_num=self.pitch)
 
         # Set up GUI
-        self.GUI = GUI(calibration=self.calibration, arduino=None, pitch=self.pitch)
+        self.GUI = GUI(calibration=self.calibration, pitch=self.pitch)
 
         self.color = color
         self.side = our_side
