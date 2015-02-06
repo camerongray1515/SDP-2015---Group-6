@@ -38,8 +38,6 @@ class Main:
         """
 
         self.vision = VisionWrapper(pitch, color, our_side, video_port)
-
-
         # Set up main planner
         self.planner = Planning(our_side, pitch)
 
@@ -47,6 +45,7 @@ class Main:
         self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)
 
         self.controller = Controller(comm_port)
+
         self.control_loop()
 
 
@@ -56,18 +55,20 @@ class Main:
 
         Takes a frame from the camera; processes it, gets the world state;
         gets the actions for the robots to perform;  passes it to the robot
-        controlers before finally updating the GUI.
+        controllers before finally updating the GUI.
         """
         counter = 1L
         timer = time.clock()
         try:
+
             key = -1
             while key != 27:  # the ESC key
 
                 #update the vision system with the next frame
                 self.vision.update()
+
                 # Find appropriate action
-                self.planner.update(self.vision.model_positions)
+                command = self.planner.update(self.vision.model_positions)
 
 
                 # Information about the grabbers from the world
@@ -85,7 +86,7 @@ class Main:
                 fps = float(counter) / (time.clock() - timer)
 
                 # Draw vision content and actions
-                self.GUI.draw( self.vision,
+                self.GUI.draw(self.vision,
                      gui_actions, fps, attackerState,
                     defenderState, "", "", grabbers, key=key)
                 counter += 1
@@ -93,10 +94,6 @@ class Main:
         except Exception as e:
             print(e.message)
 
-
-        finally:
-            # Write the new calibrations to a file.
-            self.vision.saveCalibrations()
 
 
 if __name__ == '__main__':

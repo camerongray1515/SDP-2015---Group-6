@@ -88,7 +88,7 @@ class Main:
                 # Apply preprocessing methods toggled in the UI
                 preprocessed = self.preprocessing.run(frame, pre_options)
                 frame = preprocessed['frame']
-                if 'background_sub' in preprocessed: 
+                if 'background_sub' in preprocessed:
                     cv2.imshow('bg sub', preprocessed['background_sub'])
                 # Find object positions
                 # model_positions have their y coordinate inverted

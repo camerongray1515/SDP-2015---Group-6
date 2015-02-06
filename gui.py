@@ -101,7 +101,7 @@ class GUI(object):
         # Extend image downwards and draw states.
         blank = np.zeros_like(vision.frame)[:200, :, :]
         frame_with_blank = np.vstack((vision.frame, blank))
-        self.draw_states(frame_with_blank, aState, dState, (frame_width, frame_height))
+        #self.draw_states(frame_with_blank, aState, dState, (frame_width, frame_height))
 
         if vision.model_positions and vision.regular_positions:
             for key in ['ball', 'our_defender', 'our_attacker', 'their_defender', 'their_attacker']:
@@ -109,7 +109,7 @@ class GUI(object):
                     self.data_text(
                         frame_with_blank, (frame_width, frame_height), vision.side, key,
                         vision.model_positions[key].x, vision.model_positions[key].y,
-                        vision.model_positions[key].angle, vision.model_positions[key].velocity, a_action, d_action)
+                        vision.model_positions[key].angle, vision.model_positions[key].velocity)
                     self.draw_velocity(
                         frame_with_blank, (frame_width, frame_height),
                         vision.model_positions[key].x, vision.model_positions[key].y,
@@ -165,7 +165,7 @@ class GUI(object):
         if points is not None:
             cv2.line(frame, points[0], points[1], BGR_COMMON['red'], thickness)
 
-    def data_text(self, frame, frame_offset, our_side, text, x, y, angle, velocity, a_action, d_action):
+    def data_text(self, frame, frame_offset, our_side, text, x, y, angle, velocity):
 
         if x is not None and y is not None:
             frame_width, frame_height = frame_offset
@@ -198,11 +198,11 @@ class GUI(object):
 
             if velocity is not None:
                 self.draw_text(frame, 'velocity: %.2f' % velocity, draw_x, y_offset + 40)
-        if text == 'our_attacker':
+        """if text == 'our_attacker':
             self.draw_actions(frame, a_action, draw_x, y_offset+50)
         elif text == 'our_defender':
             self.draw_actions(frame, d_action, draw_x, y_offset+50)
-
+"""
     def draw_text(self, frame, text, x, y, color=BGR_COMMON['green'], thickness=1.3, size=0.3,):
         if x is not None and y is not None:
             cv2.putText(

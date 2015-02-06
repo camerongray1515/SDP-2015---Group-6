@@ -20,7 +20,8 @@ class Planning():
 
     def update(self, model_positions):
         self.world.update_positions(model_positions)
-        self.go_to(self.world.ball.x,self.world.ball.y)
+        command = self.go_to(self.world.ball.x,self.world.ball.y)
+        #return command
 
     def go_to(self,x,y):
         distance = self.robot.get_euclidean_distance_to_point(x,y)
@@ -33,7 +34,8 @@ class Planning():
         if command:
             return command
         else:
-            return self.go_forward()
+            return self.go_forward(distance)
+
         return CommandDict.stop()
 
 
@@ -48,7 +50,7 @@ class Planning():
             return False
         speed = 100
         direction = "Right" if angle > 0 else "Left"
-        kick = False
+        kick = "None"
         return CommandDict(speed,direction,kick)
 
 
@@ -62,5 +64,5 @@ class Planning():
         else:
             speed = 100
             direction = "Forward"
-            kick = False
+            kick = "None"
             return CommandDict(speed,direction,kick)
