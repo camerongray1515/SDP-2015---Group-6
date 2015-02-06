@@ -10,12 +10,16 @@ class Planning():
 
     def __init__(self, side,pitch,attacker=True):
         self.world = World(side, pitch)
+        self.world.our_defender.catcher_area = {'width' : 30, 'height' : 30, 'front_offset' : 12}
+        self.world.our_attacker.catcher_area = {'width' : 30, 'height' : 30, 'front_offset' : 14}
         self.robot = self.world.our_attacker if attacker else self.world.our_defender
 
 
 
+
+
     def update(self, model_positions):
-        self._world.update_positions(model_positions)
+        self.world.update_positions(model_positions)
         self.go_to(self.world.ball.x,self.world.ball.y)
 
     def go_to(self,x,y):

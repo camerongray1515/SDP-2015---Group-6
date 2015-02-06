@@ -11,7 +11,7 @@ import time
 from controller import Robot_Controller, Attacker_Controller, Defender_Controller
 from gui import GUI
 import pdb
-
+from visionwrapper import VisionWrapper
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -43,16 +43,14 @@ class Main:
         self.pitch = pitch
 
         # Set up camera for frames
-        self.camera = Camera(port=video_port, pitch=self.pitch)
-        frame = self.camera.get_frame()
-        center_point = self.camera.get_adjusted_center(frame)
+        self.vision = VisionWrapper(pitch, color, our_side)
+
+        frame = self.vision.camera.get_frame()
+        center_point = self.vision.camera.get_adjusted_center(frame)
 
         # Set up vision
         self.calibration = tools.get_colors(pitch)
-        self.vision = Vision(
-            pitch=pitch, color=color, our_side=our_side,
-            frame_shape=frame.shape, frame_center=center_point,
-            calibration=self.calibration)
+
 
         # Set up postprocessing for vision
         self.postprocessing = Postprocessing()
@@ -84,18 +82,18 @@ class Main:
         try:
             key = -1
             while key != 27:  # the ESC key
-
-                frame = self.camera.get_frame()
+                self.vision.update()
+                frame = self.vision.camera.get_frame()
                 pre_options = self.preprocessing.options
                 # Apply preprocessing methods toggled in the UI
                 preprocessed = self.preprocessing.run(frame, pre_options)
                 frame = preprocessed['frame']
-                if 'background_sub' in preprocessed:
+                if 'background_sub' in preprocessed: 
                     cv2.imshow('bg sub', preprocessed['background_sub'])
                 # Find object positions
                 # model_positions have their y coordinate inverted
 
-                model_positions, regular_positions = self.vision.locate(frame)
+                model_positions, regular_positions = self.vision.vision.locate(frame)
                 model_positions = self.postprocessing.analyze(model_positions)
                 if verbose:
                 	print model_positions
@@ -126,9 +124,8 @@ class Main:
 
                 # Draw vision content and actions
                 self.GUI.draw(
-                    frame, model_positions, gui_actions, regular_positions, fps, attackerState,
-                    defenderState, attacker_actions, defender_actions, grabbers,
-                    our_color=self.color, our_side=self.side, key=key, preprocess=pre_options)
+                    self.vision,  gui_actions, fps, attackerState,
+                    defenderState, attacker_actions, defender_actions, grabbers, key=key)
                 counter += 1
 
         except:

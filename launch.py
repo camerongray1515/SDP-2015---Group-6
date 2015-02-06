@@ -75,7 +75,6 @@ class Main:
                     'our_defender': self.planner.world.our_defender.catcher_area,
                     'our_attacker': self.planner.world.our_attacker.catcher_area
                 }
-
                 # Information about states
                 attackerState = ""
                 defenderState = ""
@@ -91,8 +90,9 @@ class Main:
                     defenderState, "", "", grabbers, key=key)
                 counter += 1
 
-        except:
-            pass
+        except Exception as e:
+            print(e.message)
+
 
         finally:
             # Write the new calibrations to a file.
