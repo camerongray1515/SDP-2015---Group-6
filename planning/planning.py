@@ -2,8 +2,8 @@ from World import World
 from math import pi
 from Utility.CommandDict import CommandDict
 
-ROTATION_ERROR = pi/17
-DISTANCE_ERROR = 8*pi
+ROTATION_ERROR = pi/7
+DISTANCE_ERROR = 27
 
 class Planning():
 
@@ -30,12 +30,13 @@ class Planning():
 
     def go_to(self,x,y):
         distance = self.robot.get_euclidean_distance_to_point(x,y)
+        print "Distance: " + str(distance)
         if not self.world.pitch.is_within_bounds(self.robot,x,y): #if the point is outside of the current zone dont do the thing
             return False
 
         angle = self.robot.get_rotation_to_point(x,y)
-        print(angle)
         # If we are done rotating go forward
+
         command = self.rotate_to(angle)
         if command:
             return command
@@ -52,9 +53,10 @@ class Planning():
         :param angle: Radians to turn
         :return: False if angle within rotation error otherwise returns a command dictionary
         """
+        print "Angle: " + str(angle)
         if abs(angle) < ROTATION_ERROR:
             return False
-        speed = 80
+        speed = 60
         direction = "Right" if angle < 0 else "Left"
         kick = "None"
         return CommandDict(speed,direction,kick)
