@@ -9,8 +9,8 @@ class CommandDict(dict):
         :param kick: "Kick","Prepare","Catch","None"
         """
         assert(speed <= 100 and speed >= 0)
-        assert(direction in ["Forward", "Backward", "Left", "Right"])
-        assert(kick in ["Kick","Prepare","Catch"])
+        assert(direction in ["Forward", "Backward", "Left", "Right, None"])
+        assert(kick in ["Kick","Prepare","Catch, None"])
         self["speed"] = speed
         self["direction"] = direction
         self["kick"] = kick

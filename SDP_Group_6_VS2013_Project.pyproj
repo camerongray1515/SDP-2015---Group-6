@@ -49,19 +49,26 @@
   <ItemGroup>
     <Compile Include="controller.py" />
     <Compile Include="Control\control_ui.py" />
+    <Compile Include="Control\dict_control.py" />
     <Compile Include="Control\robot_api.py" />
     <Compile Include="Control\yo_control.py" />
     <Compile Include="Control\__init__.py" />
     <Compile Include="gui.py" />
     <Compile Include="launch-t7.py" />
+    <Compile Include="launch.py" />
     <Compile Include="main.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="planning\collisions.py" />
-    <Compile Include="planning\models.py" />
+    <Compile Include="planning\Coordinate.py" />
+    <Compile Include="planning\OtherPitchObjects.py" />
+    <Compile Include="planning\PitchObject.py" />
     <Compile Include="planning\planner.py" />
+    <Compile Include="planning\planning.py" />
+    <Compile Include="planning\Robot.py" />
     <Compile Include="planning\strategies.py" />
     <Compile Include="planning\utilities.py" />
+    <Compile Include="planning\World.py" />
     <Compile Include="planning\__init__.py" />
     <Compile Include="postprocessing\postprocessing.py" />
     <Compile Include="postprocessing\__init__.py" />
@@ -69,8 +76,10 @@
     <Compile Include="preprocessing\distortion\undistort.py" />
     <Compile Include="preprocessing\preprocessing.py" />
     <Compile Include="preprocessing\__init__.py" />
+    <Compile Include="Utility\CommandDict.py" />
     <Compile Include="Utility\Getch.py" />
     <Compile Include="Utility\__init__.py" />
+    <Compile Include="visionwrapper.py" />
     <Compile Include="vision\calibrate.py" />
     <Compile Include="vision\colors.py" />
     <Compile Include="vision\findHSV.py" />
