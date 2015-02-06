@@ -22,3 +22,11 @@ class CommandDict(dict):
         :return: The command to stop everything
         """
         return CommandDict(0,"None","None")
+    @staticmethod
+    def prepare():
+        return CommandDict(100,"None","Prepare")
+
+    @staticmethod
+    def catch():
+        return CommandDict(100,"None","Catch")
+
