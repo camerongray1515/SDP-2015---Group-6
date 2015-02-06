@@ -39,15 +39,15 @@ class VisionWrapper:
         self.pitch = pitch
 
         # Set up camera for frames
-        self.camera = Camera(port=video_port, pitch=self.pitch)
-        frame = self.camera.get_frame()
-        center_point = self.camera.get_adjusted_center(frame)
+        self.camera = Camera(port=video_port, pitch=pitch)
+        self.frame = self.camera.get_frame()
+        center_point = self.camera.get_adjusted_center(self.frame)
 
         # Set up vision
         self.calibration = tools.get_colors(pitch)
         self.vision = Vision(
             pitch=pitch, color=color, our_side=our_side,
-            frame_shape=frame.shape, frame_center=center_point,
+            frame_shape=self.frame.shape, frame_center=center_point,
             calibration=self.calibration)
 
         # Set up postprocessing for vision

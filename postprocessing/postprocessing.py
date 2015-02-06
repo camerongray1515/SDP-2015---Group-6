@@ -1,4 +1,4 @@
-from planning.World import Vector
+from planning.Coordinate import Vector
 from copy import deepcopy
 from math import atan2, pi, hypot
 
