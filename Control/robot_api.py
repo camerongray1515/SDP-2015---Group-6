@@ -5,6 +5,12 @@ import time
 speed = 18.0 # speed in cm/s, this is a constant we should calibrate when we get the motors working
 
 class RobotAPI():
+    motorPins = {
+        "left": 0,
+        "right": 1,
+        "kicker": 2
+    }
+
     def __init__(self, device_path=None, baud_rate=None):
         #check if there are valid parameters
         if (device_path is not None and baud_rate is not None):
@@ -34,35 +40,40 @@ class RobotAPI():
         timer.start()
 
     def go_forward(self, speed=100):
-        self._write_serial("forward {0}".format(speed))
+        self.set_motor("left", speed)
+        self.set_motor("right", speed)
 
     def go_backward(self, speed=100):
-        self._write_serial("reverse {0}".format(speed))
+        self.set_motor("left", -1 * speed)
+        self.set_motor("right", -1 * speed)
 
     def turn_left(self, speed=100):
-        self._write_serial("turn_left {0}".format(speed))
+        self.set_motor("left", -1 * speed)
+        self.set_motor("right", speed)
 
     def turn_right(self, speed=100):
-        self._write_serial("turn_right {0}".format(speed))
+        self.set_motor("right", -1 * speed)
+        self.set_motor("left", speed)
 
     def kick(self, speed=100):
-        self._write_serial("kicker_kick {0}".format(speed))
+        self.set_motor("kicker", speed)
         time.sleep(1)
-        self._write_serial("kicker_stop")
+        self.set_motor("kicker", 0)
 
     def prepare_catch(self):  # This may be needed if we remove side bars from the robot
                             # It closes grabber just a bit so we can collect the ball without kicker in the way
-        self._write_serial("kicker_catch 50")
+        self.set_motor("kicker", -1 * 50)
         time.sleep(0.2)
-        self._write_serial("kicker_stop")
+        self.set_motor("kicker", 0)
 
     def catch(self, speed=100):
-        self._write_serial("kicker_catch {0}".format(speed))
+        self.set_motor("kicker", -1 * speed)
         time.sleep(1)
-        self._write_serial("kicker_stop")
+        self.set_motor("kicker", 0)
 
     def stop(self):
-        self._write_serial("stop")
+        self.set_motor("left", 0)
+        self.set_motor("right", 0)
 
     def go_forward_for(self, distance):  # distance is in centimeters
         move_time = distance / speed
@@ -80,3 +91,10 @@ class RobotAPI():
         self.go_forward()
         time.sleep(num_seconds)
         self.stop()
+
+    def set_both_wheels(self, left, right):
+        self.set_motor(self, "left", left)
+        self.set_motor(self, "right", right)
+
+    def set_motor(self, motor, speed):
+        self._write_serial("set_motor {0} {1}".format(self.motorPins[motor], speed))
