@@ -2,7 +2,7 @@ from serial import Serial
 from threading import Timer
 import time
 
-speed = 19.5 # speed in cm/s, this is a constant we should calibrate when we get the motors working
+speed = 18.0 # speed in cm/s, this is a constant we should calibrate when we get the motors working
 
 class RobotAPI():
     def __init__(self, device_path=None, baud_rate=None):
