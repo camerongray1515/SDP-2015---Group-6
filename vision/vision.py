@@ -1,11 +1,11 @@
 import cv2
 import tools
-from tracker import BallTracker, RobotTracker
 from multiprocessing import Process, Queue
 from colors import BGR_COMMON
 from collections import namedtuple
 import numpy as np
 from findHSV import CalibrationGUI
+from tracker import RobotTracker, BallTracker
 
 
 TEAM_COLORS = set(['yellow', 'blue'])

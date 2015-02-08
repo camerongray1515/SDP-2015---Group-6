@@ -61,11 +61,26 @@
     </Compile>
     <Compile Include="planning\collisions.py" />
     <Compile Include="planning\Coordinate.py" />
+    <Compile Include="planning\GrabBallPlan.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="planning\IdlePlan.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="planning\OtherPitchObjects.py" />
     <Compile Include="planning\PitchObject.py" />
+    <Compile Include="planning\Plan.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="planning\planner.py" />
+    <Compile Include="planning\Planner_new.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="planning\planning.py" />
     <Compile Include="planning\Robot.py" />
+    <Compile Include="planning\ShootGoalPlan.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="planning\strategies.py" />
     <Compile Include="planning\utilities.py" />
     <Compile Include="planning\World.py" />
