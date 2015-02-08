@@ -34,7 +34,7 @@ class ShootGoalPlan(Plan):
             angle = self.robot.get_rotation_to_point(gx, gy)
             command = self.rotate_to(angle)
             # Check if we're done rotating
-            if command:
+            if not command == False:
                 return command
             # Otherwise kick the ball
             else:

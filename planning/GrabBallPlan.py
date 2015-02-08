@@ -24,7 +24,7 @@ class GrabBallPlan(Plan):
         command = self.go_to(self.world.ball.x,self.world.ball.y)
         # If we need to move to the ball, then get the command and return it
         if not command == False:
-            # Merge this command with the prepare command
+            # Merge this command with the prepare kicker command
             return CommandDict.mergeCommands(command, CommandDict.prepare())
 
         # Otherwise we are finished with this plan
