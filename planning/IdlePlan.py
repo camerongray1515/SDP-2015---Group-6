@@ -16,7 +16,6 @@ class IdlePlan(Plan):
         """
         return True
 
-    @property
     def isFinished(self):
         """
         This method is overridden here because we always want to transition out of the Idle plan if we can.
