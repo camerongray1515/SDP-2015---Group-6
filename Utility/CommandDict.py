@@ -31,9 +31,9 @@ class CommandDict(dict):
 
         kick = "None"
         if(command1["kick"] == None and not command2["kick"] == None):
-            direction = command2["kick"]
+            kick = command2["kick"]
         else:
-            direction = command1["kick"]
+            kick = command1["kick"]
 
         return CommandDict(command1["speed"], direction, kick)
 
