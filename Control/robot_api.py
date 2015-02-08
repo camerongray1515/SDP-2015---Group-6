@@ -11,6 +11,19 @@ class RobotAPI():
         "kicker": 2
     }
 
+    # The speed of each motor will be set to the specified speed multiplied by the *_scale speed in the
+    # dictionary below.  If it falls between two of these points, the speed will be linearly interpolated
+    scaling_data_points = {
+        100: {
+            "left_scale": 1,
+            "right_scale": 0.9
+        },
+        70: {
+            "left_scale": 1, 
+            "right_scale": 0.54
+        }
+    }
+
     def __init__(self, device_path=None, baud_rate=None):
         #check if there are valid parameters
         if (device_path is not None and baud_rate is not None):
@@ -93,8 +106,33 @@ class RobotAPI():
         self.stop()
 
     def set_both_wheels(self, left, right):
-        self.set_motor(self, "left", left)
-        self.set_motor(self, "right", right)
+        self.set_motor("left", left, False)
+        self.set_motor("right", right, False)
 
-    def set_motor(self, motor, speed):
-        self._write_serial("set_motor {0} {1}".format(self.motorPins[motor], speed))
+    def set_motor(self, motor, speed, scale=True):
+        if scale:
+            scaled_speed = self.get_scaled_speed(motor, speed)
+        else:
+            scaled_speed = speed
+        self._write_serial("set_motor {0} {1}".format(self.motorPins[motor], scaled_speed))
+
+    def get_scaled_speed(self, motor, speed):
+        # Find the two speeds that the specified speed lies between, or if the speed has
+        # an exact match in the data points, simply return that
+
+        # We don't scale the kicker
+        if motor == "kicker":
+            return speed
+
+        if speed in self.scaling_data_points:
+            if motor == "left":
+                return speed * self.scaling_data_points[speed]["left_scale"]
+            elif motor == "right":
+                return speed * self.scaling_data_points[speed]["right_scale"]
+            else:
+                raise Exception("Invalid motor {0}".format(motor))
+
+        dataPoints = sorted(self.scaling_data_points.keys())
+
+        return speed # TODO, remove this
+
