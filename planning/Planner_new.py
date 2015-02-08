@@ -43,6 +43,7 @@ class Planner_new(object):
             return self.current_plan.nextCommand()
         else:
             # If self.current_plan is invalid, then choose a new plan and return a command from it
+
             #TODO - is this legal? It seems ok, need to check for sure
             # Reset the old plan
             self.plans[self.current_plan_index] = self.plans[self.current_plan_index].__init__(self.world, self.robot)

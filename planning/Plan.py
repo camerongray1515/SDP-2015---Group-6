@@ -9,8 +9,8 @@ class Plan(object):
     Base class for all plans. Contains virtual method stubs that child classes must implement and concrete implementations of general functions.
     Notes:
         - The isValid and isFinished functions define if the plan can still be executed and if the plan has finished executing, respectively
-        - These are utilized somewhat differently by the Idle plan, in which isValid is always true and isFinished is always false
-            - Upshot-> We can always execute the Idle plan but we have to stop every frame
+        - These are utilized somewhat differently by the Idle plan, in which both are always true
+            - Upshot-> We can always execute the Idle plan but we have to exit it at every update
     """
 
     # Constants for the rotation/distance movement fudge factors
