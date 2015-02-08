@@ -29,14 +29,7 @@ void setup() {
   Serial.println("radio_initialised");
   
   // Add callbacks for all commands
-  scomm.addCommand("forward", command_forward);
-  scomm.addCommand("reverse", command_reverse);
-  scomm.addCommand("stop", command_stop);
-  scomm.addCommand("turn_right", command_turn_right);
-  scomm.addCommand("turn_left", command_turn_left);
-  scomm.addCommand("kicker_catch", command_kicker_catch);
-  scomm.addCommand("kicker_kick", command_kicker_kick);
-  scomm.addCommand("kicker_stop", command_kicker_stop);
+  scomm.addCommand("set_motor", set_motor_speed); // args: [motor, speed]
   scomm.addCommand("led_on", command_led_on); // args: []
   scomm.addCommand("led_off", command_led_off); // args: []
   scomm.addCommand("blink_n_times", command_blink_n_times); // args: [n]
@@ -52,59 +45,20 @@ void loop() {
 }
 
 // Command callback functions
-void command_forward() {
-  char *arg = scomm.next();
-  int motorSpeed = atoi(arg);
-  
-  motorForward(leftMotor, motorSpeed);
-  motorForward(rightMotor, motorSpeed); 
-}
+void set_motor_speed() {
+    char *motorarg = scomm.next();
+    char *speedarg = scomm.next();
 
-void command_reverse() {
-  char *arg = scomm.next();
-  int motorSpeed = atoi(arg);
-  
-  motorBackward(leftMotor, motorSpeed);
-  motorBackward(rightMotor, motorSpeed);
-}
+    int motor = atoi(motorarg);
+    int speed = atoi(speedarg);
 
-void command_stop() {
-  motorStop(leftMotor);
-  motorStop(rightMotor); 
-}
-
-void command_turn_right() {
-  char *arg = scomm.next();
-  int motorSpeed = atoi(arg);
-  
-  motorForward(leftMotor, motorSpeed);
-  motorBackward(rightMotor, motorSpeed);
-}
-
-void command_turn_left() {
-  char *arg = scomm.next();
-  int motorSpeed = atoi(arg);
-  
-  motorForward(rightMotor, motorSpeed);
-  motorBackward(leftMotor, motorSpeed);
-}
-
-void command_kicker_kick() {
-  char *arg = scomm.next();
-  int motorSpeed = atoi(arg);
-  
-  motorForward(kicker, motorSpeed); 
-}
-
-void command_kicker_catch() {
-  char *arg = scomm.next();
-  int motorSpeed = atoi(arg);
-  
-  motorBackward(kicker, motorSpeed); 
-}
-
-void command_kicker_stop() {
-  motorStop(kicker); 
+    if (speed > 0) {
+      motorForward(motor, speed);
+    } else if (speed < 0) {
+      motorBackward(motor, abs(speed));
+    } else if (speed == 0) {
+      motorStop(motor);
+    }
 }
 
 void command_led_on() {
