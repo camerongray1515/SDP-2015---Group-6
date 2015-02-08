@@ -30,15 +30,15 @@ def main():
           screen.addstr(12, 4, "9 - Go forward n centimeters")
           screen.addstr(13, 4, "0 - Go forward for n seconds")
           screen.addstr(14, 4, "a - Go backward n centimeters")
+          screen.addstr(15, 4, "b - Set both motor speeds")
 
-          screen.addstr(16, 4, "s - Set motor speed")
-          screen.addstr(18, 4, "q - Quit")
-
-          screen.addstr(20, 2, "Please pick an option...")
-          screen.addstr(21, 2, "System Information")
-          screen.addstr(22, 2, "------------------")
-          screen.addstr(23, 2, "Serial Port: {0}".format(serial_port))
-          screen.addstr(24, 2, "Motor Speed: {0}".format(motor_speed))
+          screen.addstr(17, 4, "s - Set motor speed")
+          screen.addstr(19, 4, "q - Quit")
+          screen.addstr(21, 2, "Please pick an option...")
+          screen.addstr(22, 2, "System Information")
+          screen.addstr(23, 2, "------------------")
+          screen.addstr(24, 2, "Serial Port: {0}".format(serial_port))
+          screen.addstr(25, 2, "Motor Speed: {0}".format(motor_speed))
           screen.refresh()
 
           x = screen.getch()
@@ -65,6 +65,11 @@ def main():
           if x == ord('a'):
                num_cm = get_param("Enter distance in centimeters")
                robot.go_backward_for(int(num_cm))
+          if x == ord('b'):
+               left_speed = int(get_param("Enter speed for left motor"))
+               right_speed = int(get_param("Enter speed for right motor"))
+
+               robot.set_both_wheels(left_speed, right_speed)
 
           if x == ord('0'):
                num_seconds = get_param("Enter number of seconds to drive for")
