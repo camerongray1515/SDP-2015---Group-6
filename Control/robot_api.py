@@ -16,11 +16,51 @@ class RobotAPI():
     scaling_data_points = {
         100: {
             "left_scale": 1,
-            "right_scale": 0.9
+            "right_scale": 0.85
+        },
+        90: {
+            "left_scale": 1,
+            "right_scale": 0.6667
+        },
+        80: {
+            "left_scale": 1,
+            "right_scale": 0.5875
         },
         70: {
             "left_scale": 1, 
-            "right_scale": 0.54
+            "right_scale": 0.6
+        },
+        60: {
+            "left_scale": 1,
+            "right_scale": 0.63
+        },
+        50: {
+            "left_scale": 1,
+            "right_scale": 0.56
+        },
+        -100: {
+            "left_scale": 1,
+            "right_scale": 0.85
+        },
+        -90: {
+            "left_scale": 1,
+            "right_scale": 0.6667
+        },
+        -80: {
+            "left_scale": 1,
+            "right_scale": 0.5875
+        },
+        -70: {
+            "left_scale": 1, 
+            "right_scale": 0.6
+        },
+        -60: {
+            "left_scale": 1,
+            "right_scale": 0.63
+        },
+        -50: {
+            "left_scale": 1,
+            "right_scale": 0.56
         }
     }
 
@@ -114,6 +154,7 @@ class RobotAPI():
             scaled_speed = self.get_scaled_speed(motor, speed)
         else:
             scaled_speed = speed
+
         self._write_serial("set_motor {0} {1}".format(self.motorPins[motor], scaled_speed))
 
     def get_scaled_speed(self, motor, speed):
@@ -124,15 +165,47 @@ class RobotAPI():
         if motor == "kicker":
             return speed
 
+        # We don't scale if the speed is 0 (stop)
+        if speed == 0:
+            return 0
+
         if speed in self.scaling_data_points:
             if motor == "left":
-                return speed * self.scaling_data_points[speed]["left_scale"]
+                return int(round(speed * self.scaling_data_points[speed]["left_scale"]))
             elif motor == "right":
-                return speed * self.scaling_data_points[speed]["right_scale"]
+                return int(round(speed * self.scaling_data_points[speed]["right_scale"]))
             else:
                 raise Exception("Invalid motor {0}".format(motor))
 
-        dataPoints = sorted(self.scaling_data_points.keys())
+        # Find the two data points that the given speed lies between
+        data_points = sorted(self.scaling_data_points.keys())
 
-        return speed # TODO, remove this
+        lower = -1;
+        upper = -1;
+        for point_speed in data_points:
+            if point_speed < speed:
+                lower = point_speed
+            else:
+                upper = point_speed
+                break
 
+        # The speed given is out of the range of the points that we have, therefore do not scale
+        if lower == -1:
+            return speed
+
+        # Here we attempt to remember high school maths to work out the equation of the line between the
+        # two scaling values at the lower and upper speeds
+        m = (self.scaling_data_points[upper]["{0}_scale".format(motor)] - self.scaling_data_points[lower]["{0}_scale".format(motor)]) / (upper - lower)
+        c = self.scaling_data_points[upper]["{0}_scale".format(motor)] - (m * upper)
+
+        # We can now estimate the scaling value for the given speed
+        scaling_value = m * speed + c
+
+        return int(round(speed * scaling_value))
+
+if __name__ == "__main__":
+    speed = 95
+
+    r = RobotAPI("/dev/ttyACM0", 115200)
+    print(r.get_scaled_speed("left", speed))
+    print(r.get_scaled_speed("right", speed))
