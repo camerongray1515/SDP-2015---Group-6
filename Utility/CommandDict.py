@@ -24,13 +24,13 @@ class CommandDict(dict):
         :param command2: The second command.
         """
         direction = "None"
-        if(command1["direction"] == None\ and not command2["direction"] == None):
+        if(command1["direction"] == "None" and not command2["direction"] == "None"):
             direction = command2["direction"]
         else:
             direction = command1["direction"]
 
         kick = "None"
-        if(command1["kick"] == None and not command2["kick"] == None):
+        if(command1["kick"] == "None" and not command2["kick"] == "None"):
             kick = command2["kick"]
         else:
             kick = command1["kick"]
