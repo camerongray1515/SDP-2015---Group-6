@@ -21,7 +21,7 @@ class Main:
     Primary source of robot control. Ties vision and planning together.
     """
 
-    def __init__(self, pitch, color, our_side, video_port=0, comm_port, comms=1, test_mode=False):
+    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyACM0', comms=1, test_mode=False):
         """
         Entry point for the SDP system.
 
