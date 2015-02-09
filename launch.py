@@ -1,16 +1,8 @@
-from vision.vision import Vision, Camera
 from planning.planning import Planning
-from postprocessing.postprocessing import Postprocessing
-from preprocessing.preprocessing import Preprocessing
-import vision.tools as tools
 from cv2 import waitKey
-import cv2
-import serial
 import warnings
 import time
-from controller import Robot_Controller, Attacker_Controller, Defender_Controller
 from gui import GUI
-import pdb
 from visionwrapper import VisionWrapper
 from Control.dict_control import Controller
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -21,7 +13,7 @@ class Main:
     Primary source of robot control. Ties vision and planning together.
     """
 
-    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyACM0', comms=1, test_mode=False):
+    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyACM0', comms=1):
         """
         Entry point for the SDP system.
 
@@ -106,8 +98,6 @@ if __name__ == '__main__':
     parser.add_argument("side", help="The side of our defender ['left', 'right'] allowed.")
     parser.add_argument("color", help="The color of our team - ['yellow', 'blue'] allowed.")
     parser.add_argument("comms", help="The serial port that the RF stick is using (Usually /dev/ttyACMx)")
-    parser.add_argument(
-        "-n", "--test", help="Disables sending commands to the robot.", action="store_true")
     parser.add_argument("-v", "--verbose", help="Verbose mode - print more stuff", action="store_true")
     args = parser.parse_args()
-    c = Main(pitch=int(args.pitch), color=args.color, our_side=args.side, comm_port=args.comms, test_mode=args.test).control_loop(verbose=args.verbose)
+    c = Main(pitch=int(args.pitch), color=args.color, our_side=args.side, comm_port=args.comms).control_loop(verbose=args.verbose)
