@@ -27,7 +27,7 @@ class RobotAPI():
             "right_scale": 0.5875
         },
         70: {
-            "left_scale": 1, 
+            "left_scale": 1,
             "right_scale": 0.6
         },
         60: {
@@ -51,7 +51,7 @@ class RobotAPI():
             "right_scale": 0.5875
         },
         -70: {
-            "left_scale": 1, 
+            "left_scale": 1,
             "right_scale": 0.6
         },
         -60: {
@@ -73,7 +73,7 @@ class RobotAPI():
                 print "Error in initalizing serial connection. Is the path correct?"
                 #alias the _write_serial function so we don't throw errors
                 self._write_serial = self._write_serial_debug
-    
+
     #debug/error function if we're not using serial
     def _write_serial_debug(self, data):
         print data
@@ -190,8 +190,8 @@ class RobotAPI():
         # Find the two data points that the given speed lies between
         data_points = sorted(self.scaling_data_points.keys())
 
-        lower = -1;
-        upper = -1;
+        lower = -1
+        upper = -1
         for point_speed in data_points:
             if point_speed < speed:
                 lower = point_speed
