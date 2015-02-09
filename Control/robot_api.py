@@ -64,6 +64,12 @@ class RobotAPI():
         }
     }
 
+    current_motor_speeds = {
+        "left": 0,
+        "right": 0,
+        "kicker": 0
+    }
+
     def __init__(self, device_path=None, baud_rate=None):
         # check if there are valid parameters
         if (device_path is not None and baud_rate is not None):
@@ -161,12 +167,17 @@ class RobotAPI():
         self.set_motor("right", right, False)
 
     def set_motor(self, motor, speed, scale=True):
+        # If the motor is already running at this speed, do not send the command
+        if speed == self.current_motor_speeds[motor]:
+            return
+
         if scale:
             scaled_speed = self.get_scaled_speed(motor, speed)
         else:
             scaled_speed = speed
 
         self._write_serial("set_motor {0} {1}".format(self.motorPins[motor], scaled_speed))
+        self.current_motor_speeds[motor] = speed
 
     def get_scaled_speed(self, motor, speed):
         # Find the two speeds that the specified speed lies between, or if the speed has
