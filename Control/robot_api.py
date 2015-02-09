@@ -125,9 +125,10 @@ class RobotAPI():
 
     def prepare_catch(self):  # This may be needed if we remove side bars from the robot
                             # It closes grabber just a bit so we can collect the ball without kicker in the way
-        self.set_motor("kicker", -1 * 50)
-        time.sleep(0.2)
-        self.set_motor("kicker", 0)
+        # self.set_motor("kicker", -1 * 50)
+        # time.sleep(0.2)
+        # self.set_motor("kicker", 0)
+        pass
 
     def catch(self, speed=100):
         self.set_motor("kicker", -1 * speed)
