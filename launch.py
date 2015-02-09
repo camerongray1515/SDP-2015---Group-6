@@ -32,6 +32,10 @@ class Main:
             *[Robot_Controller] defender    Robot controller object - Defender Robot has a YELLOW
                                             power wire
         """
+        self.controller = Controller(comm_port)
+        print("Waiting 10 seconds for serial to initialise")
+        time.sleep(10)
+
 
         self.vision = VisionWrapper(pitch, color, our_side, video_port)
         # Set up main planner
@@ -40,9 +44,7 @@ class Main:
         # Set up GUI
         self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)
 
-        self.controller = Controller(comm_port)
-        print("Waiting 10 seconds for serial to initialise")
-        time.sleep(10)
+
 
         self.control_loop()
 
