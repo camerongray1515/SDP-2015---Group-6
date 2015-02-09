@@ -83,6 +83,14 @@ class Plan(object):
         kick = "None"
         return CommandDict(speed, direction, kick)
 
+    def go_backward(self,distance):
+        if distance < DISTANCE_ERROR:
+            return False
+        else:
+            speed = 100
+            direction = "Backward"
+            kick = "None"
+            return CommandDict(speed,direction,kick)
 
     def go_forward(self, distance):
         """
