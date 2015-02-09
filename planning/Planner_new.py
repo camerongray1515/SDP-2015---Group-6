@@ -3,7 +3,7 @@ from World import  World
 from IdlePlan import IdlePlan
 from GrabBallPlan import GrabBallPlan
 from ShootGoalPlan import ShootGoalPlan
-
+from InterceptPlan import InterceptPlan
 #TODO Rename!!!
 class Planner_new(object):
     """Finite State Machine-Based planner. Generates commands for the robot based on plan classes derived from Plan"""
@@ -22,7 +22,10 @@ class Planner_new(object):
         self.robot = self.world.our_attacker if attacker else self.world.our_defender
 
         # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
-        self.plans = [ShootGoalPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world, self.robot)]
+        if (attacker):
+            self.plans = [ShootGoalPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world, self.robot)]
+        else:
+            self.plans = [InterceptPlan(self.world, self.robot), IdlePlan(self.world,self.robot)]
         self.current_plan = self.plans[0]
 
 
