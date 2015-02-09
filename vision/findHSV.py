@@ -78,7 +78,7 @@ class CalibrationGUI(object):
         values['Blur'] = int(values['Blur'])
 
         self.calibration[self.color]['min'] = np.array([values['Min Hue'], values['Min Sat'], values['Min Lum']])
-        self.calibration[self.color]['max'] = np.array([values['Max Hue'], values['Max Sat'], values['Min Lum']])
+        self.calibration[self.color]['max'] = np.array([values['Max Hue'], values['Max Sat'], values['Max Lum']])
         self.calibration[self.color]['contrast'] = values['Contrast']
         self.calibration[self.color]['blur'] = values['Blur']
 
