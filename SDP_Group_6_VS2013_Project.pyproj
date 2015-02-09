@@ -23,25 +23,99 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Arduino\robot-arduino\robot-arduino.ino" />
+    <Content Include="preprocessing\distortion\calibresult.jpg" />
+    <Content Include="preprocessing\distortion\samples\pitch1\10_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\11_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\12_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\13_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\14_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\15_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\16_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\1_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\2_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\3_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\4_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\5_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\6_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\7_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\8_9x6.png" />
+    <Content Include="preprocessing\distortion\samples\pitch1\9_9x6.png" />
     <Content Include="README" />
     <Content Include="requirements.txt" />
+    <Content Include="vision\calibrations\calibrations.json" />
+    <Content Include="vision\calibrations\croppings.json" />
+    <Content Include="vision\calibrations\undistort.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="controller.py" />
     <Compile Include="Control\control_ui.py" />
+    <Compile Include="Control\dict_control.py" />
     <Compile Include="Control\robot_api.py" />
     <Compile Include="Control\yo_control.py" />
     <Compile Include="Control\__init__.py" />
+    <Compile Include="gui.py" />
+    <Compile Include="launch-t7.py" />
+    <Compile Include="launch.py" />
     <Compile Include="main.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="planning\collisions.py" />
+    <Compile Include="planning\Coordinate.py" />
+    <Compile Include="planning\GrabBallPlan.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="planning\IdlePlan.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="planning\OtherPitchObjects.py" />
+    <Compile Include="planning\PitchObject.py" />
+    <Compile Include="planning\Plan.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="planning\planner.py" />
+    <Compile Include="planning\Planner_new.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="planning\planning.py" />
+    <Compile Include="planning\Robot.py" />
+    <Compile Include="planning\ShootGoalPlan.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="planning\strategies.py" />
+    <Compile Include="planning\utilities.py" />
+    <Compile Include="planning\World.py" />
+    <Compile Include="planning\__init__.py" />
+    <Compile Include="postprocessing\postprocessing.py" />
+    <Compile Include="postprocessing\__init__.py" />
+    <Compile Include="preprocessing\distortion\capture.py" />
+    <Compile Include="preprocessing\distortion\undistort.py" />
+    <Compile Include="preprocessing\preprocessing.py" />
+    <Compile Include="preprocessing\__init__.py" />
+    <Compile Include="Utility\CommandDict.py" />
     <Compile Include="Utility\Getch.py" />
     <Compile Include="Utility\__init__.py" />
+    <Compile Include="visionwrapper.py" />
+    <Compile Include="vision\calibrate.py" />
+    <Compile Include="vision\colors.py" />
+    <Compile Include="vision\findHSV.py" />
+    <Compile Include="vision\tools.py" />
+    <Compile Include="vision\tracker.py" />
+    <Compile Include="vision\vision.py" />
+    <Compile Include="vision\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Arduino\" />
     <Folder Include="Arduino\robot-arduino\" />
     <Folder Include="Control" />
+    <Folder Include="planning\" />
+    <Folder Include="postprocessing\" />
+    <Folder Include="preprocessing\" />
+    <Folder Include="preprocessing\distortion\" />
+    <Folder Include="preprocessing\distortion\samples\" />
+    <Folder Include="preprocessing\distortion\samples\pitch1\" />
     <Folder Include="Utility\" />
+    <Folder Include="vision\" />
+    <Folder Include="vision\calibrations\" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />

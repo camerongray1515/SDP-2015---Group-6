@@ -45,9 +45,6 @@ class Planning():
 
         return CommandDict.stop()
 
-
-
-
     def rotate_to(self,angle):
         """
         :param angle: Radians to turn
