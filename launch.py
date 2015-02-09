@@ -61,7 +61,7 @@ class Main:
         timer = time.clock()
         try:
 
-            key = -1
+            key = 255
             while key != 27:  # the ESC key
 
                 #update the vision system with the next frame
@@ -81,7 +81,7 @@ class Main:
                 defenderState = ""
 
                 # Use 'y', 'b', 'r' to change color.
-                key = waitKey(delay=2)  # Returns -1 if no keypress detected
+                key = waitKey(delay=2) & 0xFF  # Returns -1 if no keypress detected
                 gui_actions = []
                 fps = float(counter) / (time.clock() - timer)
 
