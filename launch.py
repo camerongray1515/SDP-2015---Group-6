@@ -71,7 +71,6 @@ class Main:
 
                 # Find appropriate action
                 command = self.planner.update(self.vision.model_positions)
-                print command
                 self.controller.update(command)
 
                 # Information about the grabbers from the world

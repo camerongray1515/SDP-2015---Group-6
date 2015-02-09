@@ -38,7 +38,7 @@ class ShootGoalPlan(Plan):
                 return command
             # Otherwise kick the ball
             else:
-                self.finished = True;
+                self.finished = True
                 return self.kick()
    
 

@@ -24,7 +24,7 @@ class CommandDict(dict):
         :param command2: The second command.
         """
         direction = "None"
-        if(command1["direction"] == None and not command2["direction"] == None):
+        if(command1["direction"] == None\ and not command2["direction"] == None):
             direction = command2["direction"]
         else:
             direction = command1["direction"]

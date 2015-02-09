@@ -10,7 +10,6 @@ class Controller():
         kick=command["kick"]
 
         if (direction == "Forward"):
-
             self.robot_api.go_forward(speed)
         elif (direction == "Backward"):
             self.robot_api.go_backward(speed)

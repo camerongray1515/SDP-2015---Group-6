@@ -3,6 +3,8 @@ from abc import ABCMeta, abstractmethod
 from World import World
 from Utility.CommandDict import CommandDict
 from math import pi
+ROTATION_ERROR = pi/7
+DISTANCE_ERROR = 30
 
 class Plan(object):
     """
@@ -14,8 +16,7 @@ class Plan(object):
     """
 
     # Constants for the rotation/distance movement fudge factors
-    ROTATION_ERROR = pi/7
-    DISTANCE_ERROR = 8*pi
+
 
     # Register this class as an abstract class
     __metaclass__ = ABCMeta
@@ -77,7 +78,7 @@ class Plan(object):
         """
         if abs(angle) < ROTATION_ERROR:
             return False
-        speed = 80
+        speed = 65
         direction = "Right" if angle < 0 else "Left"
         kick = "None"
         return CommandDict(speed, direction, kick)

@@ -21,10 +21,10 @@ class Robot_Controller(object):
         print "Attacker actions = ", action
 
         if action['left_motor'] < action['right_motor']:
-            self.api.turn_left(50)
+            self.api.turn_left(100)
             print("left")
         elif action['right_motor'] < action['left_motor']:
-            self.api.turn_right(50)
+            self.api.turn_right(100)
             print("right")
         elif action['left_motor'] == action['right_motor'] and action['left_motor'] > 0:
             self.api.go_forward()

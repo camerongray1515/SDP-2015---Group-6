@@ -23,11 +23,8 @@ class Planner_new(object):
 
         # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
         self.plans = [ShootGoalPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world, self.robot)]
-        self.current_plan_index = 0;
+        self.current_plan = self.plans[0]
 
-    @property
-    def current_plan(self):
-        return self.plans[self.current_plan_index]
 
     #TODO Currently each indivdual plan does not have any internal state governing transitions, we may need to modify the system to support this in future
     # Upshot-> Each plan can currently transition to any other plan, this may not be desirable
@@ -47,11 +44,11 @@ class Planner_new(object):
 
             #TODO - is this legal? It seems ok, need to check for sure
             # Reset the old plan
-            self.plans[self.current_plan_index] = self.plans[self.current_plan_index].__init__(self.world, self.robot)
+            #self.plans[self.current_plan] = self.plans[self.current_plan_index].__init__(self.world, self.robot)
 
-            for i in range(self.plans.count()):
-                if(self.plans[i].isValid()):
-                    self.current_plan_index = i
+            for plan in self.plans:
+                if(plan.isValid()):
+                    self.current_plan = plan
                     return self.current_plan.nextCommand()
 
 
