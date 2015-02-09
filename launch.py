@@ -1,5 +1,5 @@
 from vision.vision import Vision, Camera
-from planning.planning import Planning
+from planning.Planner_new import Planner_new
 from postprocessing.postprocessing import Postprocessing
 from preprocessing.preprocessing import Preprocessing
 import vision.tools as tools
@@ -39,7 +39,7 @@ class Main:
 
         self.vision = VisionWrapper(pitch, color, our_side, video_port)
         # Set up main planner
-        self.planner = Planning(our_side, pitch)
+        self.planner = Planner_new(our_side, pitch)
 
         # Set up GUI
         self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)

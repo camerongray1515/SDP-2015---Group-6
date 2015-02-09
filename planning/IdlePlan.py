@@ -8,7 +8,7 @@ class IdlePlan(Plan):
         """
         Constructor. Calls superclass constructor.
         """
-        super.__init__(self, world, robot);
+        super(IdlePlan, self).__init__(world, robot)
 
     def isValid(self):
         """

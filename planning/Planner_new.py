@@ -1,4 +1,5 @@
 
+from World import  World
 from IdlePlan import IdlePlan
 from GrabBallPlan import GrabBallPlan
 from ShootGoalPlan import ShootGoalPlan
@@ -26,7 +27,7 @@ class Planner_new(object):
 
     @property
     def current_plan(self):
-        return plans[self.current_plan_index]
+        return self.plans[self.current_plan_index]
 
     #TODO Currently each indivdual plan does not have any internal state governing transitions, we may need to modify the system to support this in future
     # Upshot-> Each plan can currently transition to any other plan, this may not be desirable
