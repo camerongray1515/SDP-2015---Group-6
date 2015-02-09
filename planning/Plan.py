@@ -4,7 +4,7 @@ from World import World
 from Utility.CommandDict import CommandDict
 from math import pi
 ROTATION_ERROR = pi/7
-DISTANCE_ERROR = 30
+DISTANCE_ERROR = 50
 
 class Plan(object):
     """
@@ -78,7 +78,7 @@ class Plan(object):
         """
         if abs(angle) < ROTATION_ERROR:
             return False
-        speed = 65
+        speed = 80
         direction = "Right" if angle < 0 else "Left"
         kick = "None"
         return CommandDict(speed, direction, kick)
