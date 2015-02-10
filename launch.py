@@ -35,6 +35,7 @@ class Main:
         self.controller = Controller(comm_port)
         print("Waiting 10 seconds for serial to initialise")
         time.sleep(10)
+        self.pitch = pitch
 
 
         self.vision = VisionWrapper(pitch, color, our_side, video_port)
@@ -93,6 +94,10 @@ class Main:
 
         except Exception as e:
             print(e.message)
+        
+        finally:
+            # Write the new calibrations to a file.
+            tools.save_colors(self.pitch, self.vision.calibration)
 
 
 
