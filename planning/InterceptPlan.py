@@ -20,7 +20,7 @@ class InterceptPlan(Plan):
         Returns true if the ball is moving fast and we are not holding the ball.
 
         """
-        if self.world.ball != None and self.world.ball.velocity != None:
+        if self.world.ball is not None and self.world.ball.velocity is not None:
             return self.world.ball.velocity > BALL_VELOCITY #TODO add a check for if we are holding the ball or not.
         else:
             return False
@@ -29,25 +29,23 @@ class InterceptPlan(Plan):
         """
         This method is overridden here because we always want to transition out of the Idle plan if we can.
         """
-        if self.world.ball != None:
-            y = utilities.predict_y_intersection(self.world,self.robot.x,self.world.ball,bounce = True)
+        if self.world.ball is not None:
+            y = utilities.predict_y_intersection(self.world, self.robot.x, self.world.ball, bounce = True)
             if y != None:
                 return abs(y-self.robot.y) < DISTANCE_ERROR
 
         return False
 
     def nextCommand(self):
-        return self.go_forward(200)
-
-    def nextCommand(self):
-        y = utilities.predict_y_intersection(self.world,self.robot.x,self.world.their_defender,bounce = True)
-        if y != None:
-            x = find_x(self.robot,y)
+        y = utilities.predict_y_intersection(self.world,self.robot.x, self.world.their_defender, bounce = True)
+        if y is not None:
+            x = self.find_x(self.robot, y)
+            print x
             if self.world.pitch.is_within_bounds(self.robot,x,y):
                 return self.go_to_intercept(x,y)
 
-        y = self.world.pitch.height/2
-        x = find_x(self.robot, y)
+        y = self.world.pitch.height / 2
+        x = self.find_x(self.robot, y)
         command = self.go_to(x,y)
         if command:
             return self.go_to(x,y)
@@ -62,11 +60,13 @@ class InterceptPlan(Plan):
         command = self.go_forward(100) if (abs(self.robot.get_rotation_to_point(x,y)) < pi/2) else self.go_backward(100)
         return command
 
-
-
-
-def find_x(robot,y):
-    dy = y - robot.y
-    x = dy * tan(robot.angle)
-    return x
+    def find_x(self, robot, y):
+        """
+        :param robot:
+        :param y:
+        :return:
+        """
+        dy = y - robot.y
+        x = dy * tan(robot.angle)
+        return x
 

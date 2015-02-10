@@ -43,7 +43,7 @@ class Main:
 
         self.vision = VisionWrapper(pitch, color, our_side, video_port)
         # Set up main planner
-        self.planner = Planner_new(our_side, pitch,attacker=False)
+        self.planner = Planner_new(our_side, pitch, attacker=True)
 
         # Set up GUI
         self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)
@@ -73,6 +73,7 @@ class Main:
 
                 # Find appropriate action
                 command = self.planner.update(self.vision.model_positions)
+                print command
                 self.controller.update(command)
 
                 # Information about the grabbers from the world
@@ -101,11 +102,9 @@ class Main:
 
         finally:
             pass
-            #self.vision.saveCalibrations()
-        
-        finally:
             # Write the new calibrations to a file.
-            tools.save_colors(self.pitch, self.vision.calibration)
+            pass
+            #tools.save_colors(self.pitch, self.vision.calibration)
 
 
 

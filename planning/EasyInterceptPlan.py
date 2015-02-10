@@ -20,8 +20,8 @@ class EasyInterceptPlan(Plan):
         Returns true if the ball is moving fast and we are not holding the ball.
 
         """
-        if self.world.ball != None and self.world.ball.velocity != None:
-            return self.world.ball.velocity > BALL_VELOCITY and abs(self.robot.angle) < 3*pi/4 and abs(self.robot.angle) > pi/4 #TODO add a check for if we are holding the ball or not.
+        if self.world.ball is not None and self.world.ball.velocity is not None:
+            return self.world.ball.velocity > BALL_VELOCITY and abs(self.robot.angle) < 5*pi/3 and abs(self.robot.angle) > 4*pi/3 #TODO add a check for if we are holding the ball or not.
         return False
 
     def isFinished(self):

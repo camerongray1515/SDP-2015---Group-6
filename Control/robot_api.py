@@ -181,6 +181,7 @@ class RobotAPI():
         self.current_motor_speeds[motor] = speed
 
     def get_scaled_speed(self, motor, speed):
+        return speed
         # Find the two speeds that the specified speed lies between, or if the speed has
         # an exact match in the data points, simply return that
 

@@ -9,6 +9,7 @@ class ShootGoalPlan(Plan):
         """
         return super(ShootGoalPlan, self).__init__(world, robot)
 
+
     def isValid(self):
         """
         Current constraints are:
@@ -25,22 +26,16 @@ class ShootGoalPlan(Plan):
         # Center of the goal
         (gx,gy) = (500, self.world.pitch._height / 2)
 
-        # Check if we need to move or not
-        command = self.go_to(x,y)
+        angle = self.robot.get_rotation_to_point(gx, gy)
+        command = self.rotate_to(angle)
+        # Check if we're done rotating
         if not command == False:
             return command
-        # Otherwise rotate toward the goal
+        # Otherwise kick the ball
         else:
-            angle = self.robot.get_rotation_to_point(gx, gy)
-            command = self.rotate_to(angle)
-            # Check if we're done rotating
-            if not command == False:
-                return command
-            # Otherwise kick the ball
-            else:
-                self.finished = True
-                self.robot.catcher = "open"
-                return self.kick()
+            self.finished = True
+            self.robot.catcher = "open"
+            return self.kick()
    
 
 
