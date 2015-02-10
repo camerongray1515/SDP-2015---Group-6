@@ -28,7 +28,7 @@ class Planner_new(object):
         if (attacker):
             self.plans = [ShootGoalPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world, self.robot)]
         else:
-            self.plans = [InterceptPlan(self.world, self.robot), ShootGoalPlan(self.world,self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world,self.robot)]
+            self.plans = [InterceptPlan(self.world, self.robot), IdlePlan(self.world,self.robot)]
         self.current_plan = self.plans[0]
 
 

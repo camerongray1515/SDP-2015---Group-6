@@ -4,7 +4,7 @@ from World import World
 from Utility.CommandDict import CommandDict
 from math import pi
 ROTATION_ERROR = pi/8
-DISTANCE_ERROR = 45
+DISTANCE_ERROR = 43
 
 class Plan(object):
     """
@@ -100,7 +100,7 @@ class Plan(object):
         if distance < DISTANCE_ERROR:
             return False
         else:
-            speed = speed if distance > 2 * DISTANCE_ERROR else speed / 2
+            speed = speed if distance > 2 * DISTANCE_ERROR else 40
             direction = "Forward"
             kick = "None"
             return CommandDict(speed, direction, kick)

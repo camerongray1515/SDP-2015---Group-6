@@ -37,28 +37,44 @@ class InterceptPlan(Plan):
         return False
 
     def nextCommand(self):
-        y = utilities.predict_y_intersection(self.world,self.robot.x, self.world.their_defender, bounce = True)
-        if y is not None:
-            x = self.find_x(self.robot, y)
-            print x
-            if self.world.pitch.is_within_bounds(self.robot,x,y):
-                return self.go_to_intercept(x,y)
-
-        y = self.world.pitch.height / 2
-        x = self.find_x(self.robot, y)
-        command = self.go_to(x,y)
-        if command:
-            return self.go_to(x,y)
+        if self.world.pitch.is_within_bounds(self.robot, self.robot.x, self.robot.y):
+            return self.go_to(self.world.pitch.width / 4.0, self.world.pitch.height / 2.0, 100)
         else:
-            return self.go_forward(100)
-
-    def go_to_intercept(self,x,y):
-        # Forward direction is < pi/2 on a circle.
-        distance = self.robot.get_euclidean_distance_to_point(x,y)
-        if distance == 0:
             return CommandDict.stop()
-        command = self.go_forward(100) if (abs(self.robot.get_rotation_to_point(x,y)) < pi/2) else self.go_backward(100)
-        return command
+    #     y = utilities.predict_y_intersection(self.world, self.world.ball.x, self.world.their_defender, bounce = True)
+    #     if y is not None:
+    #         x = self.find_x(self.robot, y)
+    #         print x
+    #         if self.world.pitch.is_within_bounds(self.robot, x, y):
+    #             return self.go_to_intercept(x, y)
+    #
+    #     y = self.world.pitch.height / 2
+    #     x = self.find_x(self.robot, y)
+    #     command = self.go_to(x, y)
+    #     if command:
+    #         return self.go_to(x, y)
+    #     else:
+    #         return self.go_forward(100)
+    #
+    # def go_to_intercept(self, x, y):
+    #     # Forward direction is < pi/2 and > 3pi/2 on a circle.
+    #     distance = self.robot.get_euclidean_distance_to_point(x, y)
+    #     if distance == 0:
+    #         return CommandDict.stop()
+    #     angle = abs(self.robot.get_rotation_to_point(x, y))
+    #     command = self.go_forward(100)# if angle < pi/2 or angle > (3 * pi) / 2 else self.go_backward(100)
+    #     return command
+
+
+    def go_forward(self, distance, speed=100):
+        """
+        Generates commands for the robot to move forward
+        :param distance: unit??? distance to target position
+        :return: False if :distance: is within DISTANCE_ERROR, otherwise a CommandDict containing the next command
+        """
+        direction = "Forward"
+        kick = "None"
+        return CommandDict(speed, direction, kick)
 
     def find_x(self, robot, y):
         """
