@@ -78,7 +78,7 @@ class Plan(object):
         """
         if abs(angle) < ROTATION_ERROR:
             return False
-        speed = 80
+        speed = 70
         direction = "Right" if angle < 0 else "Left"
         kick = "None"
         return CommandDict(speed, direction, kick)

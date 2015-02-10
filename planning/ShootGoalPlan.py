@@ -39,6 +39,7 @@ class ShootGoalPlan(Plan):
             # Otherwise kick the ball
             else:
                 self.finished = True
+                self.robot.catcher = "open"
                 return self.kick()
    
 

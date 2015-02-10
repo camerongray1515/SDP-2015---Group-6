@@ -48,11 +48,11 @@ class Robot(PitchObject):
         '''
         return self.catcher_area.isInside(ball.x, ball.y)
 
-    def has_ball(self, ball):
+    def has_ball(self, ball=None):
         '''
         Gets if the robot has possession of the ball
         '''
-        return (self._catcher == 'closed') and self.can_catch_ball(ball)
+        return (self._catcher == 'closed')
 
     def get_rotation_to_point(self, x, y):
         '''
