@@ -4,6 +4,8 @@ from IdlePlan import IdlePlan
 from GrabBallPlan import GrabBallPlan
 from ShootGoalPlan import ShootGoalPlan
 from InterceptPlan import InterceptPlan
+from Utility.CommandDict import CommandDict
+
 #TODO Rename!!!
 class Planner_new(object):
     """Finite State Machine-Based planner. Generates commands for the robot based on plan classes derived from Plan"""
@@ -39,22 +41,23 @@ class Planner_new(object):
         """
         # Update the world state with the given positions
         self.world.update_positions(model_positions)
-
-        if(self.current_plan.isValid() and not self.current_plan.isFinished()):
-            return self.current_plan.nextCommand()
-        else:
+        print self.current_plan
+        if self.world.ball != None:
+            if(self.current_plan.isValid() and not self.current_plan.isFinished()):
+                return self.current_plan.nextCommand()
+            else:
             # If self.current_plan is invalid, then choose a new plan and return a command from it
 
             #TODO - is this legal? It seems ok, need to check for sure
             # Reset the old plan
             #self.plans[self.current_plan] = self.plans[self.current_plan_index].__init__(self.world, self.robot)
 
-            for plan in self.plans:
-                if(plan.isValid()):
-                    self.current_plan = plan
-                    return self.current_plan.nextCommand()
+                for plan in self.plans:
+                    if(plan.isValid()):
+                        self.current_plan = plan
+                        return self.current_plan.nextCommand()
 
-
+        return CommandDict.stop()
 
 
 

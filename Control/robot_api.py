@@ -125,19 +125,19 @@ class RobotAPI():
         self.set_motor("left", speed)
 
     def kick(self, speed=100):
-        timer = Timer(1,self.set_motor("kicker",0))
+        timer = Timer(1,self.set_motor, args = ["kicker",0])
         self.set_motor("kicker", speed)
         timer.start()
 
-        
+
     def prepare_catch(self):  # This may be needed if we remove side bars from the robot
-                            # It closes grabber just a bit so we can collect the ball without kicker in the way
-        timer = Timer(0.2,self.set_motor("kicker",0))
+        # It closes grabber just a bit so we can collect the ball without kicker in the way
+        timer = Timer(0.2,self.set_motor,args = ["kicker",0])
         self.set_motor("kicker", -1 * 50)
         timer.start()
 
     def catch(self, speed=100):
-        timer = Timer(1,self.set_motor("kicker",0))
+        timer = Timer(1,self.set_motor,args = ["kicker",0])
         self.set_motor("kicker", -1 * speed)
         timer.start()
 

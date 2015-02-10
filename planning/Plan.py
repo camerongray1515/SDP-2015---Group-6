@@ -61,7 +61,7 @@ class Plan(object):
         angle = self.robot.get_rotation_to_point(x,y)
 
         # DEBUG
-        print(angle)
+        #print(angle)
 
         # If we are done rotating then go forward
         command = self.rotate_to(angle)

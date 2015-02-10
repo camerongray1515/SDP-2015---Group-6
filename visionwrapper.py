@@ -86,4 +86,4 @@ class VisionWrapper:
 
 
     def saveCalibrations(self):
-        tools.save_colors(self.pitch, self.calibration)
+        tools.save_colors(self.vision.pitch, self.calibration)

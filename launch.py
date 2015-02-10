@@ -9,6 +9,8 @@ import time
 from gui import GUI
 from visionwrapper import VisionWrapper
 from Control.dict_control import Controller
+import traceback,sys
+
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
@@ -39,7 +41,7 @@ class Main:
 
         self.vision = VisionWrapper(pitch, color, our_side, video_port)
         # Set up main planner
-        self.planner = Planner_new(our_side, pitch,"defender")
+        self.planner = Planner_new(our_side, pitch,attacker=False)
 
         # Set up GUI
         self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)
@@ -69,6 +71,7 @@ class Main:
 
                 # Find appropriate action
                 command = self.planner.update(self.vision.model_positions)
+                print(command)
                 self.controller.update(command)
 
                 # Information about the grabbers from the world
@@ -93,6 +96,11 @@ class Main:
 
         except Exception as e:
             print(e.message)
+            traceback.print_exc(file=sys.stdout)
+
+        finally:
+            pass
+            #self.vision.saveCalibrations()
 
 
 
