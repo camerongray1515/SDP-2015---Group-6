@@ -5,6 +5,7 @@ from GrabBallPlan import GrabBallPlan
 from ShootGoalPlan import ShootGoalPlan
 from InterceptPlan import InterceptPlan
 from Utility.CommandDict import CommandDict
+from EasyInterceptPlan import EasyInterceptPlan
 
 #TODO Rename!!!
 class Planner_new(object):
@@ -27,7 +28,7 @@ class Planner_new(object):
         if (attacker):
             self.plans = [ShootGoalPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world, self.robot)]
         else:
-            self.plans = [InterceptPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world,self.robot)]
+            self.plans = [EasyInterceptPlan(self.world, self.robot), InterceptPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world,self.robot)]
         self.current_plan = self.plans[0]
 
 

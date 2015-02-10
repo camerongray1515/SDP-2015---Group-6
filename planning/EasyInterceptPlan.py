@@ -6,14 +6,14 @@ from math import tan, pi
 BALL_VELOCITY = 3
 
 
-class InterceptPlan(Plan):
+class EasyInterceptPlan(Plan):
     """Defines the idle plan. This is the fallback plan the robot will end up in if the planner cannot find a suitable plan."""
 
     def __init__(self, world, robot):
         """
         Constructor. Calls superclass constructor.
         """
-        super(InterceptPlan, self).__init__(world, robot)
+        super(EasyInterceptPlan, self).__init__(world, robot)
 
     def isValid(self):
         """
@@ -21,9 +21,8 @@ class InterceptPlan(Plan):
 
         """
         if self.world.ball != None and self.world.ball.velocity != None:
-            return self.world.ball.velocity > BALL_VELOCITY #TODO add a check for if we are holding the ball or not.
-        else:
-            return False
+            return self.world.ball.velocity > BALL_VELOCITY and abs(self.robot.angle) < 3*pi/4 and abs(self.robot.angle) > pi/4 #TODO add a check for if we are holding the ball or not.
+        return False
 
     def isFinished(self):
         """
@@ -39,20 +38,6 @@ class InterceptPlan(Plan):
     def nextCommand(self):
         return self.go_forward(200)
 
-    def nextCommand(self):
-        y = utilities.predict_y_intersection(self.world,self.robot.x,self.world.their_defender,bounce = True)
-        if y != None:
-            x = find_x(self.robot,y)
-            if self.world.pitch.is_within_bounds(self.robot,x,y):
-                return self.go_to_intercept(x,y)
-
-        y = self.world.pitch.height/2
-        x = find_x(self.robot, y)
-        command = self.go_to(x,y)
-        if command:
-            return self.go_to(x,y)
-        else:
-            return self.go_forward(100)
 
     def go_to_intercept(self,x,y):
         # Forward direction is < pi/2 on a circle.

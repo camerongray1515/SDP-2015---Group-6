@@ -169,9 +169,9 @@ class RobotAPI():
 
     def set_motor(self, motor, speed, scale=True):
         # If the motor is already running at this speed, do not send the command
-        if speed == self.current_motor_speeds[motor]:
+        """if speed == self.current_motor_speeds[motor]:
             return
-
+        """
         if scale:
             scaled_speed = self.get_scaled_speed(motor, speed)
         else:
