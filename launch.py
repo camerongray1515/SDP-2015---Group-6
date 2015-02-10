@@ -43,7 +43,7 @@ class Main:
 
         self.vision = VisionWrapper(pitch, color, our_side, video_port)
         # Set up main planner
-        self.planner = Planner_new(our_side, pitch, attacker=True)
+        self.planner = Planner_new(our_side, pitch,attacker=False)
 
         # Set up GUI
         self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)
@@ -99,9 +99,8 @@ class Main:
         except Exception as e:
             print(e.message)
             traceback.print_exc(file=sys.stdout)
-
+        
         finally:
-            pass
             # Write the new calibrations to a file.
             pass
             #tools.save_colors(self.pitch, self.vision.calibration)
