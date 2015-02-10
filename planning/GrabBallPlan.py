@@ -27,7 +27,7 @@ class GrabBallPlan(Plan):
             self.robot.catcher = "prepared"
             return CommandDict.prepare()
 
-        command = self.go_to(self.world.ball.x,self.world.ball.y)
+        command = self.go_to(self.world.ball.x, self.world.ball.y, speed=75)
         # If we need to move to the ball, then get the command and return it
         if not command == False:
             return command

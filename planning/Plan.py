@@ -49,7 +49,7 @@ class Plan(object):
     def isFinished(self):
         return self.finished
     
-    def go_to(self, x, y):
+    def go_to(self, x, y, speed=100):
         """
         Generates commands for the robot to navigate to a point
         :param x: x coordinate to navigate to
@@ -68,7 +68,7 @@ class Plan(object):
         if command:
             return command
         else:
-            return self.go_forward(distance)
+            return self.go_forward(distance, speed)
 
     def rotate_to(self, angle):
         """
@@ -83,16 +83,15 @@ class Plan(object):
         kick = "None"
         return CommandDict(speed, direction, kick)
 
-    def go_backward(self,distance):
+    def go_backward(self, distance, speed=100):
         if distance < DISTANCE_ERROR:
             return False
         else:
-            speed = 100
             direction = "Backward"
             kick = "None"
-            return CommandDict(speed,direction,kick)
+            return CommandDict(speed, direction, kick)
 
-    def go_forward(self, distance):
+    def go_forward(self, distance, speed=100):
         """
         Generates commands for the robot to move forward
         :param distance: unit??? distance to target position
@@ -101,13 +100,13 @@ class Plan(object):
         if distance < DISTANCE_ERROR:
             return False
         else:
-            speed = 100 if distance > 2 * DISTANCE_ERROR else 70
+            speed = speed if distance > 2 * DISTANCE_ERROR else speed / 2
             direction = "Forward"
             kick = "None"
-            return CommandDict(speed,direction,kick)
+            return CommandDict(speed, direction, kick)
 
     def kick(self,speed=100):
-        return CommandDict(speed, "None","Kick")
+        return CommandDict(speed, "None", "Kick")
    
 
     

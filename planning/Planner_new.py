@@ -42,7 +42,7 @@ class Planner_new(object):
         """
         # Update the world state with the given positions
         self.world.update_positions(model_positions)
-        print self.current_plan
+        #print self.current_plan
         if self.world.ball != None:
             if(self.current_plan.isValid() and not self.current_plan.isFinished()):
                 return self.current_plan.nextCommand()

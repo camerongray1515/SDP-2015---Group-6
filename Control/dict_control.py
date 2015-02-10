@@ -3,11 +3,19 @@ from robot_api import RobotAPI
 class Controller():
     def __init__(self, port="/dev/ttyACM1"):
         self.kick_wait = 0
+        self.prepare_wait = 0
+        self.catch_wait = 0
         self.robot_api = RobotAPI(port,115200)
 
     def update(self, command):
         if self.kick_wait > 0:
             self.kick_wait -= 1
+            return
+        if self.prepare_wait > 0:
+            self.prepare_wait -= 1
+            return
+        if self.catch_wait > 0:
+            self.catch_wait -= 1
             return
 
         speed = command["speed"]
@@ -26,11 +34,11 @@ class Controller():
             self.robot_api.stop()
 
         if (kick == "Kick"):
-            self.kick_wait = 5
+            self.kick_wait = 20
             self.robot_api.kick(speed)
         elif (kick == "Prepare"):
-            self.kick_wait = 5
+            self.prepare_wait = 5
             self.robot_api.prepare_catch()
         elif (kick == "Catch"):
-            self.kick_wait = 5
+            self.catch_wait = 5
             self.robot_api.catch(speed)

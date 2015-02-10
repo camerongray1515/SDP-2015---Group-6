@@ -43,7 +43,7 @@ class Main:
 
         self.vision = VisionWrapper(pitch, color, our_side, video_port)
         # Set up main planner
-        self.planner = Planner_new(our_side, pitch,attacker=False)
+        self.planner = Planner_new(our_side, pitch,attacker=True)
 
         # Set up GUI
         self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)
