@@ -98,10 +98,6 @@ class Main:
         except Exception as e:
             print(e.message)
             traceback.print_exc(file=sys.stdout)
-
-        finally:
-            pass
-            #self.vision.saveCalibrations()
         
         finally:
             # Write the new calibrations to a file.
