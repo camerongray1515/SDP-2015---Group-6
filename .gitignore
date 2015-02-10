@@ -4,5 +4,4 @@
 *.pyproj.user
 .DS_Store
 .idea
-/vision/calibrations/calibrations.json
 restats
