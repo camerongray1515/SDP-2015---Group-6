@@ -3,8 +3,8 @@ from abc import ABCMeta, abstractmethod
 from World import World
 from Utility.CommandDict import CommandDict
 from math import pi
-ROTATION_ERROR = pi/7
-DISTANCE_ERROR = 50
+ROTATION_ERROR = pi/8
+DISTANCE_ERROR = 45
 
 class Plan(object):
     """
@@ -78,7 +78,7 @@ class Plan(object):
         """
         if abs(angle) < ROTATION_ERROR:
             return False
-        speed = 70
+        speed = 70 if angle > 2* ROTATION_ERROR else 65
         direction = "Right" if angle < 0 else "Left"
         kick = "None"
         return CommandDict(speed, direction, kick)
@@ -101,7 +101,8 @@ class Plan(object):
         if distance < DISTANCE_ERROR:
             return False
         else:
-            speed = 100
+
+            speed = 100 if distance > 2* DISTANCE_ERROR else 70
             direction = "Forward"
             kick = "None"
             return CommandDict(speed,direction,kick)

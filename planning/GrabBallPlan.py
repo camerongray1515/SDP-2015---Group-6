@@ -17,7 +17,7 @@ class GrabBallPlan(Plan):
             - Robot must not have the ball
             - NOT IMPLEMENTED : Robot must be within its zone - though this -should- be handled by the go_to function. This may be useful for some kind of state-reset if we get out of the zone somehow
         """
-        print("CG - {0}".format(self.robot.catcher))
+
 
         return self.world.pitch.is_within_bounds(self.robot,self.world.ball.x,self.world.ball.y) and (not self.robot.has_ball())
 
