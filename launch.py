@@ -17,7 +17,7 @@ class Main:
     Primary source of robot control. Ties vision and planning together.
     """
 
-    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyACM0', comms=1):
+    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyACM0', comms=1, quick=False):
         """
         Entry point for the SDP system.
 
@@ -33,8 +33,9 @@ class Main:
                                             power wire
         """
         self.controller = Controller(comm_port)
-        print("Waiting 10 seconds for serial to initialise")
-        time.sleep(10)
+        if not quick:
+        	print("Waiting 10 seconds for serial to initialise")
+        	time.sleep(10)
         self.pitch = pitch
 
 
@@ -109,5 +110,6 @@ if __name__ == '__main__':
     parser.add_argument("color", help="The color of our team - ['yellow', 'blue'] allowed.")
     parser.add_argument("comms", help="The serial port that the RF stick is using (Usually /dev/ttyACMx)")
     parser.add_argument("-v", "--verbose", help="Verbose mode - print more stuff", action="store_true")
+    parser.add_argument("-q", "--quick", help="Quick mode - skips wait for serial", action="store_true")
     args = parser.parse_args()
-    c = Main(pitch=int(args.pitch), color=args.color, our_side=args.side, comm_port=args.comms).control_loop(verbose=args.verbose)
+    c = Main(pitch=int(args.pitch), color=args.color, our_side=args.side, comm_port=args.comms, quick=args.quick).control_loop(verbose=args.verbose)
