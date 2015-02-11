@@ -17,7 +17,8 @@ class Main:
     Primary source of robot control. Ties vision and planning together.
     """
 
-    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyACM0', quick=False, is_attacker=False):
+    def __init__(self, pitch, color, our_side, video_port=0,
+                 comm_port='/dev/ttyACM0', quick=False, is_attacker=False):
         """
         Entry point for the SDP system.
 
@@ -72,8 +73,8 @@ class Main:
                     'our_attacker': self.planner.world.our_attacker.catcher_area
                 }
                 # Information about states
-                attackerState = ""
-                defenderState = ""
+                attacker_state = ""
+                defender_state = ""
 
                 # Use 'y', 'b', 'r' to change color.
                 key = waitKey(delay=2) & 0xFF  # Returns 255 if no keypress detected
@@ -81,8 +82,8 @@ class Main:
                 fps = float(counter) / (time.clock() - timer)
 
                 # Draw vision content and actions
-                self.GUI.draw(self.vision, gui_actions, fps, attackerState,
-                              defenderState, "", "", grabbers, key=key)
+                self.GUI.draw(self.vision, gui_actions, fps, attacker_state,
+                              defender_state, "", "", grabbers, key=key)
                 counter += 1
 
         except Exception as e:
@@ -91,17 +92,17 @@ class Main:
         finally:
             tools.save_colors(self.pitch, self.vision.calibration)
 
-
-
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("pitch", help="[0] Main pitch, [1] Secondary pitch")
     parser.add_argument("side", help="The side of our defender ['left', 'right'] allowed.")
     parser.add_argument("color", help="The color of our team - ['yellow', 'blue'] allowed.")
-    parser.add_argument("comms", help="The serial port that the RF stick is using (Usually /dev/ttyACMx)")
+    parser.add_argument("comms", help="""The serial port that the RF stick
+                        is using (Usually /dev/ttyACMx)""")
     parser.add_argument("role", help="Role of robot - 'attack' or 'defend'")
-    parser.add_argument("-q", "--quick", help="Quick mode - skips wait for serial", action="store_true")
+    parser.add_argument("-q", "--quick", help="Quick mode - skips wait for serial",
+                        action="store_true")
     args = parser.parse_args()
     if args.role == "attack" or args.role == "attacker":
         is_attacker = True
@@ -110,4 +111,5 @@ if __name__ == '__main__':
     else:
         print "Role must be 'attack' or 'defend'"
         sys.exit()
-    c = Main(pitch=int(args.pitch), color=args.color, our_side=args.side, comm_port=args.comms, quick=args.quick, is_attacker=is_attacker)
+    c = Main(pitch=int(args.pitch), color=args.color, our_side=args.side, comm_port=args.comms,
+             quick=args.quick, is_attacker=is_attacker)
