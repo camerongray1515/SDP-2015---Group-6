@@ -54,7 +54,7 @@ class Main:
         self.control_loop()
 
 
-    def control_loop(self, verbose=False):
+    def control_loop(self):
         """
         The main loop for the control system. Runs until ESC is pressed.
 
@@ -112,7 +112,6 @@ if __name__ == '__main__':
     parser.add_argument("side", help="The side of our defender ['left', 'right'] allowed.")
     parser.add_argument("color", help="The color of our team - ['yellow', 'blue'] allowed.")
     parser.add_argument("comms", help="The serial port that the RF stick is using (Usually /dev/ttyACMx)")
-    parser.add_argument("-v", "--verbose", help="Verbose mode - print more stuff", action="store_true")
     parser.add_argument("-q", "--quick", help="Quick mode - skips wait for serial", action="store_true")
     args = parser.parse_args()
     c = Main(pitch=int(args.pitch), color=args.color, our_side=args.side, comm_port=args.comms, quick=args.quick)
