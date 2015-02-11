@@ -17,7 +17,7 @@ class Main:
     Primary source of robot control. Ties vision and planning together.
     """
 
-    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyACM0', quick=False):
+    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyACM0', quick=False, is_attacker=False):
         """
         Entry point for the SDP system.
 
@@ -36,7 +36,7 @@ class Main:
 
         self.vision = VisionWrapper(pitch, color, our_side, video_port)
         # Set up main planner
-        self.planner = Planner_new(our_side, pitch, attacker=False)
+        self.planner = Planner_new(our_side, pitch, attacker=is_attacker)
 
         # Set up GUI
         self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)
@@ -100,6 +100,14 @@ if __name__ == '__main__':
     parser.add_argument("side", help="The side of our defender ['left', 'right'] allowed.")
     parser.add_argument("color", help="The color of our team - ['yellow', 'blue'] allowed.")
     parser.add_argument("comms", help="The serial port that the RF stick is using (Usually /dev/ttyACMx)")
+    parser.add_argument("role", help="Role of robot - 'attack' or 'defend'")
     parser.add_argument("-q", "--quick", help="Quick mode - skips wait for serial", action="store_true")
     args = parser.parse_args()
-    c = Main(pitch=int(args.pitch), color=args.color, our_side=args.side, comm_port=args.comms, quick=args.quick)
+    if args.role == "attack" or args.role == "attacker":
+        is_attacker = True
+    elif args.role == "defend" or args.role == "defender":
+        is_attacker = False
+    else:
+        print "Role must be 'attack' or 'defend'"
+        sys.exit()
+    c = Main(pitch=int(args.pitch), color=args.color, our_side=args.side, comm_port=args.comms, quick=args.quick, is_attacker=is_attacker)
