@@ -10,6 +10,7 @@ from gui import GUI
 from visionwrapper import VisionWrapper
 from Control.dict_control import Controller
 import traceback,sys
+import pdb
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -99,11 +100,8 @@ class Main:
         except Exception as e:
             print(e.message)
             traceback.print_exc(file=sys.stdout)
-        
         finally:
-            # Write the new calibrations to a file.
-            pass
-            #tools.save_colors(self.pitch, self.vision.calibration)
+            tools.save_colors(self.pitch, self.vision.calibration)
 
 
 
@@ -117,4 +115,4 @@ if __name__ == '__main__':
     parser.add_argument("-v", "--verbose", help="Verbose mode - print more stuff", action="store_true")
     parser.add_argument("-q", "--quick", help="Quick mode - skips wait for serial", action="store_true")
     args = parser.parse_args()
-    c = Main(pitch=int(args.pitch), color=args.color, our_side=args.side, comm_port=args.comms, quick=args.quick).control_loop(verbose=args.verbose)
+    c = Main(pitch=int(args.pitch), color=args.color, our_side=args.side, comm_port=args.comms, quick=args.quick)
