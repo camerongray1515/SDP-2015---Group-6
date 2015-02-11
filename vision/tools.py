@@ -115,7 +115,7 @@ def save_croppings(pitch, data, filename=PATH+'/calibrations/croppings.json'):
 
 def write_json(filename=PATH+'/calibrations/calibrations.json', data={}):
     _file = open(filename, 'w')
-    _file.write(json.dumps(data))
+    _file.write(json.dumps(data, indent=4))
     _file.close()
 
 
