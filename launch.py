@@ -1,7 +1,4 @@
-from vision.vision import Vision, Camera
 from planning.Planner_new import Planner_new
-from postprocessing.postprocessing import Postprocessing
-from preprocessing.preprocessing import Preprocessing
 import vision.tools as tools
 from cv2 import waitKey
 import warnings
@@ -9,8 +6,8 @@ import time
 from gui import GUI
 from visionwrapper import VisionWrapper
 from Control.dict_control import Controller
-import traceback,sys
-import pdb
+import traceback
+import sys
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -20,7 +17,7 @@ class Main:
     Primary source of robot control. Ties vision and planning together.
     """
 
-    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyACM0', comms=1, quick=False):
+    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyACM0', quick=False):
         """
         Entry point for the SDP system.
 
@@ -30,17 +27,12 @@ class Main:
             [int] pitch                     0 - main pitch, 1 - secondary pitch
             [string] our_side               the side we're on - 'left' or 'right'
             *[int] port                     The camera port to take the feed from
-            *[Robot_Controller] attacker    Robot controller object - Attacker Robot has a RED
-                                            power wire
-            *[Robot_Controller] defender    Robot controller object - Defender Robot has a YELLOW
-                                            power wire
         """
         self.controller = Controller(comm_port)
         if not quick:
-        	print("Waiting 10 seconds for serial to initialise")
-        	time.sleep(10)
+            print("Waiting 10 seconds for serial to initialise")
+            time.sleep(10)
         self.pitch = pitch
-
 
         self.vision = VisionWrapper(pitch, color, our_side, video_port)
         # Set up main planner
@@ -49,10 +41,7 @@ class Main:
         # Set up GUI
         self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)
 
-
-
         self.control_loop()
-
 
     def control_loop(self):
         """
@@ -69,7 +58,7 @@ class Main:
             key = 255
             while key != 27:  # the ESC key
 
-                #update the vision system with the next frame
+                # update the vision system with the next frame
                 self.vision.update()
 
                 # Find appropriate action
@@ -87,14 +76,13 @@ class Main:
                 defenderState = ""
 
                 # Use 'y', 'b', 'r' to change color.
-                key = waitKey(delay=2) & 0xFF  # Returns -1 if no keypress detected
+                key = waitKey(delay=2) & 0xFF  # Returns 255 if no keypress detected
                 gui_actions = []
                 fps = float(counter) / (time.clock() - timer)
 
                 # Draw vision content and actions
-                self.GUI.draw(self.vision,
-                     gui_actions, fps, attackerState,
-                    defenderState, "", "", grabbers, key=key)
+                self.GUI.draw(self.vision, gui_actions, fps, attackerState,
+                              defenderState, "", "", grabbers, key=key)
                 counter += 1
 
         except Exception as e:
