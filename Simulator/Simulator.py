@@ -120,10 +120,15 @@ class Simulator(object):
 
 
     def read_commands(self):
-        for robot in [self.LEFTDEF, self.LEFTATK, self.RIGHTDEF, self.RIGHTATK]:
+        for robot in [self.LEFTDEF, self.LEFTATK]:
             if robot['planner'] is not None:
-                command = robot['planner'].update(self.get_world_old())
+                command = robot['planner'].update(self.get_world_old_left())
                 self._read_command(robot, command)
+        for robot in [self.RIGHTDEF, self.RIGHTATK]:
+            if robot['planner'] is not None:
+                command = robot['planner'].update(self.get_world_old_right())
+                self._read_command(robot, command)
+
 
     def _read_command(self, robot, command):
         """Applies a command to a robot, changing its velocity, acceleration, etc."""
@@ -187,14 +192,26 @@ class Simulator(object):
     def get_world_new(self):
         return {'LEFTDEF':self.LEFTDEF, 'LEFTATK':self.LEFTATK, 'RIGHTDEF':self.RIGHTDEF, 'RIGHTATK':self.RIGHTATK, 'BALL':self.BALL}
 
-    def get_world_old(self):
-        """Returns the older representation format of world state used by the planner"""
-        #TODO convert angle to be be 0<=angle<2pi
+    def get_world_old_left(self):
+        """Returns the older representation format of world state used by the planner.
+        with left set to 'us'"""
         old_world = {}
         vectorify = (lambda x: Vector(x['x'], x['y'], x['angle'], x['velocity']))
         old_world['our_defender'] = vectorify(self.LEFTDEF)
         old_world['our_attacker'] = vectorify(self.LEFTATK)
         old_world['their_attacker'] = vectorify(self.RIGHTATK)
         old_world['their_defender'] = vectorify(self.RIGHTDEF)
+        old_world['ball'] = vectorify(self.BALL)
+        return old_world
+
+    def get_world_old_right(self):
+        """Returns the older representation format of world state used by the planner.
+        with left set to 'us'"""
+        old_world = {}
+        vectorify = (lambda x: Vector(x['x'], x['y'], x['angle'], x['velocity']))
+        old_world['our_defender'] = vectorify(self.RIGHTDEF)
+        old_world['our_attacker'] = vectorify(self.RIGHTATK)
+        old_world['their_defender'] = vectorify(self.LEFTDEF)
+        old_world['their_attacker']  = vectorify(self.LEFTATK)
         old_world['ball'] = vectorify(self.BALL)
         return old_world
