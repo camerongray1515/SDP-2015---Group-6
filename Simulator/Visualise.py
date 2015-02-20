@@ -1,0 +1,106 @@
+from Tkinter import *
+import pygame
+from pygame.locals import *
+import math
+import pdb
+
+COORDSCALE = 1
+WIDTH = 540
+HEIGHT = 290
+DIVIDERWIDTH = 6
+DIV1X = 115 # These should match the clipping settings used for the planner
+DIV2X = 255
+DIV3X = 395
+GOALWIDTH = 200
+INSETWIDTH = 37
+PLATEWIDTH = 40
+BALL_RAD = 8
+COLOURS = {"PITCH": (0, 120, 0), 'DIVIDER': (255,255,255), 'CORNER': (32,32,32), 'PLATE':(51, 255, 55),
+            "ARROW": (255,0,0), "LABEL":(255,255,255), "BALL": (255,40,40)}
+
+class Visualise(Frame):
+    world = None
+    canvas = None
+
+    def say_hi(self):
+        print "hi there, everyone!"
+
+    def createWidgets(self):
+        self.QUIT = Button(self)
+        self.QUIT["text"] = "QUIT"
+        self.QUIT["fg"]   = "red"
+        self.QUIT["command"] =  self.quit
+
+        self.QUIT.pack({"side": "left"})
+
+        self.hi_there = Button(self)
+        self.hi_there["text"] = "Hello",
+        self.hi_there["command"] = self.say_hi
+
+        self.hi_there.pack({"side": "top"})
+
+    def set_world(self, world):
+        self.world = world
+
+    def show(self):
+        world = self.world
+        self.draw_background()
+        #Draw Robots
+        for (robot, name) in [(world['LEFTDEF'], 'LDEF'), (world['RIGHTATK'], 'RATK'), (world['LEFTATK'], 'LATK'), (world['RIGHTDEF'], 'RDEF')]:
+            points = ()
+            hypotenuse = PLATEWIDTH/(2.0 * math.sqrt(2))
+            for point in [0, 1, 2, 3]:
+                angle = robot['angle'] + math.pi/4.0 + (point*math.pi/2.0)
+                x_point = COORDSCALE * robot['x'] + (hypotenuse * math.cos(angle)) # Set X co-ordinate
+                y_point = COORDSCALE * robot['y'] + (hypotenuse * math.sin(angle)) # Set Y co-ordinate
+                points = points + ((x_point, y_point),)
+            #Draw Plate
+            pygame.draw.polygon(self.windowSurface, COLOURS['PLATE'], points)
+            #Draw Arrow
+            arrow_points = ((COORDSCALE * robot['x'], COORDSCALE * robot['y']),) + points[1:3]
+            pygame.draw.polygon(self.windowSurface, COLOURS['ARROW'], arrow_points)
+            #Draw Labels
+            font = pygame.font.Font(None, 26)
+            text = font.render(name, 0, COLOURS['LABEL'])
+            textpos = text.get_rect()
+            textpos.centerx = COORDSCALE*robot['x']
+            textpos.centery = COORDSCALE*robot['y']
+            self.windowSurface.blit(text, textpos)
+        #Draw Ball
+        ball_pos = (int(world['BALL']['x']), int(world['BALL']['y']))
+        pygame.draw.circle(self.windowSurface, COLOURS["BALL"], ball_pos, BALL_RAD)
+        pygame.display.flip()
+
+
+
+    def __init__(self):
+        pygame.init()
+        self.windowSurface = pygame.display.set_mode((WIDTH, HEIGHT), pygame.HWSURFACE)
+        self.windowSurface.fill(COLOURS['PITCH'])
+        self.draw_background()
+
+
+    def draw_background(self):
+        # Clear Screen
+        self.windowSurface.fill(COLOURS['PITCH'])
+        # pygame.draw.polygon(self.windowSurface, COLOURS['PITCH'], ((0,0), (WIDTH, 0), (WIDTH, HEIGHT), (0, HEIGHT)))
+
+        # Draw zone dividers
+        pygame.draw.polygon(self.windowSurface, COLOURS['DIVIDER'], ((DIVIDERWIDTH/2 + DIV1X, 0), (DIVIDERWIDTH/2 + DIV1X, HEIGHT), (-DIVIDERWIDTH/2 + DIV1X, HEIGHT), (-DIVIDERWIDTH/2 + DIV1X, 0)))
+        pygame.draw.polygon(self.windowSurface, COLOURS['DIVIDER'], ((DIVIDERWIDTH/2 + DIV2X, 0), (DIVIDERWIDTH/2 + DIV2X, HEIGHT), (-DIVIDERWIDTH/2 + DIV2X, HEIGHT), (-DIVIDERWIDTH/2 + DIV2X, 0)))
+        pygame.draw.polygon(self.windowSurface, COLOURS['DIVIDER'], ((DIVIDERWIDTH/2 + DIV3X, 0), (DIVIDERWIDTH/2 + DIV3X, HEIGHT), (-DIVIDERWIDTH/2 + DIV3X, HEIGHT), (-DIVIDERWIDTH/2 + DIV3X, 0)))
+
+        # Draw Defender Zone Indents
+        pygame.draw.polygon(self.windowSurface, COLOURS['CORNER'], ((0, HEIGHT/2 + GOALWIDTH/2), (INSETWIDTH, HEIGHT), (0, HEIGHT)))
+        pygame.draw.polygon(self.windowSurface, COLOURS['CORNER'], ((0, HEIGHT/2 - GOALWIDTH/2), (INSETWIDTH, 0), (0, 0)))
+        pygame.draw.polygon(self.windowSurface, COLOURS['CORNER'], ((WIDTH, HEIGHT/2 + GOALWIDTH/2), (WIDTH - INSETWIDTH, HEIGHT), (WIDTH, HEIGHT)))
+        pygame.draw.polygon(self.windowSurface, COLOURS['CORNER'], ((WIDTH, HEIGHT/2 - GOALWIDTH/2), (WIDTH - INSETWIDTH, 0), (WIDTH, 0)))
+
+def main():
+    root = Tk()
+    app = Visualise(master=root)
+    app.mainloop()
+    root.destroy()
+
+if __name__ == '__main__':
+    main()
