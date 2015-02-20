@@ -13,11 +13,12 @@ class Simulator(object):
     BALL = {}
     HAS_BALL = None
     ROBOT_RADIUS = 20
+    ROBOT_FRICTION = 0.4
     BALL_FRICTION = 0.1
     MAX_SPEED = 20
     MAX_ROTATION = 3
-    CATCH_DISTANCE = 35
-    KICK_SPEED = 30
+    CATCH_DISTANCE = 40
+    KICK_SPEED = 40
     VELOCITY_SCALE = 3.0 # Adjust if the velocity does not match the coordinate system.
 
     def __init__(self, left_def=None, left_atk=None, right_def=None, right_atk = None, fps=FPS, world=None):
@@ -61,7 +62,7 @@ class Simulator(object):
                 entity['angle'] = entity['angle'] - (2 * math.pi)
             while entity['angle'] < 0:
                 entity['angle'] = entity['angle'] + (2 * math.pi)
-            #Enforce speed limit & keep robots on pitch
+            #Enforce speed limit. keep robots on pitch and add robot friction
             if entity != self.BALL:
                 if entity['velocity'] > self.MAX_SPEED:
                     entity['velocity'] = self.MAX_SPEED
@@ -77,6 +78,8 @@ class Simulator(object):
                     entity['y'] = 0
                 if entity['y'] > self.HEIGHT:
                     entity['y'] = self.HEIGHT
+                if entity['acceleration'] == 0:
+                    entity['velocity'] = entity['velocity'] - (timestep * entity['velocity'] * self.ROBOT_FRICTION)
 
             # Apply friction
             if entity == self.BALL:
@@ -90,10 +93,10 @@ class Simulator(object):
         "(very) Crude bounce method to stop the ball leaving the screen"
         if self.BALL['y'] > self.HEIGHT:
             self.BALL['angle'] += self.BALL['angle'] * 2
-            self.BALL['y'] = 0
+            self.BALL['y'] = self.HEIGHT
         if self.BALL['y'] < 0:
             self.BALL['angle'] += (self.BALL['angle'] - 3*math.pi/2) * 2
-            self.BALL['y'] = self.HEIGHT
+            self.BALL['y'] = 0
         if self.BALL['x'] < 0:
             self.BALL['angle'] += -self.BALL['angle']
             self.BALL['x'] = 0
@@ -138,15 +141,17 @@ class Simulator(object):
                 robot['acceleration'] = (command['speed'] + robot['acceleration'])/2
             robot['angular_velocity'] = 0
         elif command['direction'] == 'Left':
+            robot['acceleration'] = 0
             if command['speed'] > robot['angular_acceleration']:
                 robot['angular_acceleration'] = command['speed'] * 0.05
             else:
                 robot['angular_acceleration'] = (command['speed'] * 0.05 +robot['angular_acceleration'])/2
         elif command['direction'] == 'Right':
+            robot['acceleration'] = 0
             if command['speed'] < robot['angular_acceleration']:
-                robot['angular_acceleration'] = command['speed'] * 0.05
+                robot['angular_acceleration'] = -command['speed'] * 0.05
             else:
-                robot['angular_acceleration'] = (command['speed'] * 0.05 +robot['angular_acceleration'])/2
+                robot['angular_acceleration'] = -(command['speed'] * 0.05 +robot['angular_acceleration'])/2
         elif command["direction"] == 'Backward':
             print "BACKWARD DETECTED - need to test this"
             if command['speed'] < robot['acceleration']:
@@ -163,8 +168,9 @@ class Simulator(object):
                 self.HAS_BALL = robot
         elif command['kick'] == 'Kick':
             robot['message'] = 'Kick'
-            self.HAS_BALL = None
-            self.BALL['velocity'] = self.KICK_SPEED
+            if self.HAS_BALL == robot:
+                self.HAS_BALL = None
+                self.BALL['velocity'] = self.KICK_SPEED
         elif command['kick'] == 'Prepare':
             robot['message'] = 'Prepare'
         else:
