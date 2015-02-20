@@ -43,6 +43,7 @@ class Simulator(object):
             entity['angular_velocity'] = 0.0
             entity['angular_acceleration'] = 0.0
             entity['acceleration'] = 0.0
+            entity['message'] = None
 
     def step(self):
         # stop robots on collision
@@ -114,6 +115,7 @@ class Simulator(object):
         self.BALL['velocity'] = robot['velocity']
         self.BALL['angle'] = robot['angle']
 
+
     def read_commands(self):
         for robot in [self.LEFTDEF, self.LEFTATK, self.RIGHTDEF, self.RIGHTATK]:
             if robot['planner'] is not None:
@@ -122,7 +124,7 @@ class Simulator(object):
 
     def _read_command(self, robot, command):
         """Applies a command to a robot, changing its velocity, acceleration, etc."""
-        if command['direction'] != 'None':
+        if command['kick'] != 'None':
             print command
         if command["direction"] == 'None':
             robot['acceleration'] = 0

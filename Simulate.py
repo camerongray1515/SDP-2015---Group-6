@@ -14,23 +14,13 @@ FPS = 40
 
 class Main:
 
-    def __init__(self, our_side):
-        """
-        Entry point for the SDP system.
-
-        Params:
-            [int] video_port                port number for the camera
-            [string] comm_port              port number for the arduino
-            [int] pitch                     0 - main pitch, 1 - secondary pitch
-            [string] our_side               the side we're on - 'left' or 'right'
-            *[int] port                     The camera port to take the feed from
-        """
+    def __init__(self):
         # Initialise world
         left_def = {'x' : 20, 'y' : 160, 'angle':1.1, 'velocity': 0}
         left_atk = {'x' : 300, 'y' : 100, 'angle':.04, 'velocity': 50}
         right_def = {'x' : 450, 'y' : 110, 'angle':4, 'velocity': 0}
         right_atk = {'x' : 180, 'y' : 85, 'angle':3.14, 'velocity': 0}
-        ball = {'x' : 180, 'y' : 150, 'angle':0.1, 'velocity': 0}
+        ball = {'x' : 330, 'y' : 150, 'angle':1.5, 'velocity': 4}
         initial_state = {'our_defender':left_def, 'our_attacker':left_atk, 'their_attacker':right_atk, 'their_defender':right_def, 'ball':ball}
 
         # Set up planner(s)
@@ -62,10 +52,12 @@ class Main:
         counter = 0
         sim = self.sim
         while True:
-            if counter % 4  == 0: # Not allowed to feen a command every frame
+            if counter % 4  == 0: # Not allowed to read a command every frame
                 self.sim.read_commands()
             sim.step()
             self.disp.set_world(sim.get_world_new())
+            if counter % 4 == 0:
+                self.disp.read_messages()
             self.disp.show()
             counter = counter + 1
             clock.tick(FPS)
@@ -73,4 +65,4 @@ class Main:
 
 
 if __name__ == '__main__':
-    Main(our_side='left')
+    Main()

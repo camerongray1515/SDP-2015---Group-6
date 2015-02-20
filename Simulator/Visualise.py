@@ -3,8 +3,10 @@ import pygame
 from pygame.locals import *
 import math
 import pdb
+import random
 
 COORDSCALE = 1
+MESSAGEFRAMES = 40
 WIDTH = 540
 HEIGHT = 290
 DIVIDERWIDTH = 6
@@ -21,23 +23,8 @@ COLOURS = {"PITCH": (0, 120, 0), 'DIVIDER': (255,255,255), 'CORNER': (32,32,32),
 class Visualise(Frame):
     world = None
     canvas = None
+    messages = []
 
-    def say_hi(self):
-        print "hi there, everyone!"
-
-    def createWidgets(self):
-        self.QUIT = Button(self)
-        self.QUIT["text"] = "QUIT"
-        self.QUIT["fg"]   = "red"
-        self.QUIT["command"] =  self.quit
-
-        self.QUIT.pack({"side": "left"})
-
-        self.hi_there = Button(self)
-        self.hi_there["text"] = "Hello",
-        self.hi_there["command"] = self.say_hi
-
-        self.hi_there.pack({"side": "top"})
 
     def set_world(self, world):
         self.world = world
@@ -69,7 +56,34 @@ class Visualise(Frame):
         #Draw Ball
         ball_pos = (int(world['BALL']['x']), int(world['BALL']['y']))
         pygame.draw.circle(self.windowSurface, COLOURS["BALL"], ball_pos, BALL_RAD)
+
+        #Draw messages
+        self.draw_messages()
+
         pygame.display.flip()
+
+    def read_messages(self):
+        "Should be called only when the simulator provides new commands. Stores messages such as kicker actions"
+        for entity in [self.world['LEFTDEF'],self.world['RIGHTATK'], self.world['LEFTATK'],self.world['RIGHTDEF']]:
+            if entity['message'] is not None:
+                # Add a random ofset - crude way of making it more likley that multiple messages will be visible.
+                message_coords = (entity['x'] + 40 * random.random(), entity['y'] + 40 * random.random())
+                message = (entity['message'], message_coords, MESSAGEFRAMES)
+                self.messages.append(message)
+
+    def draw_messages(self):
+        new_messages = []
+        for (message, coords, frames) in self.messages:
+            font = pygame.font.Font(None, 26)
+            text = font.render(message, 1, COLOURS['LABEL'])
+            textpos = text.get_rect()
+            textpos.centerx = COORDSCALE*coords[0] + 20
+            textpos.centery = COORDSCALE*coords[1] + 20
+            self.windowSurface.blit(text, textpos)
+            frames = frames - 1
+            if frames > 0:
+                new_messages.append((message, coords, frames))
+        self.messages = new_messages
 
 
 
