@@ -75,7 +75,7 @@ class RobotAPI():
         if (device_path is not None and baud_rate is not None):
             try:
                 self.serial = Serial(device_path, baud_rate)
-            except SerialException:
+            except:
                 print "Error in initalizing serial connection. Is the path correct?"
                 #alias the _write_serial function so we don't throw errors
                 self._write_serial = self._write_serial_debug
