@@ -47,36 +47,34 @@
     <Content Include="vision\calibrations\undistort.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="controller.py" />
     <Compile Include="Control\control_ui.py" />
     <Compile Include="Control\dict_control.py" />
     <Compile Include="Control\robot_api.py" />
     <Compile Include="Control\yo_control.py" />
     <Compile Include="Control\__init__.py" />
     <Compile Include="gui.py" />
-    <Compile Include="launch-t7.py" />
     <Compile Include="launch.py" />
     <Compile Include="main.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="planning\collisions.py" />
     <Compile Include="planning\Coordinate.py" />
+    <Compile Include="planning\EasyInterceptPlan.py" />
     <Compile Include="planning\GrabBallPlan.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="planning\IdlePlan.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="planning\InterceptPlan.py" />
     <Compile Include="planning\OtherPitchObjects.py" />
     <Compile Include="planning\PitchObject.py" />
     <Compile Include="planning\Plan.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="planning\planner.py" />
-    <Compile Include="planning\Planner_new.py">
+    <Compile Include="planning\Planner.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="planning\planning.py" />
     <Compile Include="planning\Robot.py" />
     <Compile Include="planning\ShootGoalPlan.py">
       <SubType>Code</SubType>
@@ -91,6 +89,11 @@
     <Compile Include="preprocessing\distortion\undistort.py" />
     <Compile Include="preprocessing\preprocessing.py" />
     <Compile Include="preprocessing\__init__.py" />
+    <Compile Include="profile.py" />
+    <Compile Include="Simulate.py" />
+    <Compile Include="Simulator\Simulator.py" />
+    <Compile Include="Simulator\Visualise.py" />
+    <Compile Include="Simulator\__init__.py" />
     <Compile Include="Utility\CommandDict.py" />
     <Compile Include="Utility\Getch.py" />
     <Compile Include="Utility\__init__.py" />
@@ -113,6 +116,7 @@
     <Folder Include="preprocessing\distortion\" />
     <Folder Include="preprocessing\distortion\samples\" />
     <Folder Include="preprocessing\distortion\samples\pitch1\" />
+    <Folder Include="Simulator\" />
     <Folder Include="Utility\" />
     <Folder Include="vision\" />
     <Folder Include="vision\calibrations\" />

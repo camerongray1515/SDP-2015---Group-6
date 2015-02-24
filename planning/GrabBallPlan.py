@@ -19,7 +19,7 @@ class GrabBallPlan(Plan):
         """
 
         if self.world.ball is not None:
-            return self.world.pitch.is_within_bounds(self.robot,self.world.ball.x,self.world.ball.y) and (not self.robot.has_ball())
+            return self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y) and (not self.robot.has_ball())
         return False
 
     def nextCommand(self):
@@ -27,8 +27,8 @@ class GrabBallPlan(Plan):
             self.robot.catcher = "prepared"
             return CommandDict.prepare()
 
-        command = self.go_to(self.world.ball.x, self.world.ball.y, speed=75)
         # If we need to move to the ball, then get the command and return it
+        command = self.go_to(self.world.ball.x, self.world.ball.y, speed=75)
         if not command == False:
             return command
 

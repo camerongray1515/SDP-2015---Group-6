@@ -1,4 +1,4 @@
-from planning.Planner_new import Planner_new
+from planning.Planner import Planner
 import warnings
 import time
 from Control.dict_control import Controller

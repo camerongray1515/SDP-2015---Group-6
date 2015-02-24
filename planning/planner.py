@@ -1,154 +1,59 @@
-from World import *
-from collisions import *
-from strategies import *
-from utilities import *
 
+from World import  World
+from IdlePlan import IdlePlan
+from GrabBallPlan import GrabBallPlan
+from ShootGoalPlan import ShootGoalPlan
+from InterceptPlan import InterceptPlan
+from Utility.CommandDict import CommandDict
+from EasyInterceptPlan import EasyInterceptPlan
 
-class Planner:
+class Planner(object):
+    """Finite State Machine-Based planner. Generates commands for the robot based on plan classes derived from Plan"""
 
-    def __init__(self, our_side, pitch_num):
-        self._world = World(our_side, pitch_num)
-        self._world.our_defender.catcher_area = {'width' : 30, 'height' : 30, 'front_offset' : 12} #10
-        self._world.our_attacker.catcher_area = {'width' : 30, 'height' : 30, 'front_offset' : 14}
+    def __init__(self, side, pitch, attacker=True):
+        """
+        Constructor.
+        :param side: "left" or "right"; The side of the pitch we are on
+        :param pitch: 0 or 1; The main pitch (0) or the side pitch (1)
+        :param attacker: True (or not given) if we are the attacker robot, otherwise False if we are the defender
+        """
+        self.world = World(side, pitch)
+        #TODO catcher_areas need tweaking for our robot, they are currently set to team 7's
+        self.world.our_defender.catcher_area = {'width' : 30, 'height' : 30, 'front_offset' : 12}
+        self.world.our_attacker.catcher_area = {'width' : 30, 'height' : 30, 'front_offset' : 14}
+        self.robot = self.world.our_attacker if attacker else self.world.our_defender
 
-        # self._defender_defence_strat = DefenderDefence(self._world)
-        # self._defender_attack_strat = DefaultDefenderAttack(self._world)
-
-        self._attacker_strategies = {'defence' : [AttackerDefend],
-                                     'grab' : [AttackerGrab, AttackerGrabCareful],
-                                     'score' : [AttackerDriveByTurn, AttackerDriveBy, AttackerTurnScore, AttackerScoreDynamic],
-                                     'catch' : [AttackerPositionCatch, AttackerCatch]}
-
-        self._defender_strategies = {'defence' : [DefenderDefence, DefenderPenalty],
-                                     'grab' : [DefenderGrab],
-                                     'pass' : [DefenderBouncePass]}
-
-        self._defender_state = 'defence'
-        self._defender_current_strategy = self.choose_defender_strategy(self._world)
-
-        self._attacker_state = 'defence'
-        self._attacker_current_strategy = self.choose_attacker_strategy(self._world)
-
-    # Provisional. Choose the first strategy in the applicable list.
-    def choose_attacker_strategy(self, world):
-        next_strategy = self._attacker_strategies[self._attacker_state][0]
-        return next_strategy(world)
-
-    # Provisional. Choose the first strategy in the applicable list.
-    def choose_defender_strategy(self, world):
-        next_strategy = self._defender_strategies[self._defender_state][0]
-        return next_strategy(world)
-
-    @property
-    def attacker_strat_state(self):
-        return self._attacker_current_strategy.current_state
-
-    @property
-    def defender_strat_state(self):
-        return self._defender_current_strategy.current_state
-
-    @property
-    def attacker_state(self):
-        return self._attacker_state
-
-    @attacker_state.setter
-    def attacker_state(self, new_state):
-        assert new_state in ['defence', 'attack']
-        self._attacker_state = new_state
-
-    @property
-    def defender_state(self):
-        return self._defender_state
-
-    @defender_state.setter
-    def defender_state(self, new_state):
-        assert new_state in ['defence', 'attack']
-        self._defender_state = new_state
-
-    def update_world(self, position_dictionary):
-        self._world.update_positions(position_dictionary)
-
-    def plan(self, robot='attacker'):
-        assert robot in ['attacker', 'defender']
-        our_defender = self._world.our_defender
-        our_attacker = self._world.our_attacker
-        their_defender = self._world.their_defender
-        their_attacker = self._world.their_attacker
-        ball = self._world.ball
-        if robot == 'defender':
-            # If the ball is in their attacker zone:
-            if self._world.pitch.zones[their_attacker.zone].isInside(ball.x, ball.y):
-                # If the bal is not in the defender's zone, the state should always be 'defend'.
-                if not self._defender_state == 'defence':
-                    self._defender_state = 'defence'
-                    self._defender_current_strategy = self.choose_defender_strategy(self._world)
-                return self._defender_current_strategy.generate()
-
-            # We have the ball in our zone, so we grab and pass:
-            elif self._world.pitch.zones[our_defender.zone].isInside(ball.x, ball.y):
-                # Check if we should switch from a grabbing to a scoring strategy.
-                if  self._defender_state == 'grab' and self._defender_current_strategy.current_state == 'GRABBED':
-                    self._defender_state = 'pass'
-                    self._defender_current_strategy = self.choose_defender_strategy(self._world)
-
-                # Check if we should switch from a defence to a grabbing strategy.
-                elif self._defender_state == 'defence':
-                    self._defender_state = 'grab'
-                    self._defender_current_strategy = self.choose_defender_strategy(self._world)
-
-                elif self._defender_state == 'pass' and self._defender_current_strategy.current_state == 'FINISHED':
-                    self._defender_state = 'grab'
-                    self._defender_current_strategy = self.choose_defender_strategy(self._world)
-
-                return self._defender_current_strategy.generate()
-            # Otherwise, chillax:
-            else:
-
-                return do_nothing()
-
+        # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
+        if (attacker):
+            self.plans = [ShootGoalPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world, self.robot)]
         else:
-            # If the ball is in their defender zone we defend:
+            self.plans = [InterceptPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world,self.robot)]
 
-            if self._world.pitch.zones[their_defender.zone].isInside(ball.x, ball.y):
-                if not self._attacker_state == 'defence':
-                    self._attacker_state = 'defence'
-                    self._attacker_current_strategy = self.choose_attacker_strategy(self._world)
-                return self._attacker_current_strategy.generate()
+        self.current_plan = self.plans[0]
 
-            # If ball is in our attacker zone, then grab the ball and score:
-            elif self._world.pitch.zones[our_attacker.zone].isInside(ball.x, ball.y):
+    def update(self, model_positions):
+        """
+        Main planner update function. Should be called once per frame.
+        :param model_positions: A dictionary containing the positions of the objects on the pitch. (See VisionWrapper.model_positions)
+        :return: The next command to issue to the robot.
+        """
+        # Update the world state with the given positions
+        self.world.update_positions(model_positions)
 
-                # Check if we should switch from a grabbing to a scoring strategy.
-                if self._attacker_state == 'grab' and self._attacker_current_strategy.current_state == 'GRABBED':
-                    self._attacker_state = 'score'
-                    self._attacker_current_strategy = self.choose_attacker_strategy(self._world)
-
-                elif self._attacker_state == 'grab':
-                    # Switch to careful mode if the ball is too close to the wall.
-                    if abs(self._world.ball.y - self._world.pitch.height) < 0 or abs(self._world.ball.y) < 0:
-                        if isinstance(self._attacker_current_strategy, AttackerGrab):
-                            self._attacker_current_strategy = AttackerGrabCareful(self._world)
-                    else:
-                        if isinstance(self._attacker_current_strategy, AttackerGrabCareful):
-                            self._attacker_current_strategy = AttackerGrab(self._world)
-
-                # Check if we should switch from a defence to a grabbing strategy.
-                elif self._attacker_state in ['defence', 'catch'] :
-                    self._attacker_state = 'grab'
-                    self._attacker_current_strategy = self.choose_attacker_strategy(self._world)
-
-                elif self._attacker_state == 'score' and self._attacker_current_strategy.current_state == 'FINISHED':
-                    self._attacker_state = 'grab'
-                    self._attacker_current_strategy = self.choose_attacker_strategy(self._world)
-
-                return self._attacker_current_strategy.generate()
-            # If the ball is in our defender zone, prepare to catch the passed ball:
-            elif self._world.pitch.zones[our_defender.zone].isInside(ball.x, ball.y) or \
-                 self._attacker_state == 'catch':
-                 # self._world.pitch.zones[their_attacker.zone].isInside(ball.x, ball.y):
-                if not self._attacker_state == 'catch':
-                    self._attacker_state = 'catch'
-                    self._attacker_current_strategy = self.choose_attacker_strategy(self._world)
-                return self._attacker_current_strategy.generate()
+        #DEBUG
+        #print self.current_plan
+        
+        if self.world.ball != None:
+            if(self.current_plan.isValid() and not self.current_plan.isFinished()):
+                return self.current_plan.nextCommand()
             else:
-                return calculate_motor_speed(0, 0)
+            # If self.current_plan is invalid, then choose a new plan and return a command from it
+                for plan in self.plans:
+                    if(plan.isValid()):
+                        self.current_plan = plan
+                        return self.current_plan.nextCommand()
+        else:
+            return CommandDict.stop()
+
+
+

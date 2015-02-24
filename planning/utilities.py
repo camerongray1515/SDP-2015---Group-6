@@ -8,7 +8,6 @@ MAX_DISPLACEMENT_SPEED = 690
 MAX_ANGLE_SPEED = 50
 BALL_VELOCITY = 3
 
-
 def is_shot_blocked(world, our_robot, their_robot):
     '''
     Checks if our robot could shoot past their robot
@@ -84,25 +83,7 @@ def predict_y_intersection(world, predict_for_x, robot, full_width=False, bounce
         else:
             return None
 
-
-def grab_ball():
-    return {'left_motor': 0, 'right_motor': 0, 'kicker': 0, 'catcher': 1, 'speed': 1000}
-
-
-def kick_ball():
-    return {'left_motor': 0, 'right_motor': 0, 'kicker': 1, 'catcher': 0, 'speed': 1000}
-
-
-def open_catcher():
-    return {'left_motor': 0, 'right_motor': 0, 'kicker': 1, 'catcher': 0, 'speed': 1000}
-
-
-def turn_shoot(orientation):
-    return {'turn_90': orientation, 'left_motor': 0, 'right_motor': 0, 'kicker': 1, 'catcher': 0, 'speed': 1000}
-
-
-def has_matched(robot, x=None, y=None, angle=None,
-                angle_threshold=ANGLE_MATCH_THRESHOLD, distance_threshold=DISTANCE_MATCH_THRESHOLD):
+def has_matched(robot, x=None, y=None, angle=None, angle_threshold=ANGLE_MATCH_THRESHOLD, distance_threshold=DISTANCE_MATCH_THRESHOLD):
     dist_matched = True
     angle_matched = True
     if not(x is None and y is None):
@@ -110,48 +91,3 @@ def has_matched(robot, x=None, y=None, angle=None,
     if not(angle is None):
         angle_matched = abs(angle) < angle_threshold
     return dist_matched and angle_matched
-
-
-def calculate_motor_speed(displacement, angle, backwards_ok=False, careful=False):
-    '''
-    Simplistic view of calculating the speed: no modes or trying to be careful
-    '''
-    moving_backwards = False
-    general_speed = 95 if careful else 300
-    angle_thresh = BALL_ANGLE_THRESHOLD if careful else ANGLE_MATCH_THRESHOLD
-    print(angle)
-    if backwards_ok and abs(angle) > pi/2:
-        angle = (-pi + angle) if angle > 0 else (pi + angle)
-        moving_backwards = True
-
-
-    if not (displacement is None):
-
-        if displacement < DISTANCE_MATCH_THRESHOLD:
-            return {'left_motor': 0, 'right_motor': 0, 'kicker': 0, 'catcher': 0, 'speed': general_speed}
-
-        elif abs(angle) > angle_thresh:
-            speed = (angle/pi) * MAX_ANGLE_SPEED
-            return {'left_motor': -speed, 'right_motor': speed, 'kicker': 0, 'catcher': 0, 'speed': general_speed}
-
-        else:
-            speed = log(displacement, 10) * MAX_DISPLACEMENT_SPEED
-            speed = -speed if moving_backwards else speed
-            # print 'DISP:', displacement
-            if careful:
-                return {'left_motor': speed, 'right_motor': speed, 'kicker': 0, 'catcher': 0, 'speed': 1000/(1+10**(-0.1*(displacement-85)))}
-            return {'left_motor': speed, 'right_motor': speed, 'kicker': 0, 'catcher': 0, 'speed': 1000/(1+10**(-0.1*(displacement-30)))}
-
-    else:
-
-        if abs(angle) > angle_thresh:
-            speed = (angle/pi) * MAX_ANGLE_SPEED
-            return {'left_motor': -speed, 'right_motor': speed, 'kicker': 0, 'catcher': 0, 'speed': general_speed}
-
-        else:
-            return {'left_motor': 0, 'right_motor': 0, 'kicker': 0, 'catcher': 0, 'speed': general_speed}
-
-
-
-def do_nothing():
-    return calculate_motor_speed(0, 0)

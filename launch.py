@@ -1,4 +1,4 @@
-from planning.Planner_new import Planner_new
+from planning.Planner import Planner
 import vision.tools as tools
 from cv2 import waitKey
 import warnings
@@ -11,14 +11,11 @@ import sys
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-
 class Main:
     """
     Primary source of robot control. Ties vision and planning together.
     """
-
-    def __init__(self, pitch, color, our_side, video_port=0,
-                 comm_port='/dev/ttyACM0', quick=False, is_attacker=False):
+    def __init__(self, pitch, color, our_side, video_port=0, comm_port='/dev/ttyACM0', quick=False, is_attacker=False):
         """
         Entry point for the SDP system.
 
@@ -33,11 +30,14 @@ class Main:
         if not quick:
             print("Waiting 10 seconds for serial to initialise")
             time.sleep(10)
+
         self.pitch = pitch
 
+        # Set up the vision system
         self.vision = VisionWrapper(pitch, color, our_side, video_port)
-        # Set up main planner
-        self.planner = Planner_new(our_side, pitch, attacker=is_attacker)
+
+        # Set up the planner
+        self.planner = Planner(our_side, pitch, attacker=is_attacker)
 
         # Set up GUI
         self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)
@@ -55,18 +55,18 @@ class Main:
         counter = 1L
         timer = time.clock()
         try:
-
             key = 255
             while key != 27:  # the ESC key
-
                 # update the vision system with the next frame
                 self.vision.update()
 
                 # Find appropriate action
                 command = self.planner.update(self.vision.model_positions)
-                print command
+                #DEBUG
+                #print command
                 self.controller.update(command)
 
+                # TODO we should refactor this stuff out of our main loop
                 # Information about the grabbers from the world
                 grabbers = {
                     'our_defender': self.planner.world.our_defender.catcher_area,

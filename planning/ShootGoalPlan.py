@@ -19,12 +19,13 @@ class ShootGoalPlan(Plan):
         # Either way the grabber state is not currently updated, need to look through the team 7 code and fix this
         return self.robot.has_ball(self.world.ball)
 
-    #TODO this needs tweaking, robot gets to the center and then spins
     def nextCommand(self):
         # Center of the robot's zone
         (x,y) = self.world.pitch.zones[self.robot._zone].center()
+  
         # Center of the goal
-        (gx,gy) = (500, self.world.pitch._height / 2)
+        #TODO test if this works
+        (gx,gy) = (self.world.their_goal.get_polygon().center().x, self.world.pitch._height / 2)
 
         angle = self.robot.get_rotation_to_point(gx, gy)
         command = self.rotate_to(angle)

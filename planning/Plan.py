@@ -3,6 +3,8 @@ from abc import ABCMeta, abstractmethod
 from World import World
 from Utility.CommandDict import CommandDict
 from math import pi
+
+# Constants for the rotation/distance movement fudge factors
 ROTATION_ERROR = pi/8
 DISTANCE_ERROR = 43
 
@@ -14,9 +16,6 @@ class Plan(object):
         - These are utilized somewhat differently by the Idle plan, in which both are always true
             - Upshot-> We can always execute the Idle plan but we have to exit it at every update
     """
-
-    # Constants for the rotation/distance movement fudge factors
-
 
     # Register this class as an abstract class
     __metaclass__ = ABCMeta
@@ -57,8 +56,8 @@ class Plan(object):
         :return: Returns a CommandDict with the next command if we need to move to the given point or False if there is nothing to be done
         """
         # Calculate the distance and the angle from the robot to the ball
-        distance = self.robot.get_euclidean_distance_to_point(x,y)
-        angle = self.robot.get_rotation_to_point(x,y)
+        distance = self.robot.get_euclidean_distance_to_point(x, y)
+        angle = self.robot.get_rotation_to_point(x, y)
 
         # DEBUG
         #print(angle)
@@ -84,6 +83,11 @@ class Plan(object):
         return CommandDict(speed, direction, kick)
 
     def go_backward(self, distance, speed=100):
+        """
+        Generates commands for the robot to move backward
+        :param distance: unit??? distance to target position
+        :return: False if :distance: is within DISTANCE_ERROR, otherwise a CommandDict containing the next command
+        """
         if distance < DISTANCE_ERROR:
             return False
         else:
@@ -105,7 +109,10 @@ class Plan(object):
             kick = "None"
             return CommandDict(speed, direction, kick)
 
-    def kick(self,speed=100):
+    def kick(self, speed=100):
+        """
+        Generates a kick command with optional speed.
+        """
         return CommandDict(speed, "None", "Kick")
    
 
