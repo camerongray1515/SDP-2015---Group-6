@@ -24,10 +24,10 @@ class Main:
         initial_state = {'our_defender':left_def, 'our_attacker':left_atk, 'their_attacker':right_atk, 'their_defender':right_def, 'ball':ball}
 
         # Set up planner(s)
-        left_def_planner = Planner_new('left', 2, attacker=False)
-        left_atk_planner = Planner_new('left', 2, attacker=True)
-        right_def_planner = Planner_new('right', 2, attacker=False)
-        right_atk_planner =Planner_new('right', 2, attacker=True)
+        left_def_planner = Planner('left', 2, attacker=False)
+        left_atk_planner = Planner('left', 2, attacker=True)
+        right_def_planner = Planner('right', 2, attacker=False)
+        right_atk_planner = Planner('right', 2, attacker=True)
 
         # Create simulator
         self.sim = Simulator(left_def=left_def_planner,left_atk=left_atk_planner, right_def=right_def_planner,

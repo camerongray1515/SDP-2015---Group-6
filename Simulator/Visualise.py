@@ -47,18 +47,19 @@ class Visualise(Frame):
             arrow_points = ((COORDSCALE * robot['x'], COORDSCALE * robot['y']),) + points[1:3]
             pygame.draw.polygon(self.windowSurface, COLOURS['ARROW'], arrow_points)
             #Draw Labels
-            font = pygame.font.Font(None, 26)
-            text = font.render(name, 0, COLOURS['LABEL'])
-            textpos = text.get_rect()
-            textpos.centerx = COORDSCALE*robot['x']
-            textpos.centery = COORDSCALE*robot['y']
-            self.windowSurface.blit(text, textpos)
+        #     font = pygame.font.Font(None, 26)
+        #     text = font.render(name, 0, COLOURS['LABEL'])
+        #     textpos = text.get_rect()
+        #     textpos.centerx = COORDSCALE*robot['x']
+        #     textpos.centery = COORDSCALE*robot['y']
+        #     self.windowSurface.blit(text, textpos)
+
         #Draw Ball
         ball_pos = (int(world['BALL']['x']), int(world['BALL']['y']))
         pygame.draw.circle(self.windowSurface, COLOURS["BALL"], ball_pos, BALL_RAD)
 
         #Draw messages
-        self.draw_messages()
+        #self.draw_messages()
 
         pygame.display.flip()
 

@@ -25,7 +25,7 @@ class ShootGoalPlan(Plan):
   
         # Center of the goal
         #TODO test if this works
-        (gx,gy) = (self.world.their_goal.get_polygon().center().x, self.world.pitch._height / 2)
+        (gx,gy) = (self.world.their_goal.get_polygon()[0][0], self.world.pitch._height / 2)
 
         angle = self.robot.get_rotation_to_point(gx, gy)
         command = self.rotate_to(angle)
