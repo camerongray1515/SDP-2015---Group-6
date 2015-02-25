@@ -13,11 +13,12 @@ class Simulator(object):
     BALL = {}
     HAS_BALL = None
     ROBOT_RADIUS = 20
-    ROBOT_FRICTION = 0.4
+    ROBOT_FRICTION = 0.8
     BALL_FRICTION = 0.1
     MAX_SPEED = 20
     MAX_ROTATION = 3
     CATCH_DISTANCE = 40
+    BOUNCE_DISTANCE = 15
     KICK_SPEED = 40
     VELOCITY_SCALE = 3.0 # Adjust if the velocity does not match the coordinate system.
     FRAMES_UNTIL_COMMAND = 99
@@ -33,7 +34,7 @@ class Simulator(object):
         self.setup_world()
 
     def setup_world(self):
-        # Should really be speed rather than velocity, blame inherited code
+        # Should really be speed rather than velelf.BALL['angocity, blame inherited code
         keys = ['x', 'y', 'angle', 'velocity']
         for key in keys:
             self.LEFTDEF[key] = self.world['our_defender'][key]
@@ -68,6 +69,8 @@ class Simulator(object):
             if entity != self.BALL:
                 if entity['velocity'] > self.MAX_SPEED:
                     entity['velocity'] = self.MAX_SPEED
+                if entity['velocity'] < -self.MAX_SPEED:
+                	entity['velocity'] = -self.MAX_SPEED
                 if entity['angular_velocity'] > self.MAX_ROTATION:
                     entity['angular_velocity'] = self.MAX_ROTATION
                 if entity['angular_velocity'] < - self.MAX_ROTATION:
@@ -113,7 +116,14 @@ class Simulator(object):
         if self. BALL['x'] > self.WIDTH:
             self.BALL['angle'] = math.pi - self.BALL['angle']
             self.BALL['x'] = self.WIDTH
-        while self. BALL['angle'] >= 2 * math.pi:
+       
+        #bounce if there is contact with a robot
+        for robot in [self.LEFTDEF, self.LEFTATK, self.RIGHTATK, self.RIGHTDEF]:
+        	if self.in_collision_range(robot):
+        		print "BOUNCE!"
+        		self.BALL['angle'] = self.BALL['angle'] + math.pi
+
+       	while self. BALL['angle'] >= 2 * math.pi:
             self. BALL['angle'] = self. BALL['angle'] - (2 * math.pi)
         while self. BALL['angle'] < 0:
             self. BALL['angle'] = self. BALL['angle'] + (2 * math.pi)
@@ -169,12 +179,12 @@ class Simulator(object):
             else:
                 robot['angular_acceleration'] = -(command['speed'] * 0.05 +robot['angular_acceleration'])/2
         elif command["direction"] == 'Backward':
-            print "BACKWARD DETECTED - need to test this"
-            if command['speed'] < robot['acceleration']:
-                robot['acceleration'] = command['speed']
-            else:
-                robot['acceleration'] = (command['speed'] + robot['acceleration'])/2
-            robot['angular_velocity'] = 0
+        	if robot['velocity'] > 0:
+        		robot['velocity'] = 0
+        	elif command['speed'] < -robot['velocity']:
+        		robot['acceleration'] = -command['speed']
+        	else:
+        		robot['acceleration'] = (robot['acceleration'] + -command['speed'])/2
         else:
             print command
 
@@ -198,6 +208,12 @@ class Simulator(object):
         delta_y =  robot['y'] - self.BALL['y']
         distance = math.sqrt(delta_x*delta_x + delta_y*delta_y)
         return distance <= self.CATCH_DISTANCE
+
+    def in_collision_range(self, robot):
+        delta_x = robot['x'] - self.BALL['x']
+        delta_y =  robot['y'] - self.BALL['y']
+        distance = math.sqrt(delta_x*delta_x + delta_y*delta_y)
+        return distance <= self.BOUNCE_DISTANCE
 
 
     def get_world_new(self):
