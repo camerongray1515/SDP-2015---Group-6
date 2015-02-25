@@ -6,6 +6,7 @@ from ShootGoalPlan import ShootGoalPlan
 from InterceptPlan import InterceptPlan
 from Utility.CommandDict import CommandDict
 from EasyInterceptPlan import EasyInterceptPlan
+from AlignPlan import AlignPlan
 
 class Planner(object):
     """Finite State Machine-Based planner. Generates commands for the robot based on plan classes derived from Plan"""
@@ -25,7 +26,7 @@ class Planner(object):
 
         # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
         if (attacker):
-            self.plans = [ShootGoalPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world, self.robot)]
+            self.plans = [ShootGoalPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), AlignPlan(self.world, self.robot), IdlePlan(self.world, self.robot)]
         else:
             self.plans = [InterceptPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world,self.robot)]
 
