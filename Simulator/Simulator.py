@@ -93,7 +93,8 @@ class Simulator(object):
             # Perform commands if if the delay has been reached
             if self.FRAMES_UNTIL_COMMAND == 0:
             	for robot in [self.LEFTDEF, self.LEFTATK, self.RIGHTDEF, self.RIGHTATK]:
-            		self._read_command(robot, robot['command'])
+            		if robot['planner'] is not None:
+            			self._read_command(robot, robot['command'])
             	self.FRAMES_UNTIL_COMMAND == 99
             else:
              	self.FRAMES_UNTIL_COMMAND -= 1
@@ -185,6 +186,7 @@ class Simulator(object):
         		robot['acceleration'] = -command['speed']
         	else:
         		robot['acceleration'] = (robot['acceleration'] + -command['speed'])/2
+        	robot['angular_velocity'] = 0
         else:
             print command
 
