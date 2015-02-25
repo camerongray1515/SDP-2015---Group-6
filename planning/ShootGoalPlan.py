@@ -68,7 +68,10 @@ class ShootGoalPlan(Plan):
                 return self.kick()
 
         else:
-            return CommandDict(100, "Forward", "None")
+            command =  self.go_to(self.robot.x, self.robot.y + 150)
+            if command:
+                return command
+            return CommandDict.Stop()
 
        
 
