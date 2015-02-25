@@ -7,6 +7,7 @@ from InterceptPlan import InterceptPlan
 from Utility.CommandDict import CommandDict
 from EasyInterceptPlan import EasyInterceptPlan
 from AlignPlan import AlignPlan
+from MatchY import MatchY
 
 class Planner(object):
     """Finite State Machine-Based planner. Generates commands for the robot based on plan classes derived from Plan"""
@@ -26,9 +27,9 @@ class Planner(object):
 
         # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
         if (attacker):
-            self.plans = [ShootGoalPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), AlignPlan(self.world, self.robot), IdlePlan(self.world, self.robot)]
+            self.plans = [ShootGoalPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), AlignPlan(self.world, self.robot), MatchY(self.world, self.robot), IdlePlan(self.world, self.robot)]
         else:
-            self.plans = [InterceptPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world,self.robot)]
+            self.plans = [ShootGoalPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world,self.robot)]
 
         self.current_plan = self.plans[0]
 
@@ -42,7 +43,7 @@ class Planner(object):
         self.world.update_positions(model_positions)
 
         #DEBUG
-        #print self.current_plan
+        print self.current_plan
         
         if self.world.ball != None:
             if(self.current_plan.isValid() and not self.current_plan.isFinished()):
