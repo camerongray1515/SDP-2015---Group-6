@@ -28,7 +28,7 @@ class ShootGoalPlan(Plan):
         (gx,gy) = (self.world.their_goal.get_polygon()[0][0], self.world.pitch._height / 2)
 
         angle = self.robot.get_rotation_to_point(gx, gy)
-        command = self.rotate_to(angle)
+        command = self.rotate_to(angle, fudge=0.2)
         # Check if we're done rotating
         if not command == False:
             return command

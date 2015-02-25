@@ -69,13 +69,14 @@ class Plan(object):
         else:
             return self.go_forward(distance, speed)
 
-    def rotate_to(self, angle):
+    def rotate_to(self, angle, fudge=1):
         """
         Generates commands for the robot to rotate by a specific angle
         :param angle: Radians to turn
+        :param fudge: optional multiplier of the rotation error - e.g use 0.5 for double precision
         :return: False if :angle: is within ROTATION_ERROR otherwise returns a CommandDict with the next command
         """
-        if abs(angle) < ROTATION_ERROR:
+        if abs(angle) < fudge * ROTATION_ERROR:
             return False
         speed = 70 if angle > 3 * ROTATION_ERROR else 50
         direction = "Right" if angle < 0 else "Left"
