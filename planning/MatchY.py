@@ -29,12 +29,12 @@ class MatchY(Plan):
         robot_angle = self.robot.angle
         if robot_angle <= math.pi:
             if ball_y > robot_y:
-                command =  self.go_to(self.robot.x, ball_y)
+                command =  self.go_to(self.robot.x, ball_y, distance_fudge=0.2)
             else:
                 return self.go_backward(70)
         else:
             if ball_y < robot_y:
-                command =  self.go_to(self.robot.x, ball_y)
+                command =  self.go_to(self.robot.x, ball_y, distance_fudge=0.2)
             else:
                 return self.go_backward(70)
         if not command:
