@@ -135,12 +135,10 @@ class Simulator(object):
             if robot['planner'] is not None:
                 command = robot['planner'].update(self.get_world_old_left())
                 robot['command'] = command
-                self._read_command(robot, command)
         for robot in [self.RIGHTDEF, self.RIGHTATK]:
-            if robot['planner'] is not None:
-            	robot['command'] = command
+            if robot['planner'] is not None:            	
                 command = robot['planner'].update(self.get_world_old_right())
-                self._read_command(robot, command)
+                robot['command'] = command
 
 
     def _read_command(self, robot, command):
