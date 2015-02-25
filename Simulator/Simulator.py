@@ -20,6 +20,8 @@ class Simulator(object):
     CATCH_DISTANCE = 40
     KICK_SPEED = 40
     VELOCITY_SCALE = 3.0 # Adjust if the velocity does not match the coordinate system.
+    FRAMES_UNTIL_COMMAND = 99
+
 
     def __init__(self, left_def=None, left_atk=None, right_def=None, right_atk = None, fps=FPS, world=None):
         self.LEFTDEF['planner'] = left_def
@@ -85,6 +87,14 @@ class Simulator(object):
             if entity == self.BALL:
                 entity['velocity'] = entity['velocity'] - self.BALL_FRICTION*entity['velocity']*timestep
 
+            # Perform commands if if the delay has been reached
+            if self.FRAMES_UNTIL_COMMAND == 0:
+            	for robot in [self.LEFTDEF, self.LEFTATK, self.RIGHTDEF, self.RIGHTATK]:
+            		self._read_command(robot, robot['command'])
+            	self.FRAMES_UNTIL_COMMAND == 99
+            else:
+             	self.FRAMES_UNTIL_COMMAND -= 1
+
         self.bounce_ball()
         if self.HAS_BALL is not None:
             self.move_ball()
@@ -119,13 +129,16 @@ class Simulator(object):
         self.BALL['angle'] = robot['angle']
 
 
-    def read_commands(self):
+    def read_commands(self, delay=0):
+    	self.FRAMES_UNTIL_COMMAND = delay
         for robot in [self.LEFTDEF, self.LEFTATK]:
             if robot['planner'] is not None:
                 command = robot['planner'].update(self.get_world_old_left())
+                robot['command'] = command
                 self._read_command(robot, command)
         for robot in [self.RIGHTDEF, self.RIGHTATK]:
             if robot['planner'] is not None:
+            	robot['command'] = command
                 command = robot['planner'].update(self.get_world_old_right())
                 self._read_command(robot, command)
 

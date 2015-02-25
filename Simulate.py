@@ -11,6 +11,9 @@ import pygame
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 FPS = 40
+DELAY = 3 # frames before a command is executed
+          # DON'T SET HIGHER DELAY THAN DELAY UNTIL A NEXT COMMAND IS READ
+          # No mechanism for queing commands 
 
 class Main:
 
@@ -53,7 +56,7 @@ class Main:
         sim = self.sim
         while True:
             if counter % 4  == 0: # Not allowed to read a command every frame
-                self.sim.read_commands()
+                self.sim.read_commands(delay=DELAY)
             sim.step()
             self.disp.set_world(sim.get_world_new())
             if counter % 4 == 0:
