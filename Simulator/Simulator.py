@@ -104,20 +104,33 @@ class Simulator(object):
             self.move_ball()
 
     def bounce_ball(self):
-        "(very) Crude bounce method to stop the ball leaving the screen"
+        """Crude bounce method to stop the ball leaving the screen
+            Reverses the x or y component of velocity as appropriate"""
         if self.BALL['y'] > self.HEIGHT:
-            self.BALL['angle'] += self.BALL['angle'] * 2
+            (x, y) = self.get_vector_component(self.BALL['angle'], self.BALL['velocity'])
+            y = - y
+            (angle, _) = self.get_vector_angle_magnitude(x, y)
+            self.BALL['angle'] = angle
             self.BALL['y'] = self.HEIGHT
         if self.BALL['y'] < 0:
-            self.BALL['angle'] += (self.BALL['angle'] - 3*math.pi/2) * 2
+            (x, y) = self.get_vector_component(self.BALL['angle'], self.BALL['velocity'])
+            y = - y
+            (angle, _) = self.get_vector_angle_magnitude(x, y)
+            self.BALL['angle'] = angle
             self.BALL['y'] = 0
         if self.BALL['x'] < 0:
-            self.BALL['angle'] += -self.BALL['angle']
+            (x, y) = self.get_vector_component(self.BALL['angle'], self.BALL['velocity'])
+            x = - x
+            (angle, _) = self.get_vector_angle_magnitude(x, y)
+            self.BALL['angle'] = angle
             self.BALL['x'] = 0
         if self. BALL['x'] > self.WIDTH:
-            self.BALL['angle'] = math.pi - self.BALL['angle']
+            (x, y) = self.get_vector_component(self.BALL['angle'], self.BALL['velocity'])
+            x = - x
+            (angle, _) = self.get_vector_angle_magnitude(x, y)
+            self.BALL['angle'] = angle
             self.BALL['x'] = self.WIDTH
-       
+
         #bounce if there is contact with a robot
         for robot in [self.LEFTDEF, self.LEFTATK, self.RIGHTATK, self.RIGHTDEF]:
         	if self.in_collision_range(robot):
@@ -147,7 +160,7 @@ class Simulator(object):
                 command = robot['planner'].update(self.get_world_old_left())
                 robot['command'] = command
         for robot in [self.RIGHTDEF, self.RIGHTATK]:
-            if robot['planner'] is not None:            	
+            if robot['planner'] is not None:
                 command = robot['planner'].update(self.get_world_old_right())
                 robot['command'] = command
 
@@ -244,3 +257,15 @@ class Simulator(object):
         old_world['their_attacker']  = vectorify(self.LEFTATK)
         old_world['ball'] = vectorify(self.BALL)
         return old_world
+
+    @staticmethod
+    def get_vector_component(angle, magnitude):
+        x = magnitude * math.cos(angle)
+        y = magnitude * math.sin(angle)
+        return (x,y)
+
+    @staticmethod
+    def get_vector_angle_magnitude(x, y):
+        angle = math.atan2(y, x)
+        magnitude = math.sqrt(x*x + y*y)
+        return (angle, magnitude)
