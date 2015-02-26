@@ -59,6 +59,8 @@ void set_motor_speed() {
     } else if (speed == 0) {
       motorStop(motor);
     }
+    
+    Serial.println("ack");
 }
 
 void command_led_on() {
