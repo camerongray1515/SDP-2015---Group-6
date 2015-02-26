@@ -27,10 +27,11 @@ class Planner(object):
         self.robot = self.world.our_attacker if attacker else self.world.our_defender
 
         # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
+        p = (lambda plan: plan(self.world, self.robot))
         if (attacker):
-            self.plans = [ShootGoalPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), AlignPlan(self.world, self.robot), MatchY(self.world, self.robot), IdlePlan(self.world, self.robot)]
+            self.plans = [p(ShootGoalPlan), p(GrabBallPlan), p(AlignPlan), p(MatchY), p(IdlePlan)]
         else:
-            self.plans = [PassPlan(self.world, self.robot), GrabBallPlan(self.world, self.robot), IdlePlan(self.world,self.robot)]
+            self.plans = [p(PassPlan), p(GrabBallPlan), p(IdlePlan)]
 
         self.current_plan = self.plans[0]
 
@@ -45,7 +46,6 @@ class Planner(object):
 
         #DEBUG
         print self.current_plan
-
         if self.world.ball != None:
             if(self.current_plan.isValid() and not self.current_plan.isFinished()):
                 return self.current_plan.nextCommand()
