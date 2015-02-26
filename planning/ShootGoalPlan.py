@@ -27,7 +27,7 @@ class ShootGoalPlan(Plan):
 
         # Center of the robot's zone
         (x,y) = self.world.pitch.zones[self.robot._zone].center()
-  
+
         # Center of the goal
         #TODO test if this works
         (gx,gy) = (self.world.their_goal.get_polygon()[0][0], self.world.pitch._height / 2)
@@ -68,12 +68,28 @@ class ShootGoalPlan(Plan):
                 return self.kick()
 
         else:
-            command =  self.go_to(self.robot.x, self.robot.y + 150)
+            #TODO
+            #if self.robot.x is out of it's zone:
+            #   target_x = centre of robot's zone
+            #else:
+            #   target_x = robot.x
+            if their_def.y < self.robot.y and self.robot.y < 200: #TODO retrieve the actual max Y for the pitch here
+                command =  self.go_to(self.robot.x, self.robot.y + 150)
+            elif not self.robot.y < 20 and not self.robot.y > 200: # If robot was isn't too near the edge
+                command = self.go_to(self.robot.x, self.robot.y  -150)
+            else:
+                command = self.go_to(self.robot.x, 100) # If can't get round opponent on the wings, move towards the centre
             if command:
                 return command
-            return CommandDict.Stop()
+            else:
+                command = self.go_to(self.robot.x, 200 - self.robot.y) # If that doesn't work, better to do something than nothing.
+            if command:
+                return command
+            else:
+                pdb.set_trace()
+                return CommandDict.stop()
 
-       
+
 
     def blocked(self, target_x, target_y, obstacle_x, obstacle_y, obstacle_width=30):
         d_y = self.robot.y - target_y
