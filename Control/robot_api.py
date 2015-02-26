@@ -1,6 +1,7 @@
 from serial import Serial, SerialException
 from threading import Timer
 import time
+import random
 
 speed = 19.5 # speed in cm/s, this is a constant we should calibrate when we get the motors working
 
@@ -74,8 +75,8 @@ class RobotAPI():
         # check if there are valid parameters
         if (device_path is not None and baud_rate is not None):
             try:
-                self.serial = Serial(device_path, baud_rate)
-            except:
+                self.serial = Serial(device_path, baud_rate, timeout=0.001)
+            except SerialException:
                 print "Error in initalizing serial connection. Is the path correct?"
                 #alias the _write_serial function so we don't throw errors
                 self._write_serial = self._write_serial_debug
@@ -85,10 +86,18 @@ class RobotAPI():
         print data
 
     def _write_serial(self, data):
+        ack = False
 
-        data_bytes = str.encode(data)
-        data_bytes += '\r'
-        self.serial.write(data_bytes)
+        # Test code that will drop the majority of commands to test fault tollerance
+        while not ack:
+            data_bytes = str.encode(data)
+            data_bytes += '\r'
+            self.serial.write(data_bytes)
+
+            try:
+                ack = self.serial.read()
+            except SerialException as ex:
+                ack = False
 
     def blink_led(self, delay=500):
         command = "blink {0}".format(delay)
