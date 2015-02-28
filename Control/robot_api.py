@@ -1,5 +1,4 @@
 from serial import Serial, SerialException
-from threading import Timer
 import time
 import random
 
@@ -75,7 +74,7 @@ class RobotAPI():
         # check if there are valid parameters
         if (device_path is not None and baud_rate is not None):
             try:
-                self.serial = Serial(device_path, baud_rate, timeout=0.001)
+                self.serial = Serial(device_path, baud_rate, timeout=0.1)
             except SerialException:
                 print "Error in initalizing serial connection. Is the path correct?"
                 #alias the _write_serial function so we don't throw errors
@@ -112,11 +111,6 @@ class RobotAPI():
     def led_off(self):
         self._write_serial("led_off")
 
-    def on_for_n_seconds(self, on_time):
-        self.led_on()
-        timer = Timer(on_time, self.led_off)
-        timer.start()
-
     def go_forward(self, speed=100):
         self.set_motor("left", speed)
         self.set_motor("right", speed)
@@ -134,21 +128,15 @@ class RobotAPI():
         self.set_motor("left", speed)
 
     def kick(self, speed=100):
-        timer = Timer(1,self.set_motor, args = ["kicker",0])
-        self.set_motor("kicker", speed)
-        timer.start()
+        self._write_serial("kick {0}".format(speed))
 
 
     def prepare_catch(self):  # This may be needed if we remove side bars from the robot
         # It closes grabber just a bit so we can collect the ball without kicker in the way
-        timer = Timer(0.2,self.set_motor,args = ["kicker",0])
-        self.set_motor("kicker", -1 * 50)
-        timer.start()
+        self._write_serial("prepare_catch")
 
     def catch(self, speed=100):
-        timer = Timer(1,self.set_motor,args = ["kicker",0])
-        self.set_motor("kicker", -1 * speed)
-        timer.start()
+        self._write_serial("catch {0}".format(speed))
 
 
     def stop(self):
@@ -176,7 +164,7 @@ class RobotAPI():
         self.set_motor("left", left, False)
         self.set_motor("right", right, False)
 
-    def set_motor(self, motor, speed, scale=True):
+    def set_motor(self, motor, speed, scale=True, delay=0):
         # If the motor is already running at this speed, do not send the command
         """if speed == self.current_motor_speeds[motor]:
             return
@@ -186,7 +174,7 @@ class RobotAPI():
         else:
             scaled_speed = speed
 
-        self._write_serial("set_motor {0} {1}".format(self.motorPins[motor], scaled_speed))
+        self._write_serial("set {0} {1} {2}".format(self.motorPins[motor], scaled_speed, delay))
         self.current_motor_speeds[motor] = speed
 
     def get_scaled_speed(self, motor, speed):
@@ -235,10 +223,3 @@ class RobotAPI():
         scaling_value = m * speed + c
 
         return int(round(speed * scaling_value))
-
-if __name__ == "__main__":
-    speed = 95
-
-    r = RobotAPI("/dev/ttyACM0", 115200)
-    print(r.get_scaled_speed("left", speed))
-    print(r.get_scaled_speed("right", speed))
