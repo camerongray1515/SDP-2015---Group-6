@@ -106,7 +106,7 @@ void setup() {
   Serial.println("radio_initialised");
   
   // Add callbacks for all commands
-  scomm.addCommand("set_motor", store_motor_action); // args: [motor, speed]
+  scomm.addCommand("set", store_motor_action); // args: [motor, speed]
   scomm.addCommand("led_on", command_led_on); // args: []
   scomm.addCommand("led_off", command_led_off); // args: []
   scomm.addCommand("blink_n_times", command_blink_n_times); // args: [n]
@@ -128,11 +128,13 @@ void store_motor_action() {
     Serial.println("ack");
     char *motorarg = scomm.next();
     char *speedarg = scomm.next();
+    char *delayarg = scomm.next();
 
     int motor = atoi(motorarg);
     int speed = atoi(speedarg);
+    int delay = atoi(delayarg);
     
-    event_loop::add_command_head(motor, speed, millis()+10000);
+    event_loop::add_command_head(motor, speed, millis()+delay);
 }
 
 void set_motor_speed(int motor, int speed) {

@@ -141,9 +141,8 @@ class RobotAPI():
 
     def prepare_catch(self):  # This may be needed if we remove side bars from the robot
         # It closes grabber just a bit so we can collect the ball without kicker in the way
-        timer = Timer(0.2,self.set_motor,args = ["kicker",0])
         self.set_motor("kicker", -1 * 50)
-        timer.start()
+        self.set_motor("kicker", 0, delay=200)
 
     def catch(self, speed=100):
         timer = Timer(1,self.set_motor,args = ["kicker",0])
@@ -176,7 +175,7 @@ class RobotAPI():
         self.set_motor("left", left, False)
         self.set_motor("right", right, False)
 
-    def set_motor(self, motor, speed, scale=True):
+    def set_motor(self, motor, speed, scale=True, delay=0):
         # If the motor is already running at this speed, do not send the command
         """if speed == self.current_motor_speeds[motor]:
             return
@@ -186,7 +185,7 @@ class RobotAPI():
         else:
             scaled_speed = speed
 
-        self._write_serial("set_motor {0} {1}".format(self.motorPins[motor], scaled_speed))
+        self._write_serial("set {0} {1} {2}".format(self.motorPins[motor], scaled_speed, delay))
         self.current_motor_speeds[motor] = speed
 
     def get_scaled_speed(self, motor, speed):
@@ -235,10 +234,3 @@ class RobotAPI():
         scaling_value = m * speed + c
 
         return int(round(speed * scaling_value))
-
-if __name__ == "__main__":
-    speed = 95
-
-    r = RobotAPI("/dev/ttyACM0", 115200)
-    print(r.get_scaled_speed("left", speed))
-    print(r.get_scaled_speed("right", speed))
