@@ -1,5 +1,4 @@
 from serial import Serial, SerialException
-from threading import Timer
 import time
 import random
 
@@ -112,11 +111,6 @@ class RobotAPI():
     def led_off(self):
         self._write_serial("led_off")
 
-    def on_for_n_seconds(self, on_time):
-        self.led_on()
-        timer = Timer(on_time, self.led_off)
-        timer.start()
-
     def go_forward(self, speed=100):
         self.set_motor("left", speed)
         self.set_motor("right", speed)
@@ -134,20 +128,15 @@ class RobotAPI():
         self.set_motor("left", speed)
 
     def kick(self, speed=100):
-        timer = Timer(1,self.set_motor, args = ["kicker",0])
-        self.set_motor("kicker", speed)
-        timer.start()
+        self._write_serial("kick {0}".format(speed))
 
 
     def prepare_catch(self):  # This may be needed if we remove side bars from the robot
         # It closes grabber just a bit so we can collect the ball without kicker in the way
-        self.set_motor("kicker", -1 * 50)
-        self.set_motor("kicker", 0, delay=200)
+        self._write_serial("prepare_catch")
 
     def catch(self, speed=100):
-        timer = Timer(1,self.set_motor,args = ["kicker",0])
-        self.set_motor("kicker", -1 * speed)
-        timer.start()
+        self._write_serial("catch {0}".format(speed))
 
 
     def stop(self):
