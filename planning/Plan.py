@@ -115,6 +115,9 @@ class Plan(object):
         Generates a kick command with optional speed.
         """
         return CommandDict(speed, "None", "Kick")
+
+    # def __str__(self):
+    #     return self.__name__
    
 
     

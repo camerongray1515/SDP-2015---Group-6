@@ -84,3 +84,6 @@ class PassPlan(Plan):
         if math.fabs(ball_y_at_obstacle - obstacle_y)<obstacle_width:
             return True
         return False
+
+    def __str__(self):
+        return "pass plan"

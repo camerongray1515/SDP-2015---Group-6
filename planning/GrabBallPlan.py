@@ -37,3 +37,7 @@ class GrabBallPlan(Plan):
             self.finished = True
             self.robot.catcher = "closed"
             return CommandDict.catch()
+
+
+    def __str__(self):
+        return "grab ball plan"

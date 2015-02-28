@@ -25,4 +25,7 @@ class IdlePlan(Plan):
     def nextCommand(self):
         return CommandDict.stop()
 
+    def __str__(self):
+        return "idle plan"
+
 

@@ -40,3 +40,7 @@ class AlignPlan(Plan):
 
     def isAligned(self, robot):
         return math.fabs(robot.angle - math.pi/2) < ERROR or math.fabs(robot.angle - 3 * math.pi/2) < ERROR  
+
+
+    def __str__(self):
+        return "align plan"

@@ -17,12 +17,37 @@ PROCESSING_DEBUG = False
 Center = namedtuple('Center', 'x y')
 
 
+import cv2
+import tools
+from tracker import BallTracker, RobotTracker
+from multiprocessing import Process, Queue
+from colors import BGR_COMMON
+from collections import namedtuple
+import numpy as np
+# from findHSV import CalibrationGUI
+
+
+TEAM_COLORS = set(['yellow', 'blue'])
+SIDES = ['left', 'right']
+PITCHES = [0, 1]
+
+PROCESSING_DEBUG = False
+
+Center = namedtuple('Center', 'x y')
+
+
 class Vision:
     """
     Locate objects on the pitch.
     """
 
-    def __init__(self, pitch, color, our_side, frame_shape, frame_center, calibration):
+    def __init__(self,
+                 pitch,
+                 color,
+                 our_side,
+                 frame_shape,
+                 frame_center,
+                 calibration):
         """
         Initialize the vision system.
 
@@ -46,39 +71,71 @@ class Vision:
         if our_side == 'left':
             self.us = [
                 RobotTracker(
-                    color=color, crop=zones[0], offset=zones[0][0], pitch=pitch,
-                    name='Our Defender', calibration=calibration),   # defender
+                    color=color,
+                    crop=zones[0],
+                    offset=zones[0][0],
+                    pitch=pitch,
+                    name='Our Defender',
+                    calibration=calibration),   # defender
                 RobotTracker(
-                    color=color, crop=zones[2], offset=zones[2][0], pitch=pitch,
-                    name='Our Attacker', calibration=calibration)   # attacker
+                    color=color,
+                    crop=zones[2],
+                    offset=zones[2][0],
+                    pitch=pitch,
+                    name='Our Attacker',
+                    calibration=calibration)   # attacker
             ]
 
             self.opponents = [
                 RobotTracker(
-                    color=opponent_color, crop=zones[3], offset=zones[3][0], pitch=pitch,
-                    name='Their Defender', calibration=calibration),
+                    color=opponent_color,
+                    crop=zones[3],
+                    offset=zones[3][0],
+                    pitch=pitch,
+                    name='Their Defender',
+                    calibration=calibration),
                 RobotTracker(
-                    color=opponent_color, crop=zones[1], offset=zones[1][0], pitch=pitch,
-                    name='Their Attacker', calibration=calibration)
+                    color=opponent_color,
+                    crop=zones[1],
+                    offset=zones[1][0],
+                    pitch=pitch,
+                    name='Their Attacker',
+                    calibration=calibration)
 
             ]
         else:
             self.us = [
                 RobotTracker(
-                    color=color, crop=zones[3], offset=zones[3][0], pitch=pitch,
-                    name='Our Defender', calibration=calibration),
+                    color=color,
+                    crop=zones[3],
+                    offset=zones[3][0],
+                    pitch=pitch,
+                    name='Our Defender',
+                    calibration=calibration),
                 RobotTracker(
-                    color=color, crop=zones[1], offset=zones[1][0], pitch=pitch,
-                    name='Our Attacker', calibration=calibration)
-            ]
+                    color=color,
+                    crop=zones[1],
+                    offset=zones[1][0],
+                    pitch=pitch,
+                    name='Our Attacker',
+                    calibration=calibration)
+            ] 
 
             self.opponents = [
                 RobotTracker(
-                    color=opponent_color, crop=zones[0], offset=zones[0][0], pitch=pitch,
-                    name='Their Defender', calibration=calibration),   # defender
+                    color=opponent_color,
+                    crop=zones[0],
+                    offset=zones[0][0],
+                    pitch=pitch,
+                    name='Their Defender',
+                    calibration=calibration),   # defender
                 RobotTracker(
-                    color=opponent_color, crop=zones[2], offset=zones[2][0], pitch=pitch,
-                    name='Their Attacker', calibration=calibration)
+                    color=opponent_color,
+                    crop=zones[2],
+                    offset=zones[2][0],
+                    pitch=pitch,
+                    name='Their Attacker',
+                    calibration=calibration)
             ]
 
         # Set up trackers
@@ -86,7 +143,10 @@ class Vision:
             (0, width, 0, height), 0, pitch, calibration)
 
     def _get_zones(self, width, height):
-        return [(val[0], val[1], 0, height) for val in tools.get_zones(width, height, pitch=self.pitch)]
+        return [(val[0], val[1], 0, height)
+                for val in tools.get_zones(width,
+                                           height,
+                                           pitch=self.pitch)]
 
     def _get_opponent_color(self, our_color):
         return (TEAM_COLORS - set([our_color])).pop()
@@ -104,13 +164,18 @@ class Vision:
         positions = self.get_adjusted_positions(positions)
 
         # Wrap list of positions into a dictionary
-        keys = ['our_defender', 'our_attacker', 'their_defender', 'their_attacker', 'ball']
+        keys = ['our_defender',
+                'our_attacker',
+                'their_defender',
+                'their_attacker',
+                'ball']
         regular_positions = dict()
         for i, key in enumerate(keys):
             regular_positions[key] = positions[i]
 
         # Error check we got a frame
-        height, width, channels = frame.shape if frame is not None else (None, None, None)
+        height, width, channels = frame.shape if frame is not None \
+            else (None, None, None)
 
         model_positions = {
             'our_attacker': self.to_info(positions[1], height),
@@ -124,12 +189,15 @@ class Vision:
 
     def get_adjusted_point(self, point):
         """
-        Given a point on the plane, calculate the adjusted point, by taking into account
-        the height of the robot, the height of the camera and the distance of the point
+        Given a point on the plane, calculate the
+        adjusted point, by taking into account the
+        height of the robot, the height of the
+        camera and the distance of the point
         from the center of the lens.
         """
         plane_height = 250.0
-        robot_height = 20.0
+        # TWEAK
+        robot_height = 18.0
         coefficient = robot_height/plane_height
 
         x = point[0]
@@ -193,11 +261,17 @@ class Vision:
             [5-tuple] positions     - locations of the robots and the ball
         """
         queues = [Queue() for i in range(5)]
-        objects = [self.us[0], self.us[1], self.opponents[0], self.opponents[1], self.ball_tracker]
+        objects = [self.us[0],
+                   self.us[1],
+                   self.opponents[0],
+                   self.opponents[1],
+                   self.ball_tracker]
 
         # Define processes
         processes = [
-            Process(target=obj.find, args=((frame, queues[i]))) for (i, obj) in enumerate(objects)]
+            Process(target=obj.find, args=((frame, queues[i])))
+                                            for (i, obj)
+                                            in enumerate(objects)]
 
         # Start processes
         for process in processes:
@@ -232,6 +306,7 @@ class Vision:
                 velocity = args['velocity']
 
         return {'x': x, 'y': y, 'angle': angle, 'velocity': velocity}
+
 
 
 class Camera(object):
