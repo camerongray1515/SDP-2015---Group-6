@@ -6,6 +6,7 @@ import time
 from gui import GUI
 from visionwrapper import VisionWrapper
 from Control.dict_control import Controller
+from Utility.CommandDict import CommandDict
 import traceback
 import sys
 
@@ -26,10 +27,13 @@ class Main:
             [string] our_side               the side we're on - 'left' or 'right'
             *[int] port                     The camera port to take the feed from
         # """
-        # self.controller = Controller(comm_port)
+        self.controller = Controller(comm_port)
         if not quick:
             print("Waiting 10 seconds for serial to initialise")
-            # time.sleep(10)
+            time.sleep(10)
+
+        # Kick once to ensure we are in the correct position
+        self.controller.update(CommandDict.kick())
 
         self.pitch = pitch
 
@@ -71,7 +75,7 @@ class Main:
                 command = self.planner.update(self.vision.model_positions)
                 #DEBUG
                 #print command
-                # self.controller.update(command)
+                self.controller.update(command)
 
                 # TODO we should refactor this stuff out of our main loop
                 # Information about the grabbers from the world

@@ -58,3 +58,10 @@ class CommandDict(dict):
         """
         return CommandDict(100, "None", "Catch")
 
+    @staticmethod
+    def kick():
+        """
+        :return: The command to kick the ball
+        """
+        return CommandDict(100, "None", "Kick")
+
