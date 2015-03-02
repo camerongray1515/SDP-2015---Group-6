@@ -11,7 +11,7 @@ class Simulator(object):
     HEIGHT = 290
     BALL = {}
     HAS_BALL = None
-    ROBOT_RADIUS = 25
+    ROBOT_RADIUS = 30
     ROBOT_FRICTION = 0.8
     BALL_FRICTION = 0.1
     MAX_SPEED = 20
@@ -20,6 +20,7 @@ class Simulator(object):
     BOUNCE_DISTANCE = 15
     KICK_SPEED = 50
     VELOCITY_SCALE = 3.0 # Adjust if the velocity does not match the coordinate system.
+    ROTATION_SCALE = 0.04
     FRAMES_UNTIL_COMMAND = 99
 
 
@@ -182,15 +183,15 @@ class Simulator(object):
         elif command['direction'] == 'Left':
             robot['acceleration'] = 0
             if command['speed'] > robot['angular_acceleration']:
-                robot['angular_acceleration'] = command['speed'] * 0.05
+                robot['angular_acceleration'] = command['speed'] * self.ROTATION_SCALE
             else:
-                robot['angular_acceleration'] = (command['speed'] * 0.05 +robot['angular_acceleration'])/2
+                robot['angular_acceleration'] = (command['speed'] * self.ROTATION_SCALE +robot['angular_acceleration'])/2
         elif command['direction'] == 'Right':
             robot['acceleration'] = 0
             if command['speed'] < robot['angular_acceleration']:
-                robot['angular_acceleration'] = -command['speed'] * 0.05
+                robot['angular_acceleration'] = -command['speed'] * self.ROTATION_SCALE
             else:
-                robot['angular_acceleration'] = -(command['speed'] * 0.05 +robot['angular_acceleration'])/2
+                robot['angular_acceleration'] = -(command['speed'] * self.ROTATION_SCALE +robot['angular_acceleration'])/2
         elif command["direction"] == 'Backward':
             if robot['velocity'] > 0:
                 robot['velocity'] = 0
