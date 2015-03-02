@@ -1,7 +1,7 @@
 from Plan import Plan
 import math
 from Utility.CommandDict import CommandDict
-import pdb
+import planning.utilities
 
 class PassPlan(Plan):
     """Plan for the robot passing to the its teammate
@@ -32,7 +32,8 @@ class PassPlan(Plan):
         # Aim at friendly attacker position
         (gx,gy) = (self.world.our_attacker.x, self.world.our_attacker.y)
 
-        isBlocked = self.blocked(gx, gy, their_atk.x, their_atk.y)
+        #isBlocked = self.blocked(gx, gy, their_atk.x, their_atk.y)
+        isBlocked = planning.utilities.is_shot_blocked(self.world, self.robot, self.world.their_attacker)
         if not isBlocked: # if our pass path is not blocked
             angle = self.robot.get_rotation_to_point(gx, gy)
             command = self.rotate_to(angle, fudge=0.1)
