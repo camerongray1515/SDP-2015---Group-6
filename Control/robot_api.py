@@ -94,6 +94,7 @@ class RobotAPI():
             data_bytes += '\r'
             self.serial.write(data_bytes)
             num_attempts += 1
+            print("Sent command: {0}".format(data))
 
             try:
                 ack = self.serial.read()
@@ -171,9 +172,9 @@ class RobotAPI():
 
     def set_motor(self, motor, speed, scale=True, delay=0):
         # If the motor is already running at this speed, do not send the command
-        """if speed == self.current_motor_speeds[motor]:
+        if speed == self.current_motor_speeds[motor]:
             return
-        """
+        
         if scale:
             scaled_speed = self.get_scaled_speed(motor, speed)
         else:

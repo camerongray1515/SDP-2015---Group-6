@@ -86,3 +86,6 @@ class InterceptPlan(Plan):
         x = dy * tan(robot.angle)
         return x
 
+    def __str__(self):
+        return "intercept plan"
+

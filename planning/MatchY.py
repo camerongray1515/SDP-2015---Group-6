@@ -43,4 +43,8 @@ class MatchY(Plan):
             return command
 
     def isMatched(self, robot, ball):
-        return math.fabs(robot.y - ball.y) < ERROR  
+        return math.fabs(robot.y - ball.y) < ERROR 
+
+
+    def __str__(self):
+        return "sideways alignment"

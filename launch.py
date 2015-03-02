@@ -6,6 +6,7 @@ import time
 from gui import GUI
 from visionwrapper import VisionWrapper
 from Control.dict_control import Controller
+from Utility.CommandDict import CommandDict
 import traceback
 import sys
 
@@ -25,13 +26,17 @@ class Main:
             [int] pitch                     0 - main pitch, 1 - secondary pitch
             [string] our_side               the side we're on - 'left' or 'right'
             *[int] port                     The camera port to take the feed from
-        """
+        # """
         self.controller = Controller(comm_port)
         if not quick:
             print("Waiting 10 seconds for serial to initialise")
             time.sleep(10)
 
+        # Kick once to ensure we are in the correct position
+        self.controller.update(CommandDict.kick())
+
         self.pitch = pitch
+
 
         # Set up the vision system
         self.vision = VisionWrapper(pitch, color, our_side, video_port)
@@ -41,9 +46,12 @@ class Main:
 
         # Set up GUI
         self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)
+        self.color = color
+        self.side = our_side
 
         self.control_loop()
 
+     
     def control_loop(self):
         """
         The main loop for the control system. Runs until ESC is pressed.
@@ -57,10 +65,13 @@ class Main:
         try:
             key = 255
             while key != 27:  # the ESC key
+            
                 # update the vision system with the next frame
                 self.vision.update()
-
+                pre_options = self.vision.preprocessing.options
                 # Find appropriate action
+                co = self.color
+
                 command = self.planner.update(self.vision.model_positions)
                 #DEBUG
                 #print command
@@ -75,15 +86,21 @@ class Main:
                 # Information about states
                 attacker_state = ""
                 defender_state = ""
-
+                # print self.vision.model_positions
+                regular_positions = self.vision.regular_positions
+                model_positions = self.vision.model_positions
+                # print self.planner.current_plan.world
+                defenderState = (str(self.planner.current_plan), "0")
                 # Use 'y', 'b', 'r' to change color.
                 key = waitKey(delay=2) & 0xFF  # Returns 255 if no keypress detected
                 gui_actions = []
                 fps = float(counter) / (time.clock() - timer)
 
                 # Draw vision content and actions
-                self.GUI.draw(self.vision, gui_actions, fps, attacker_state,
-                              defender_state, "", "", grabbers, key=key)
+                self.GUI.draw(
+                    self.vision.frame, model_positions, gui_actions, regular_positions, fps, None,
+                    defenderState, None, None, False,
+                    our_color=self.color, our_side=self.side, key=key, preprocess=pre_options)
                 counter += 1
 
         except Exception as e:
