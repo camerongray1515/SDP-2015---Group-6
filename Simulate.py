@@ -55,11 +55,11 @@ class Main:
         counter = 0
         sim = self.sim
         while True:
-            if counter % 4  == 0: # Not allowed to read a command every frame
+            if counter % 5  == 0: # Not allowed to read a command every frame
                 self.sim.read_commands(delay=DELAY)
             sim.step()
             self.disp.set_world(sim.get_world_new())
-            if counter % 4 == 0:
+            if counter % 5 == 0:
                 self.disp.read_messages()
             self.disp.show()
             counter = counter + 1
