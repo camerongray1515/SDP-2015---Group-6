@@ -46,10 +46,19 @@ class PassPlan(Plan):
                 return self.kick(80)
         print "BLOCKED!"
 
-        centre = self.world.pitch.zones[self.robot.zone].center()[1] # find the middle y position of the zone
+        (cent_x, cent_y) = self.world.pitch.zones[self.robot.zone].center() # find the middle y position of the zone
 
-        if self.robot.y >= centre:
-            pass
+        if their_atk.y >= cent_y:
+            goto_y = cent_y - cent_y/2
+        else:
+            goto_y = cent_y + cent_y/2
+
+        command = self.go_to(cent_x, goto_y)
+        if command:
+            return command
+        else:
+            return CommandDict.stop()
+
 
 
         # closely_marked = False # Closely marked = their attacker is close to our robot
