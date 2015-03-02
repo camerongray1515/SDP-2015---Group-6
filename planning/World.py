@@ -1,8 +1,6 @@
-from Polygon.cPolygon import Polygon
 from math import cos, sin, hypot, pi, atan2
-from vision import tools
-from Robot import Robot
-from OtherPitchObjects import Pitch, Goal, Ball
+from planning.Robot import Robot
+from planning.OtherPitchObjects import Pitch, Goal, Ball
 
 
 class World(object):
