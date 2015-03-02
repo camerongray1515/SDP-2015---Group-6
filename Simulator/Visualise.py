@@ -1,4 +1,3 @@
-from Tkinter import *
 import pygame
 from pygame.locals import *
 import math
@@ -20,7 +19,7 @@ BALL_RAD = 8
 COLOURS = {"PITCH": (0, 120, 0), 'DIVIDER': (255,255,255), 'CORNER': (32,32,32), 'PLATE':(51, 255, 55),
             "ARROW": (255,0,0), "LABEL":(255,255,255), "BALL": (255,40,40)}
 
-class Visualise(Frame):
+class Visualise(object):
     world = None
     canvas = None
     messages = []
