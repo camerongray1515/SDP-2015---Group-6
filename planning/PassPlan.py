@@ -45,32 +45,39 @@ class PassPlan(Plan):
                 self.robot.catcher = "open"
                 return self.kick(80)
         print "BLOCKED!"
-        closely_marked = False # Closely marked = their attacker is close to our robot
-        #If closely marked, try and shoot around the opponent
-        #If not, move until a clear shot is possible
 
-        if math.fabs(their_atk.x - self.robot.x) < 150:
-                closely_marked = True
+        centre = self.world.pitch.zones[self.robot.zone].center()[1] # find the middle y position of the zone
 
-        if closely_marked == True:
-       	    gx = their_atk.x
-            gy = 0
-            angle = self.robot.get_rotation_to_point(gx, gy)
-            command = self.rotate_to(angle, fudge=0.3)
-            # Check if we're done rotating
-            if not command == False:
-                return command
-            # Otherwise kick the ball
-            else:
-                self.finished = True
-                self.robot.catcher = "open"
-                return self.kick(70)
+        if self.robot.y >= centre:
+            pass
 
-        else:
-            command =  self.go_to(self.robot.x, self.robot.y + 150)
-            if command:
-                return command
-            return CommandDict.Stop()
+
+        # closely_marked = False # Closely marked = their attacker is close to our robot
+        # #If closely marked, try and shoot around the opponent
+        # #If not, move until a clear shot is possible
+        #
+        # if math.fabs(their_atk.x - self.robot.x) < 150:
+        #         closely_marked = True
+        #
+        # if closely_marked == True:
+       	#     gx = their_atk.x
+        #     gy = 0
+        #     angle = self.robot.get_rotation_to_point(gx, gy)
+        #     command = self.rotate_to(angle, fudge=0.3)
+        #     # Check if we're done rotating
+        #     if not command == False:
+        #         return command
+        #     # Otherwise kick the ball
+        #     else:
+        #         self.finished = True
+        #         self.robot.catcher = "open"
+        #         return self.kick(70)
+        #
+        # else:
+        #     command =  self.go_to(self.robot.x, self.robot.y + 150)
+        #     if command:
+        #         return command
+        #     return CommandDict.Stop()
 
 
 
