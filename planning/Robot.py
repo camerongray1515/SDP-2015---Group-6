@@ -29,6 +29,17 @@ class Robot(PitchObject):
         area.rotate(self.angle, self.x, self.y)
         return area
 
+    @property
+    def ball_area(self):
+        front_left = (self.x + self._catcher_area['front_offset'] + self._catcher_area['height']*1.5, self.y + self._catcher_area['width']/2.0)
+        front_right = (self.x + self._catcher_area['front_offset'] + self._catcher_area['height']*1.5, self.y - self._catcher_area['width']/2.0)
+        back_left = (self.x - self._catcher_area['front_offset'], self.y + self._catcher_area['width'])
+        back_right = (self.x - self._catcher_area['front_offset'], self.y - self._catcher_area['width'])
+        area = Polygon((front_left, front_right, back_left, back_right))
+        area.rotate(self.angle, self.x, self.y)
+        return area
+
+
     @catcher_area.setter
     def catcher_area(self, area_dict):
         self._catcher_area = area_dict
@@ -52,7 +63,7 @@ class Robot(PitchObject):
         '''
         Gets if the robot has possession of the ball
         '''
-        return (self._catcher == 'closed') and self.catcher_area.isInside(ball.x, ball.y)
+        return (self._catcher == 'closed') and self.ball_area.isInside(ball.x, ball.y)
 
     def get_rotation_to_point(self, x, y):
         '''
