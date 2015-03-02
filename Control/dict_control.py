@@ -22,8 +22,13 @@ class Controller():
         direction=command["direction"]
         kick=command["kick"]
 
+
         if (direction == "Forward"):
             self.robot_api.go_forward(speed)
+            if 'speedr' in command:
+                speed_right = command["speedr"]
+                self.robot_api.go_forward_asym(speed, speed_right)
+
         elif (direction == "Backward"):
             self.robot_api.go_backward(speed)
         elif (direction == "Right"):
