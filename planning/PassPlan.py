@@ -33,7 +33,7 @@ class PassPlan(Plan):
         (gx,gy) = (self.world.our_attacker.x, self.world.our_attacker.y)
 
         isBlocked = self.blocked(gx, gy, their_atk.x, their_atk.y)
-        if not isBlocked:
+        if not isBlocked: # if our pass path is not blocked
             angle = self.robot.get_rotation_to_point(gx, gy)
             command = self.rotate_to(angle, fudge=0.1)
             # Check if we're done rotating
@@ -43,34 +43,50 @@ class PassPlan(Plan):
             else:
                 self.finished = True
                 self.robot.catcher = "open"
-                return self.kick()
+                return self.kick(80)
         print "BLOCKED!"
-        closely_marked = False # Closely marked = their attacker is close to our robot
-        #If closely marked, try and shoot around the opponent
-        #If not, move until a clear shot is possible
 
-        if math.fabs(their_atk.x - self.robot.x) < 150:
-                closely_marked = True
+        (cent_x, cent_y) = self.world.pitch.zones[self.robot.zone].center() # find the middle y position of the zone
 
-        if closely_marked == True:
-       	    gx = their_atk.x
-            gy = 0
-            angle = self.robot.get_rotation_to_point(gx, gy)
-            command = self.rotate_to(angle, fudge=0.3)
-            # Check if we're done rotating
-            if not command == False:
-                return command
-            # Otherwise kick the ball
-            else:
-                self.finished = True
-                self.robot.catcher = "open"
-                return self.kick()
-
+        if their_atk.y >= cent_y:
+            goto_y = cent_y - cent_y/2
         else:
-            command =  self.go_to(self.robot.x, self.robot.y + 150)
-            if command:
-                return command
-            return CommandDict.Stop()
+            goto_y = cent_y + cent_y/2
+
+        command = self.go_to(cent_x, goto_y)
+        if command:
+            return command
+        else:
+            return CommandDict.stop()
+
+
+
+        # closely_marked = False # Closely marked = their attacker is close to our robot
+        # #If closely marked, try and shoot around the opponent
+        # #If not, move until a clear shot is possible
+        #
+        # if math.fabs(their_atk.x - self.robot.x) < 150:
+        #         closely_marked = True
+        #
+        # if closely_marked == True:
+       	#     gx = their_atk.x
+        #     gy = 0
+        #     angle = self.robot.get_rotation_to_point(gx, gy)
+        #     command = self.rotate_to(angle, fudge=0.3)
+        #     # Check if we're done rotating
+        #     if not command == False:
+        #         return command
+        #     # Otherwise kick the ball
+        #     else:
+        #         self.finished = True
+        #         self.robot.catcher = "open"
+        #         return self.kick(70)
+        #
+        # else:
+        #     command =  self.go_to(self.robot.x, self.robot.y + 150)
+        #     if command:
+        #         return command
+        #     return CommandDict.Stop()
 
 
 
