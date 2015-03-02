@@ -87,17 +87,22 @@ class RobotAPI():
     def _write_serial(self, data):
         ack = False
 
+        num_attempts = 0
         # Test code that will drop the majority of commands to test fault tollerance
         while not ack:
             data_bytes = str.encode(data)
             data_bytes += '\r'
             self.serial.write(data_bytes)
+            num_attempts += 1
             print("Sent command: {0}".format(data))
 
             try:
                 ack = self.serial.read()
             except SerialException as ex:
                 ack = False
+            
+            if num_attempts >= 100:
+                raise Exception("Too many attempts to send command")
 
     def blink_led(self, delay=500):
         command = "blink {0}".format(delay)
@@ -115,6 +120,12 @@ class RobotAPI():
     def go_forward(self, speed=100):
         self.set_motor("left", speed)
         self.set_motor("right", speed)
+
+
+    def go_forward_asym(self, speed_left=100, speed_right=100):
+        self.set_motor("left", speed)
+        self.set_motor("right", speed)
+
 
     def go_backward(self, speed=100):
         self.set_motor("left", -1 * speed)
