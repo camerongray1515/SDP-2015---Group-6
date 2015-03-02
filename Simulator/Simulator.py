@@ -1,5 +1,4 @@
 import math
-import pdb
 from planning.Coordinate import Vector
 
 class Simulator(object):
@@ -12,7 +11,7 @@ class Simulator(object):
     HEIGHT = 290
     BALL = {}
     HAS_BALL = None
-    ROBOT_RADIUS = 20
+    ROBOT_RADIUS = 25
     ROBOT_FRICTION = 0.8
     BALL_FRICTION = 0.1
     MAX_SPEED = 20
@@ -70,7 +69,7 @@ class Simulator(object):
                 if entity['velocity'] > self.MAX_SPEED:
                     entity['velocity'] = self.MAX_SPEED
                 if entity['velocity'] < -self.MAX_SPEED:
-                	entity['velocity'] = -self.MAX_SPEED
+                    entity['velocity'] = -self.MAX_SPEED
                 if entity['angular_velocity'] > self.MAX_ROTATION:
                     entity['angular_velocity'] = self.MAX_ROTATION
                 if entity['angular_velocity'] < - self.MAX_ROTATION:
@@ -92,12 +91,12 @@ class Simulator(object):
 
             # Perform commands if if the delay has been reached
             if self.FRAMES_UNTIL_COMMAND == 0:
-            	for robot in [self.LEFTDEF, self.LEFTATK, self.RIGHTDEF, self.RIGHTATK]:
-            		if robot['planner'] is not None:
-            			self._read_command(robot, robot['command'])
-            	self.FRAMES_UNTIL_COMMAND == 99
+                for robot in [self.LEFTDEF, self.LEFTATK, self.RIGHTDEF, self.RIGHTATK]:
+                    if robot['planner'] is not None:
+                        self._read_command(robot, robot['command'])
+                self.FRAMES_UNTIL_COMMAND == 99
             else:
-             	self.FRAMES_UNTIL_COMMAND -= 1
+                self.FRAMES_UNTIL_COMMAND -= 1
 
         self.bounce_ball()
         if self.HAS_BALL is not None:
@@ -133,11 +132,11 @@ class Simulator(object):
 
         #bounce if there is contact with a robot
         for robot in [self.LEFTDEF, self.LEFTATK, self.RIGHTATK, self.RIGHTDEF]:
-        	if self.in_collision_range(robot):
-        		print "BOUNCE!"
-        		self.BALL['angle'] = self.BALL['angle'] + math.pi
+            if self.in_collision_range(robot):
+                print "BOUNCE!"
+                self.BALL['angle'] = self.BALL['angle'] + math.pi
 
-       	while self. BALL['angle'] >= 2 * math.pi:
+        while self. BALL['angle'] >= 2 * math.pi:
             self. BALL['angle'] = self. BALL['angle'] - (2 * math.pi)
         while self. BALL['angle'] < 0:
             self. BALL['angle'] = self. BALL['angle'] + (2 * math.pi)
@@ -154,7 +153,7 @@ class Simulator(object):
 
 
     def read_commands(self, delay=0):
-    	self.FRAMES_UNTIL_COMMAND = delay
+        self.FRAMES_UNTIL_COMMAND = delay
         for robot in [self.LEFTDEF, self.LEFTATK]:
             if robot['planner'] is not None:
                 command = robot['planner'].update(self.get_world_old_left())
@@ -193,13 +192,13 @@ class Simulator(object):
             else:
                 robot['angular_acceleration'] = -(command['speed'] * 0.05 +robot['angular_acceleration'])/2
         elif command["direction"] == 'Backward':
-        	if robot['velocity'] > 0:
-        		robot['velocity'] = 0
-        	elif command['speed'] < -robot['velocity']:
-        		robot['acceleration'] = -command['speed']
-        	else:
-        		robot['acceleration'] = (robot['acceleration'] + -command['speed'])/2
-        	robot['angular_velocity'] = 0
+            if robot['velocity'] > 0:
+                robot['velocity'] = 0
+            elif command['speed'] < -robot['velocity']:
+                robot['acceleration'] = -command['speed']
+            else:
+                robot['acceleration'] = (robot['acceleration'] + -command['speed'])/2
+            robot['angular_velocity'] = 0
         else:
             print command
 
@@ -218,11 +217,19 @@ class Simulator(object):
             robot['message'] = 0
 
     def in_range(self, robot):
-        """Returns true if the robot is within catching range of the ball"""
+        """Returns true if the robot is within catching range of the ball and will still be next frame"""
         delta_x = robot['x'] - self.BALL['x']
         delta_y =  robot['y'] - self.BALL['y']
         distance = math.sqrt(delta_x*delta_x + delta_y*delta_y)
-        return distance <= self.CATCH_DISTANCE
+        if not distance <= self.CATCH_DISTANCE:
+            return False
+        else:
+            # Check for next frame
+            timestep = 1.0/self.FPS
+            delta_x = robot['x'] - (self.BALL['x'] + timestep * self.VELOCITY_SCALE * self.BALL['velocity'] * math.cos(self.BALL['angle']))
+            delta_y =  robot['y'] - (self.BALL['y'] + timestep * self.VELOCITY_SCALE * self.BALL['velocity'] * math.sin(self.BALL['angle']))
+            distance = math.sqrt(delta_x*delta_x + delta_y*delta_y)
+            return distance <= self.CATCH_DISTANCE
 
     def in_collision_range(self, robot):
         delta_x = robot['x'] - self.BALL['x']
