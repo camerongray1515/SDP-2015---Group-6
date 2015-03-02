@@ -33,7 +33,7 @@ class PassPlan(Plan):
         (gx,gy) = (self.world.our_attacker.x, self.world.our_attacker.y)
 
         isBlocked = self.blocked(gx, gy, their_atk.x, their_atk.y)
-        if not isBlocked:
+        if not isBlocked: # if our pass path is not blocked
             angle = self.robot.get_rotation_to_point(gx, gy)
             command = self.rotate_to(angle, fudge=0.1)
             # Check if we're done rotating
@@ -43,7 +43,7 @@ class PassPlan(Plan):
             else:
                 self.finished = True
                 self.robot.catcher = "open"
-                return self.kick()
+                return self.kick(80)
         print "BLOCKED!"
         closely_marked = False # Closely marked = their attacker is close to our robot
         #If closely marked, try and shoot around the opponent
@@ -64,7 +64,7 @@ class PassPlan(Plan):
             else:
                 self.finished = True
                 self.robot.catcher = "open"
-                return self.kick()
+                return self.kick(70)
 
         else:
             command =  self.go_to(self.robot.x, self.robot.y + 150)
