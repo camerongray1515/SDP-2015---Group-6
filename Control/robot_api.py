@@ -116,6 +116,12 @@ class RobotAPI():
         self.set_motor("left", speed)
         self.set_motor("right", speed)
 
+
+    def go_forward_asym(self, speed_left=100, speed_right=100):
+        self.set_motor("left", speed)
+        self.set_motor("right", speed)
+
+
     def go_backward(self, speed=100):
         self.set_motor("left", -1 * speed)
         self.set_motor("right", -1 * speed)
