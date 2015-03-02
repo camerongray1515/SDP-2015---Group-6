@@ -14,6 +14,8 @@ class Robot(PitchObject):
         super(Robot, self).__init__(x, y, angle, velocity, width, length, height, angle_offset)
         self._zone = zone
         self._catcher = 'open'
+        self.out_of_bounds_counter = 5
+
 
     @property
     def zone(self):

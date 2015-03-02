@@ -49,6 +49,7 @@ class PassPlan(Plan):
         (cent_x, cent_y) = self.world.pitch.zones[self.robot.zone].center() # find the middle y position of the zone
 
         if their_atk.y >= cent_y:
+            # if their attacker is on the top half we want to go toward the bottom half of the pitch
             goto_y = cent_y - cent_y/2
         else:
             goto_y = cent_y + cent_y/2
@@ -90,7 +91,7 @@ class PassPlan(Plan):
 
 
 
-    def blocked(self, target_x, target_y, obstacle_x, obstacle_y, obstacle_width=30):
+    def blocked(self, target_x, target_y, obstacle_x, obstacle_y, obstacle_width=50):
         d_y = self.robot.y - target_y
         d_x = self.robot.x - target_x
         m = d_y/d_x

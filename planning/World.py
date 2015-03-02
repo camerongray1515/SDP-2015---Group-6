@@ -25,6 +25,7 @@ class World(object):
         self._goals.append(Goal(0, 0, self._pitch.height/2.0, 0))
         self._goals.append(Goal(3, self._pitch.width, self._pitch.height/2.0, pi))
 
+
     @property
     def our_attacker(self):
         return self._robots[2] if self._our_side == 'left' else self._robots[1]
@@ -60,10 +61,15 @@ class World(object):
     def update_positions(self, pos_dict):
         ''' This method will update the positions of the pitch objects
             that it gets passed by the vision system '''
-        self.our_attacker.vector = pos_dict['our_attacker']
-        self.their_attacker.vector = pos_dict['their_attacker']
-        self.our_defender.vector = pos_dict['our_defender']
-        self.their_defender.vector = pos_dict['their_defender']
+        robots = {'our_attacker':self.our_attacker,'their_attacker':self.their_attacker , 'our_defender':self.our_defender ,'their_defender':self.their_defender}
+        for key in robots.keys():
+
+            if robots[key].vector.angle == pos_dict[key].angle:
+                robots[key].out_of_bounds_counter -= 1
+            else:
+                robots[key].out_of_bounds_counter = 5
+            robots[key].vector = pos_dict[key]
+
         self.ball.vector = pos_dict['ball']
         # Checking if the robot locations make sense:
         # Is the side correct:

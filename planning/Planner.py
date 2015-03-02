@@ -43,7 +43,6 @@ class Planner(object):
         """
         # Update the world state with the given positions
         self.world.update_positions(model_positions)
-
         #DEBUG
         print self.current_plan
         if self.world.ball != None:
