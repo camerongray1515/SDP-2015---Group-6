@@ -19,7 +19,7 @@ class Simulator(object):
     MAX_ROTATION = 3
     CATCH_DISTANCE = 40
     BOUNCE_DISTANCE = 15
-    KICK_SPEED = 40
+    KICK_SPEED = 50
     VELOCITY_SCALE = 3.0 # Adjust if the velocity does not match the coordinate system.
     FRAMES_UNTIL_COMMAND = 99
 
