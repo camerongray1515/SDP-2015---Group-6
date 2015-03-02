@@ -1,6 +1,7 @@
 from Plan import Plan
 from Utility.CommandDict import CommandDict
 import math
+import pdb
 
 ERROR = math.pi/15
 
@@ -25,7 +26,28 @@ class AlignPlan(Plan):
         return False
 
     def nextCommand(self):
+        return_threshold = 40 # return to centre if this close to edge
         current_angle = self.robot.angle
+        current_x = self.robot.x
+        # If close to the edge of zone, return to the centre
+        zone = self.world.pitch.zones[self.robot.zone][0] 
+        #zone is of form [(115.0, 290.0), (255.0, 290.0), (255.0, 0.0), (115.0, 0.0)]
+        min_x = 10000
+        max_x = 0
+        for point in zone:
+            x_coord = point[0]
+            if min_x > x_coord:
+                min_x = x_coord
+            if max_x < x_coord:
+                max_x = x_coord
+        if math.fabs(current_x - max_x) < return_threshold or math.fabs(current_x - min_x) < return_threshold:
+            print "ALIGN - Return to centre"
+            mid_x = (min_x + max_x)/2
+            command = self.go_to(mid_x, self.robot.y, speed=75)
+            if command:
+                return command
+
+
         # Turn either left or right, depending on which requires the least turning
         if current_angle < math.pi:
             if current_angle < math.pi/2:
