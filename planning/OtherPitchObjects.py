@@ -1,6 +1,6 @@
 from PitchObject import PitchObject
 from Polygon.cPolygon import Polygon
-from vision import tools
+from planning.utilities import get_croppings
 
 BALL_WIDTH = 5
 BALL_LENGTH = 5
@@ -38,7 +38,7 @@ class Pitch(object):
     '''
 
     def __init__(self, pitch_num):
-        config_json = tools.get_croppings(pitch=pitch_num)
+        config_json = get_croppings(pitch=pitch_num)
 
         self._width = max([point[0] for point in config_json['outline']]) - min([point[0] for point in config_json['outline']])
         self._height = max([point[1] for point in config_json['outline']]) - min([point[1] for point in config_json['outline']])

@@ -1,5 +1,7 @@
 from math import tan, pi, hypot, log
 from Robot import Robot
+import json
+import os
 
 DISTANCE_MATCH_THRESHOLD = 15
 ANGLE_MATCH_THRESHOLD = pi/10
@@ -7,6 +9,9 @@ BALL_ANGLE_THRESHOLD = pi/20
 MAX_DISPLACEMENT_SPEED = 690
 MAX_ANGLE_SPEED = 50
 BALL_VELOCITY = 3
+
+PATH = os.getcwd()
+PITCHES = ['Pitch_0', 'Pitch_1', 'Pitch_2']
 
 def is_shot_blocked(world, our_robot, their_robot):
     '''
@@ -91,3 +96,17 @@ def has_matched(robot, x=None, y=None, angle=None, angle_threshold=ANGLE_MATCH_T
     if not(angle is None):
         angle_matched = abs(angle) < angle_threshold
     return dist_matched and angle_matched
+
+
+# Code duplicated from vision.tools to avoid the dependency on OpenCV
+# TODO - consolidate into single location
+def get_croppings(filename=PATH+'/vision/calibrations/croppings.json', pitch=0):
+    croppings = get_json(filename)
+    return croppings[PITCHES[pitch]]
+
+
+def get_json(filename=PATH+'/vision/calibrations/calibrations.json'):
+    _file = open(filename, 'r')
+    content = json.loads(_file.read())
+    _file.close()
+    return content
