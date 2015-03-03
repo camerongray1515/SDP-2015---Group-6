@@ -10,6 +10,7 @@ import time
 import pygame
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
+SHOWLABELS = False # Doesn't work on DICE
 FPS = 40
 DELAY = 3 # frames before a command is executed
           # DON'T SET HIGHER DELAY THAN DELAY UNTIL A NEXT COMMAND IS READ
@@ -37,7 +38,7 @@ class Main:
                              right_atk=right_atk_planner, world=initial_state, fps=FPS)
 
         # Create visualisor
-        self.disp = Visualise()
+        self.disp = Visualise(labels=SHOWLABELS)
         self.disp.set_world(self.sim.get_world_new())
         self.disp.show()
 
