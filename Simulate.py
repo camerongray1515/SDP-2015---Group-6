@@ -21,15 +21,15 @@ class Main:
     def __init__(self):
         # Initialise world
         left_def = {'x' : 20, 'y' : 160, 'angle':1.1, 'velocity': 0}
-        left_atk = {'x' : 300, 'y' : 100, 'angle':.04, 'velocity': 50}
+        left_atk = {'x' : 300, 'y' : 150, 'angle':1.5, 'velocity': 0}
         right_def = {'x' : 450, 'y' : 110, 'angle':4, 'velocity': 0}
         right_atk = {'x' : 180, 'y' : 85, 'angle':3.14, 'velocity': 0}
-        ball = {'x' : 330, 'y' : 150, 'angle':1.5, 'velocity': 4}
+        ball = {'x' : 450, 'y' : 150, 'angle':1.5, 'velocity': 4}
         initial_state = {'our_defender':left_def, 'our_attacker':left_atk, 'their_attacker':right_atk, 'their_defender':right_def, 'ball':ball}
 
         # Set up planner(s)
         left_def_planner = Planner('left', 2, attacker=False)
-        left_atk_planner = Planner('left', 2, attacker=True)
+        left_atk_planner = None #Planner('left', 2, attacker=True)
         right_def_planner = Planner('right', 2, attacker=False)
         right_atk_planner = Planner('right', 2, attacker=True)
 

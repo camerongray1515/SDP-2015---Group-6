@@ -57,7 +57,10 @@ class Visualise(object):
                 self.windowSurface.blit(text, textpos)
 
                 #Draw Planner state:
-                plan = robot['planner'].current_plan
+                if robot['planner'] is not None:
+                	plan = robot['planner'].current_plan
+                else:
+                	plan = None
                 if plan is None:
                     text = font.render("None", 0, COLOURS['LABEL'])
                 else:
