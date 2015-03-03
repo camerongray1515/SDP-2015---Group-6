@@ -32,7 +32,7 @@ class PassPlan(Plan):
         # Aim at friendly attacker position
         (gx,gy) = (self.world.our_attacker.x, self.world.our_attacker.y)
 
-        #isBlocked = self.blocked(gx, gy, their_atk.x, their_atk.y)
+        #isBlocked = self.blocked(gx, gy, their_atk.x, their_atk.y, self.robot.x, self.robot.y)
         isBlocked = planning.utilities.is_shot_blocked(self.world, self.robot, self.world.their_attacker)
         if not isBlocked: # if our pass path is not blocked
             angle = self.robot.get_rotation_to_point(gx, gy)
@@ -92,11 +92,17 @@ class PassPlan(Plan):
 
 
 
-    def blocked(self, target_x, target_y, obstacle_x, obstacle_y, obstacle_width=50):
-        d_y = self.robot.y - target_y
-        d_x = self.robot.x - target_x
-        m = d_y/d_x
-        c = self.robot.y - m*self.robot.x
+    @staticmethod
+    def blocked(target_x, target_y, obstacle_x, obstacle_y, robot_x, robot_y, obstacle_width=40):
+        d_y = robot_y - target_y
+        d_x = robot_x - target_x
+        
+        # Catch div by zero
+        if d_x == 0:
+            d_x = 0.0001 
+
+        m = d_y/float(d_x)
+        c = robot_y - m*robot_x
         #Compare y-coords when x is equal:
         ball_y_at_obstacle = m*obstacle_x + c
         if math.fabs(ball_y_at_obstacle - obstacle_y)<obstacle_width:
