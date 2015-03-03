@@ -18,6 +18,8 @@ PLATEWIDTH = 40
 BALL_RAD = 8
 COLOURS = {"PITCH": (0, 120, 0), 'DIVIDER': (255,255,255), 'CORNER': (32,32,32), 'PLATE':(51, 255, 55),
             "ARROW": (255,0,0), "LABEL":(255,255,255), "BALL": (255,40,40)}
+STATE_LABEL_X = {'LDEF':80, 'RATK':160, 'LATK':240, 'RDEF':320}
+STATE_LABEL_Y = 190
 
 class Visualise(object):
     world = None
@@ -54,6 +56,16 @@ class Visualise(object):
                 textpos.centery = COORDSCALE*robot['y']
                 self.windowSurface.blit(text, textpos)
 
+                #Draw Planner state:
+                plan = robot['planner'].current_plan
+                if plan is None:
+                    text = font.render("None", 0, COLOURS['LABEL'])
+                else:
+                    text = font.render(Plan, 0, COLOURS['LABEL'])
+                textpos = text.get_rect()
+                textpos.centerx = STATE_LABEL_X[name]
+                textpos.centery = STATE_LABEL_Y
+                self.windowSurface.blit(text, textpos)
         #Draw Ball
         ball_pos = (int(world['BALL']['x']), int(world['BALL']['y']))
         pygame.draw.circle(self.windowSurface, COLOURS["BALL"], ball_pos, BALL_RAD)
