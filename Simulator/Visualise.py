@@ -18,8 +18,8 @@ PLATEWIDTH = 40
 BALL_RAD = 8
 COLOURS = {"PITCH": (0, 120, 0), 'DIVIDER': (255,255,255), 'CORNER': (32,32,32), 'PLATE':(51, 255, 55),
             "ARROW": (255,0,0), "LABEL":(255,255,255), "BALL": (255,40,40)}
-STATE_LABEL_X = {'LDEF':80, 'RATK':160, 'LATK':240, 'RDEF':320}
-STATE_LABEL_Y = 190
+STATE_LABEL_X = {'LDEF':60, 'RATK':170, 'LATK':320, 'RDEF':470}
+STATE_LABEL_Y = 250
 
 class Visualise(object):
     world = None
@@ -61,7 +61,7 @@ class Visualise(object):
                 if plan is None:
                     text = font.render("None", 0, COLOURS['LABEL'])
                 else:
-                    text = font.render(Plan, 0, COLOURS['LABEL'])
+                    text = font.render(str(plan), 0, COLOURS['LABEL'])
                 textpos = text.get_rect()
                 textpos.centerx = STATE_LABEL_X[name]
                 textpos.centery = STATE_LABEL_Y
