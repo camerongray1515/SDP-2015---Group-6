@@ -2,7 +2,7 @@
 from abc import ABCMeta, abstractmethod
 from World import World
 from Utility.CommandDict import CommandDict
-from math import pi
+from math import pi, fabs
 
 # Constants for the rotation/distance movement fudge factors
 ROTATION_ERROR = pi/8
@@ -47,6 +47,36 @@ class Plan(object):
     #concrete functions
     def isFinished(self):
         return self.finished
+
+    def go_to_asym(self, x, y, speed = 100, coef = 1):
+        distance = self.robot.get_euclidean_distance_to_point(x, y)
+        delta_angle = self.robot.get_rotation_to_point(x, y)
+
+        c_asy = fabs(coef * delta_angle)
+
+        cd = {}
+
+
+        speed = speed if distance > 2 * DISTANCE_ERROR else 40
+        direction = "Forward"
+        kick = "None"
+
+
+        if delta_angle > 0:
+            sr = speed
+            sl = speed * c_asy
+        else:
+            sl = speed
+            sr = speed * c_asy
+
+        cd["speed"] = sl
+        cd["direction"] = direction
+        cd["kick"] = kick
+        cd["speed_right"] = sr
+
+        return cd
+
+
     
     def go_to(self, x, y, speed=100, distance_fudge=1):
         """
