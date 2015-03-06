@@ -12,6 +12,7 @@ def main():
      serial_port = get_param("Enter path to serial port")
 
      robot = RobotAPI(serial_port, 115200)
+     robot.enabled = True
      x = 0
 
      while x != ord('q'):

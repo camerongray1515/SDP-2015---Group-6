@@ -3,7 +3,7 @@ from vision.colors import BGR_COMMON
 from vision.findHSV import CalibrationGUI
 from vision import tools
 import numpy as np
-
+from Control.robot_api import RobotAPI
 
 from collections import namedtuple
 
@@ -77,6 +77,7 @@ class GUI(object):
     def cast_binary(self, x):
         return x == 1
 
+
     def draw(self, frame, model_positions, actions, regular_positions, fps,
              dState, aState, a_action, d_action, grabbers, our_color, our_side,
              key=None, preprocess=None):
@@ -87,6 +88,16 @@ class GUI(object):
         """
         # Get general information about the frame
         frame_height, frame_width, channels = frame.shape
+
+
+        # turn stuff off and on
+
+        if key == ord('c'):
+            print('toggle serial')
+            RobotAPI.enabled = not RobotAPI.enabled
+            #RobotAPI.set_enabled(not RobotAPI.enabled)
+
+
 
         # Draw the calibration gui
         self.calibration_gui.show(frame, key)
