@@ -65,7 +65,7 @@ class Robot(PitchObject):
         '''
         Gets if the robot has possession of the ball
         '''
-        return (self._catcher == 'closed') and self.ball_area.isInside(ball.x, ball.y)
+        return (self._catcher == 'closed') #and self.ball_area.isInside(ball.x, ball.y)
 
     def get_rotation_to_point(self, x, y):
         '''

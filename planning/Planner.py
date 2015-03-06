@@ -24,7 +24,7 @@ class Planner(object):
         #TODO catcher_areas need tweaking for our robot, they are currently set to team 7's
         self.world.our_defender.catcher_area = {'width' : 30, 'height' : 30, 'front_offset' : 12}
         self.world.our_attacker.catcher_area = {'width' : 30, 'height' : 30, 'front_offset' : 14}
-        self.robot = self.world.our_attacker if attacker else self.world.our_defender
+        self.robot = self.world.our_attacker #if attacker else self.world.our_defender
 
         # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
         p = (lambda plan: plan(self.world, self.robot))

@@ -99,7 +99,7 @@ class Plan(object):
         else:
             return self.go_forward(distance, speed, fudge=distance_fudge)
 
-    def rotate_to(self, angle, fudge=1):
+    def rotate_to(self, angle, fudge=1 ):
         """
         Generates commands for the robot to rotate by a specific angle
         :param angle: Radians to turn

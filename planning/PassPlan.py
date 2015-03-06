@@ -30,10 +30,10 @@ class PassPlan(Plan):
         (x,y) = self.world.pitch.zones[self.robot._zone].center()
 
         # Aim at friendly attacker position
-        (gx,gy) = (self.world.our_attacker.x, self.world.our_attacker.y)
+        (gx,gy) = (self.world.our_defender.x, self.world.our_defender.y)
 
-        #isBlocked = self.blocked(gx, gy, their_atk.x, their_atk.y, self.robot.x, self.robot.y)
-        isBlocked = planning.utilities.is_shot_blocked(self.world, self.robot, self.world.their_attacker)
+        isBlocked = self.blocked(gx, gy, their_atk.x, their_atk.y, self.robot.x, self.robot.y)
+        #isBlocked = planning.utilities.is_shot_blocked(self.world, self.robot, self.world.their_attacker)
         if not isBlocked: # if our pass path is not blocked
             angle = self.robot.get_rotation_to_point(gx, gy)
             command = self.rotate_to(angle, fudge=0.1)
@@ -45,6 +45,7 @@ class PassPlan(Plan):
                 self.finished = True
                 self.robot.catcher = "open"
                 return self.kick(80)
+
         print "BLOCKED!"
 
         (cent_x, cent_y) = self.world.pitch.zones[self.robot.zone].center() # find the middle y position of the zone
@@ -59,6 +60,7 @@ class PassPlan(Plan):
         if command:
             return command
         else:
+            print "BLAAAAAAAAAAAAAAAAAAAAAAAH"
             return CommandDict.stop()
 
 
