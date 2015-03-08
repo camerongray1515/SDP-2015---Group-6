@@ -1,4 +1,5 @@
 from robot_api import RobotAPI
+from consol import log,log_time
 
 class Controller():
     def __init__(self, port="/dev/ttyACM1"):
@@ -8,6 +9,9 @@ class Controller():
         self.robot_api = RobotAPI(port,115200)
 
     def update(self, command):
+
+
+
         if self.kick_wait > 0:
             self.kick_wait -= 1
             return
@@ -22,9 +26,15 @@ class Controller():
         direction=command["direction"]
         kick=command["kick"]
 
+        log_time('dict_control')
+        log('speed', speed, 'dict_control')
+        log('direction', direction, 'dict_control')
+        log('kick', kick, 'dict_control')
+
 
         if (direction == "Forward"):
             self.robot_api.go_forward(speed)
+            log_time('dict_control', 'time go forward called')
             if 'speedr' in command:
                 speed_right = command["speedr"]
                 self.robot_api.go_forward_asym(speed, speed_right)

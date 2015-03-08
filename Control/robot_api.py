@@ -1,6 +1,8 @@
 from serial import Serial, SerialException
 import time
 import random
+from consol import log, log_time
+import time
 
 speed = 19.5 # speed in cm/s, this is a constant we should calibrate when we get the motors working
 
@@ -12,12 +14,19 @@ class RobotAPI(object):
     }
 
 
+    @property
+    def enabled(self):
+        return self._enabled
 
-    enabled = True
-    @staticmethod
-    def set_enabled(e):
-        print('Comms enabled: ' + str(e))
-        enabled = e
+    @enabled.setter
+    def enabled(self, e):
+        if not e:
+            self.stop()
+
+        self._enabled = e
+        log('Communication enabled (press C to toggle)', self.enabled, "Comms")
+
+
 
 
     # The speed of each motor will be set to the specified speed multiplied by the *_scale speed in the
@@ -81,6 +90,7 @@ class RobotAPI(object):
 
     def __init__(self, device_path=None, baud_rate=None):
         # check if there are valid parameters
+        self._enabled = False
         if (device_path is not None and baud_rate is not None):
             try:
                 self.serial = Serial(device_path, baud_rate, timeout=0.1)
@@ -89,6 +99,9 @@ class RobotAPI(object):
                 #alias the _write_serial function so we don't throw errors
                 self._write_serial = self._write_serial_debug
 
+        #just for printing
+        self.enabled = False
+
     #debug/error function if we're not using serial
     def _write_serial_debug(self, data):
         print data
@@ -96,9 +109,9 @@ class RobotAPI(object):
 
 
     def _write_serial(self, data):
-        print(RobotAPI.enabled)
-        if not RobotAPI.enabled:
+        if not self.enabled:
            return
+
 
         ack = False
 
@@ -109,7 +122,9 @@ class RobotAPI(object):
             data_bytes += '\r'
             self.serial.write(data_bytes)
             num_attempts += 1
-            print("Sent command: {0}".format(data))
+
+            log("Sent command", format(data), "Comms")
+            log_time('Comms')
 
             try:
                 ack = self.serial.read()
@@ -181,8 +196,9 @@ class RobotAPI(object):
 
     def set_motor(self, motor, speed, scale=True, delay=0):
         # If the motor is already running at this speed, do not send the command
-        if speed == self.current_motor_speeds[motor]:
-            return
+        # this creates bugs when enabling comms so i commented it out
+        #if speed == self.current_motor_speeds[motor]:
+         #   return
         
         if scale:
             scaled_speed = self.get_scaled_speed(motor, speed)

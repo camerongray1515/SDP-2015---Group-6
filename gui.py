@@ -3,8 +3,7 @@ from vision.colors import BGR_COMMON
 from vision.findHSV import CalibrationGUI
 from vision import tools
 import numpy as np
-from Control.robot_api import RobotAPI
-
+import consol
 from collections import namedtuple
 
 
@@ -35,12 +34,13 @@ class GUI(object):
     def nothing(self, x):
         pass
 
-    def __init__(self, calibration, pitch):
+    def __init__(self, calibration, pitch, launch):
         self.zones = None
         # print calibration
         self.calibration_gui = CalibrationGUI(calibration)
         # self.arduino = arduino
         self.pitch = pitch
+        self.launch = launch
 
         cv2.namedWindow(self.VISION)
 
@@ -77,7 +77,6 @@ class GUI(object):
     def cast_binary(self, x):
         return x == 1
 
-
     def draw(self, frame, model_positions, actions, regular_positions, fps,
              dState, aState, a_action, d_action, grabbers, our_color, our_side,
              key=None, preprocess=None):
@@ -90,12 +89,22 @@ class GUI(object):
         frame_height, frame_width, channels = frame.shape
 
 
-        # turn stuff off and on
+        # turn stuff off and on, i linked launch class in a variable called launch
+
+
+        robot = self.launch.controller.robot_api
 
         if key == ord('c'):
             print('toggle serial')
-            RobotAPI.enabled = not RobotAPI.enabled
-            #RobotAPI.set_enabled(not RobotAPI.enabled)
+
+            robot.enabled = not robot.enabled
+
+        if key == 27:
+            robot.enabled = False
+
+
+        #draw console
+        consol.draw()
 
 
 

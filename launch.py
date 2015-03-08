@@ -13,6 +13,8 @@ import sys
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 class Main:
+
+
     """
     Primary source of robot control. Ties vision and planning together.
     """
@@ -45,8 +47,8 @@ class Main:
         self.planner = Planner(our_side, pitch, attacker=is_attacker)
 
         # Set up GUI
-        self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)
-        self.GUI.launch = self
+        self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch, launch=self)
+
         self.color = color
         self.side = our_side
 

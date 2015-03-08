@@ -40,3 +40,5 @@ The starting positions of the robots can be changed in Simulate.py
 If using 32 bit python (not on DICE), the SHOWLABELS flag can be changed to True. This allows drawing planning state.
 
 Other simulator variables can be changed in Simulator/Simulator.py
+=======
+python launch.py -q 0 right blue /dev/ttyACM0 attack
