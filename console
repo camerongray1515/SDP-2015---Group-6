@@ -1,0 +1,8 @@
+from launch import Main
+import os
+
+class Console(object):
+    @staticmethod
+    def draw():
+        os.system('cls')
+        print('test')
