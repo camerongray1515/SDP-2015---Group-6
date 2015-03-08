@@ -24,6 +24,9 @@ from multiprocessing import Process, Queue
 from colors import BGR_COMMON
 from collections import namedtuple
 import numpy as np
+import subprocess
+# pip install --user --install-option="--prefix=" -U scikit-learn
+# from sklearn.cluster import MiniBatchKMeans
 # from findHSV import CalibrationGUI
 
 
@@ -56,6 +59,10 @@ class Vision:
             [string] color      color of our robot
             [string] our_side   our side
         """
+
+        self.v4l_settings()
+
+
         self.pitch = pitch
         self.color = color
         self.our_side = our_side
@@ -119,7 +126,7 @@ class Vision:
                     pitch=pitch,
                     name='Our Attacker',
                     calibration=calibration)
-            ] 
+            ]
 
             self.opponents = [
                 RobotTracker(
@@ -141,6 +148,35 @@ class Vision:
         # Set up trackers
         self.ball_tracker = BallTracker(
             (0, width, 0, height), 0, pitch, calibration)
+
+    def v4l_settings(self):
+        # it would be nice to reset settings after executing the program..
+        video0_old = {}
+        attributes = ["bright", "contrast", "color", "hue"]
+        video0_new = {"bright": 150, "contrast": 70, "color": 80, "hue": 0}
+
+        for attr in attributes:
+            p = subprocess.Popen(["v4lctl", "show", attr], stdout=subprocess.PIPE)
+            output, err = p.communicate()
+            video0_old[attr] = int(output[len(attr)+1:])
+            if video0_old[attr] != video0_new[attr]:
+                p = subprocess.Popen(["v4lctl", "setattr", attr, str(video0_new[attr])], stdout=subprocess.PIPE)
+                output, err = p.communicate()
+
+        # will only output restore file if any value was different.
+        # this also prevents from resetting the file on each run
+        # to run this bash file, cd to out main dir (where the .sh file is)
+        # type "chmod 755 restore_v4lctl_settings.sh"
+        # and then "./restore_v4lctl_settings.sh"
+        if (video0_old != video0_new):
+            f = open('restore_v4lctl_settings.sh','w')
+            f.write('#!/bin/sh\n')
+            f.write('echo \"restoring v4lctl settings to previous values\"\n')
+            for attr in attributes:
+                f.write("v4lctl setattr " + attr + ' ' + str(video0_old[attr]) + "\n")
+                f.write('echo \"setting ' + attr +' to ' + str(video0_old[attr]) + '"\n')
+            f.write('echo \"v4lctl values restored\"')
+            f.close()
 
     def _get_zones(self, width, height):
         return [(val[0], val[1], 0, height)
