@@ -4,12 +4,21 @@ import random
 
 speed = 19.5 # speed in cm/s, this is a constant we should calibrate when we get the motors working
 
-class RobotAPI():
+class RobotAPI(object):
     motorPins = {
         "left": 0,
         "right": 1,
         "kicker": 2
     }
+
+
+
+    enabled = True
+    @staticmethod
+    def set_enabled(e):
+        print('Comms enabled: ' + str(e))
+        enabled = e
+
 
     # The speed of each motor will be set to the specified speed multiplied by the *_scale speed in the
     # dictionary below.  If it falls between two of these points, the speed will be linearly interpolated
@@ -84,7 +93,13 @@ class RobotAPI():
     def _write_serial_debug(self, data):
         print data
 
+
+
     def _write_serial(self, data):
+        print(RobotAPI.enabled)
+        if not RobotAPI.enabled:
+           return
+
         ack = False
 
         num_attempts = 0
@@ -104,18 +119,6 @@ class RobotAPI():
             if num_attempts >= 100:
                 raise Exception("Too many attempts to send command")
 
-    def blink_led(self, delay=500):
-        command = "blink {0}".format(delay)
-        self._write_serial(command)
-
-    def stop_blinking(self):
-        self._write_serial("stop_blinking")
-
-    def led_on(self):
-        self._write_serial("led_on")
-
-    def led_off(self):
-        self._write_serial("led_off")
 
     def go_forward(self, speed=100):
         self.set_motor("left", speed)

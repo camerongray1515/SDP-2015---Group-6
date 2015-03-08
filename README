@@ -1,1 +1,3 @@
-Hello World
+Example how to launch program
+
+python launch.py 1 right blue /dev/ttyACM0 attack
