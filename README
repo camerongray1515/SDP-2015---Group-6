@@ -1,3 +1,31 @@
-Example how to launch program
+Launching the program
+==================
 
-python launch.py 1 right blue /dev/ttyACM0 attack
+Launch our code you need to run the launch.py script.
+
+The script should be run using the following command:
+
+`python launch.py [options] pitch side colour serial-port role`
+
+options:
+-q  - skip the 10 second delay when starting the program
+
+pitch  [0,1] 
+0 if we are on the main pitch and 1 in the side room. 
+
+side [left, right]
+says what side of the pitch we are on. 
+This can sometimes be somewhat counter intuitive so make sure you have put in the right side. 
+
+colour [blue, yellow]
+colour is completely useless and will be removed in a later version, however it is required to run at this moment in time.
+
+serial-port /path/to/port
+Is the path to the radio stick port. 
+The port can be found in /dev (use ls /dev to find it)
+It is usually either /dev/ttyACM0 or dev/ttyACM1
+
+role [attacker,defender]
+Decides which set of plans we should execute. 
+Defender is the pass ball plan while attacker is the align and shoot at goal plans. 
+
