@@ -19,7 +19,8 @@ class MatchY(Plan):
             - Robot is not already matching the ball's position
         """
 
-        if self.world.ball is not None and not self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y):
+        if self.world.ball is not None and (not self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y)\
+                or self.world.ball.velocity > 3):
             return not self.isMatched(self.robot, self.world.ball)
         return False
 
