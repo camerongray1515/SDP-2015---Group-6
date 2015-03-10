@@ -2,6 +2,7 @@
 from abc import ABCMeta, abstractmethod
 from World import World
 from Utility.CommandDict import CommandDict
+import math
 from math import pi, fabs
 
 # Constants for the rotation/distance movement fudge factors
@@ -50,6 +51,9 @@ class Plan(object):
 
     def isFinished(self):
         return self.finished
+
+    def isAligned(self, robot):
+        return math.fabs(robot.angle - math.pi/2) < ROTATION_ERROR or math.fabs(robot.angle - 3 * math.pi/2) < ROTATION_ERROR
 
     def go_to_asym(self, x, y, speed = 100, coef = 1):
         distance = self.robot.get_euclidean_distance_to_point(x, y)
