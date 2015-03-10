@@ -5,7 +5,7 @@ from Utility.CommandDict import CommandDict
 from math import pi, fabs
 
 # Constants for the rotation/distance movement fudge factors
-ROTATION_ERROR = pi/8
+ROTATION_ERROR = pi/12
 DISTANCE_ERROR = 43
 
 class Plan(object):
