@@ -1,6 +1,7 @@
 from Plan import Plan
 import math
 from Utility.CommandDict import CommandDict
+import pdb
 
 class NewShootGoalPlan(Plan):
     """Plan for the robot shooting the ball."""
@@ -27,8 +28,26 @@ class NewShootGoalPlan(Plan):
         # Center of the robot's zone
         (x, y) = self.world.pitch.zones[self.robot.zone].center()
 
+        # Returns list of points in order: xmin, xmax, ymin, ymax
+        goal_points = self.world.their_goal.get_polygon().boundingBox()
+        x_min = goal_points[0]
+        x_max = goal_points[1]
+        y_min = goal_points[2]
+        y_max = goal_points[3]
+
         # Center of the goal
-        (gx, gy) = (self.world.their_goal.get_polygon()[0][0], self.world.pitch.height / 2)
+        (gx, gy) = ((x_max + x_min)/2, (y_min + y_max)/2)
+
+        # for each 5 pixels between start of goal to end of goal 
+        # check if isBLocked
+        # if false, rotate towards the unblocked point and shoot
+
+        # store position we are aiming at, if it becomes blocked pick a new one
+
+        # if we go through the whole loop without finding a spot
+        # move to a different positon and try agian
+
+        #find their robot position pick top or bottom, move in that direction (make sure not to go into the wall)
 
 
         angle = self.robot.get_rotation_to_point(gx, gy)
