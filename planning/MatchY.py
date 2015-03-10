@@ -16,11 +16,14 @@ class MatchY(Plan):
     def isValid(self):
         """
         Current constraints are:
+            - Ball must not be in the robot's zone OR the ball is in the robot's zone and has a velocity > 3
             - Robot is not already matching the ball's position
+            - Robot must be aligned (as per the AlignPlan)
         """
 
-        if self.world.ball is not None and (not self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y)\
-                or self.world.ball.velocity > 3):
+        if (self.world.ball is not None) and \
+                (not self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y) or self.world.ball.velocity > 3) and \
+                (self.isAligned(self.robot)):
             return not self.isMatched(self.robot, self.world.ball)
         return False
 
@@ -36,6 +39,7 @@ class MatchY(Plan):
         print predicted_x
         goto_x = self.robot.x + predicted_x
         distance = self.robot.get_euclidean_distance_to_point(goto_x, robot_y)
+
         # check if the x,y coordinate we would end up in if we matched y is within bounds
         # if it's outside use go_to to match the y position and a central x position
         if (not self.world.pitch.is_within_bounds(self.robot,goto_x, ball_y)):

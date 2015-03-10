@@ -3,8 +3,6 @@ from Utility.CommandDict import CommandDict
 import math
 import pdb
 
-ERROR = math.pi/15
-
 class AlignPlan(Plan):
     """Plan for aligning the robot sideways on the pitch to allow for easier interception"""
 
@@ -22,7 +20,8 @@ class AlignPlan(Plan):
         """
 
         if self.world.ball is not None:
-            return not self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y) and (not self.isAligned(self.robot))
+            return not self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y) and \
+                   (not self.isAligned(self.robot))
         return False
 
     def nextCommand(self):
@@ -59,11 +58,6 @@ class AlignPlan(Plan):
                 return CommandDict(57, "Left", "None")
             else: 
                 return CommandDict(57, "Right", "None")
-
-    def isAligned(self, robot):
-        return math.fabs(robot.angle - math.pi/2) < ERROR or math.fabs(robot.angle - 3 * math.pi/2) < ERROR
-
-
 
     def __str__(self):
         return "align plan"

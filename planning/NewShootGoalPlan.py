@@ -1,7 +1,7 @@
 from Plan import Plan
 import math
 from Utility.CommandDict import CommandDict
-import pdb
+from Polygon.cPolygon import Polygon
 
 class NewShootGoalPlan(Plan):
     """Plan for the robot shooting the ball."""
@@ -29,7 +29,7 @@ class NewShootGoalPlan(Plan):
         (x, y) = self.world.pitch.zones[self.robot.zone].center()
 
         # Returns list of points in order: xmin, xmax, ymin, ymax
-        goal_points = self.world.their_goal.get_polygon().boundingBox()
+        goal_points = Polygon(self.world.their_goal.get_polygon()).boundingBox()
         x_min = goal_points[0]
         x_max = goal_points[1]
         y_min = goal_points[2]
