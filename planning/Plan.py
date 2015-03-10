@@ -45,6 +45,9 @@ class Plan(object):
         return NotImplemented
 
     #concrete functions
+    def reset(self):
+        self.finished = False
+
     def isFinished(self):
         return self.finished
 

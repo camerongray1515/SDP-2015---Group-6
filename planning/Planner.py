@@ -2,10 +2,8 @@
 from World import  World
 from IdlePlan import IdlePlan
 from GrabBallPlan import GrabBallPlan
-from ShootGoalPlan import ShootGoalPlan
-from InterceptPlan import InterceptPlan
+from NewShootGoalPlan import NewShootGoalPlan
 from Utility.CommandDict import CommandDict
-from EasyInterceptPlan import EasyInterceptPlan
 from AlignPlan import AlignPlan
 from MatchY import MatchY
 from PassPlan import PassPlan
@@ -29,7 +27,7 @@ class Planner(object):
         # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
         p = (lambda plan: plan(self.world, self.robot))
         if (attacker):
-            self.plans = [p(ShootGoalPlan), p(GrabBallPlan), p(AlignPlan), p(MatchY), p(IdlePlan)]
+            self.plans = [p(NewShootGoalPlan), p(GrabBallPlan), p(AlignPlan), p(MatchY), p(IdlePlan)]
         else:
             self.plans = [p(PassPlan), p(GrabBallPlan), p(IdlePlan)]
 
@@ -43,8 +41,7 @@ class Planner(object):
         """
         # Update the world state with the given positions
         self.world.update_positions(model_positions)
-        #DEBUG
-        #print self.current_plan
+
         if self.world.ball != None:
             if(self.current_plan.isValid() and not self.current_plan.isFinished()):
                 return self.current_plan.nextCommand()
@@ -53,6 +50,7 @@ class Planner(object):
                 for plan in self.plans:
                     if(plan.isValid()):
                         self.current_plan = plan
+                        #self.current_plan.reset()
                         return self.current_plan.nextCommand()
         else:
             return CommandDict.stop()
