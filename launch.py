@@ -46,6 +46,7 @@ class Main:
 
         # Set up GUI
         self.GUI = GUI(calibration=self.vision.calibration, pitch=pitch)
+        self.GUI.launch = self
         self.color = color
         self.side = our_side
 
@@ -53,6 +54,7 @@ class Main:
 
      
     def control_loop(self):
+        #TODO change this description ESC doesn't work
         """
         The main loop for the control system. Runs until ESC is pressed.
 

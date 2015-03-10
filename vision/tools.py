@@ -83,7 +83,10 @@ def get_colors(pitch=0, filename=PATH+'/calibrations/calibrations.json'):
 
 def save_colors(pitch, colors, filename=PATH+'/calibrations/calibrations.json'):
     json_content = get_json(filename)
-    machine_name = socket.gethostname().split('.')[0]
+    machine_name = "default"
+    # machine_name = socket.gethostname().split('.')[0]
+    # now that we have the feed settings set by v4lctl, should be no need to store calibrations
+    # from different pcs
     pitch_name = 'PITCH0' if pitch == 0 else 'PITCH1'
 
     # convert np.arrays into lists
