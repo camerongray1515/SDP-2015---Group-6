@@ -30,3 +30,14 @@ role [attacker,defender]
 Decides which set of plans we should execute. 
 Defender is the pass ball plan while attacker is the align and shoot at goal plans. 
 
+==================
+Running the simulator
+==================
+
+Run the simulator using
+    python Simulate.py
+    
+The starting positions of the robots can be changed in Simulate.py
+If using 32 bit python (not on DICE), the SHOWLABELS flag can be changed to True. This allows drawing planning state.
+
+Other simulator variables can be changed in Simulator/Simulator.py
