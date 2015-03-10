@@ -38,6 +38,48 @@ class NewShootGoalPlan(Plan):
         # Center of the goal
         (gx, gy) = ((x_max + x_min)/2, (y_min + y_max)/2)
 
+        # Shoot for the centre of the goal if possible
+        if not self.blocked(gx, gy, their_defender.x, their_defender.y):
+            return self.shoot(gx, gy)
+        
+        # If that isn't possble check if
+        # a target has been set, try that first
+        if self.robot.target_y is not None:
+            if not self.blocked(gx, self.robot.target_y, their_defender.x, their_defender.y):
+                return self.shoot(gx, self.robot.target_y)
+
+        # If the previous target is no longer clear, try again
+        # Searches the goal in 5 pixel intervals for a clear spot
+        current_y = y_min + 5
+        while current_y < y_max:
+            if not self.blocked(gx, current_y, their_defender.x, their_defender.y):
+                self.robot.target_y = current_y
+                return self.shoot(gx, current_y)
+            current_y += 5
+
+        # If there is no clear shot then pick a side (top/bottom) and move there
+        if self.robot.y < their_defender.y:
+            move_to_y = self.world.pitch.zones[self.robot.zone].boundingBox()[3] - 60
+        else:
+            move_to_y = 60
+
+        command = self.go_to(self.world.pitch.zones[self.robot.zone].center()[0], move_to_y, speed=80)
+        if not command == False:
+            return command
+        else:
+            # If we're already there and still blocked, swap sides:
+            if move_to_y == 60:
+                move_to_y = self.world.pitch.zones[self.robot.zone].boundingBox()[3] - 60
+            else:
+                move_to_y = 60
+            command = self.go_to(self.world.pitch.zones[self.robot.zone].center()[0], move_to_y, speed=80)
+            if not command == False:
+                return command
+            else:
+                print "NewShootGoalPlan failed!"
+
+
+
         # for each 5 pixels between start of goal to end of goal 
         # check if isBLocked
         # if false, rotate towards the unblocked point and shoot
@@ -50,21 +92,7 @@ class NewShootGoalPlan(Plan):
         #find their robot position pick top or bottom, move in that direction (make sure not to go into the wall)
 
 
-        angle = self.robot.get_rotation_to_point(gx, gy)
-        command = self.rotate_to(angle, fudge=0.2)
-        # Check if we're done rotating
-        if command is not False:
-            return command
-        # Otherwise kick the ball
-        else:
-            self.finished = True
-            self.robot.catcher = "open"
-            return self.kick()
-
-
-
-
-    def blocked(self, target_x, target_y, obstacle_x, obstacle_y, obstacle_width=30):
+    def blocked(self, target_x, target_y, obstacle_x, obstacle_y, obstacle_width=25):
         d_y = self.robot.y - target_y
         d_x = self.robot.x - target_x
         m = d_y/d_x
@@ -74,6 +102,19 @@ class NewShootGoalPlan(Plan):
         if math.fabs(ball_y_at_obstacle - obstacle_y)<obstacle_width:
             return True
         return False
+
+    def shoot(self, gx, gy):
+        angle = self.robot.get_rotation_to_point(gx, gy)
+        command = self.rotate_to(angle, fudge=0.2)
+        # Check if we're done rotating
+        if command is not False:
+            return command
+        # Otherwise kick the ball
+        else:
+            self.finished = True
+            self.robot.catcher = "open"
+            self.robot.target_y = None
+            return self.kick()
 
     def __str__(self):
         return "shoot goal plan"
