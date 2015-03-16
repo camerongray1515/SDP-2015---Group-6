@@ -27,7 +27,6 @@ class Main:
             [string] comm_port              port number for the arduino
             [int] pitch                     0 - main pitch, 1 - secondary pitch
             [string] our_side               the side we're on - 'left' or 'right'
-            *[int] port                     The camera port to take the feed from
         # """
         self.controller = Controller(comm_port)
         if not quick:
@@ -36,9 +35,7 @@ class Main:
 
         # Kick once to ensure we are in the correct position
         self.controller.update(CommandDict.kick())
-
         self.pitch = pitch
-
 
         # Set up the vision system
         self.vision = VisionWrapper(pitch, color, our_side, video_port)
@@ -73,28 +70,17 @@ class Main:
                 # update the vision system with the next frame
                 self.vision.update()
                 pre_options = self.vision.preprocessing.options
-                # Find appropriate action
-                co = self.color
 
+                # Find appropriate action
                 command = self.planner.update(self.vision.model_positions)
-                #DEBUG
-                #print command
                 self.controller.update(command)
 
-                # TODO we should refactor this stuff out of our main loop
-                # Information about the grabbers from the world
-                grabbers = {
-                    'our_defender': self.planner.world.our_defender.catcher_area,
-                    'our_attacker': self.planner.world.our_attacker.catcher_area
-                }
                 # Information about states
-                attacker_state = ""
-                defender_state = ""
-                # print self.vision.model_positions
                 regular_positions = self.vision.regular_positions
                 model_positions = self.vision.model_positions
-                # print self.planner.current_plan.world
+
                 defenderState = (str(self.planner.current_plan), "0")
+
                 # Use 'y', 'b', 'r' to change color.
                 key = waitKey(delay=2) & 0xFF  # Returns 255 if no keypress detected
                 gui_actions = []
