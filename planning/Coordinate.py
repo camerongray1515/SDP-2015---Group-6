@@ -39,7 +39,7 @@ class Vector(Coordinate):
 
     def __init__(self, x, y, angle, velocity):
         super(Vector, self).__init__(x, y)
-        if angle == None or velocity == None or angle < 0 or angle >= (2*pi):
+        if angle == None or velocity == None:
             raise ValueError('Can not initialise attributes of Vector to None')
         else:
             self._angle = angle
@@ -55,14 +55,14 @@ class Vector(Coordinate):
 
     @angle.setter
     def angle(self, new_angle):
-        if new_angle == None or new_angle < 0 or new_angle >= (2*pi):
-            raise ValueError('Angle can not be None, also must be between 0 and 2pi')
+        if new_angle == None:
+            raise ValueError('Angle can not be None')
         self._angle = new_angle
 
     @velocity.setter
     def velocity(self, new_velocity):
-        if new_velocity == None or new_velocity < 0:
-            raise ValueError('Velocity can not be None or negative')
+        if new_velocity == None:
+            raise ValueError('Velocity can not be None')
         self._velocity = new_velocity
 
     def __eq__(self, other):

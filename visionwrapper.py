@@ -78,7 +78,7 @@ class VisionWrapper:
         self.model_positions, self.regular_positions = self.vision.locate(self.frame)
         self.model_positions = self.postprocessing.analyze(self.model_positions)
 
-        #self.model_positions = self.averagePositions(7, self.regular_positions)
+        self.model_positions = self.averagePositions(3, self.model_positions)
 
     def averagePositions(self, frames, positions_in):
         """
@@ -87,25 +87,19 @@ class VisionWrapper:
         :return: averaged positions
         """
 
-        validFrames = self.frameQueue.__len__()
-        if validFrames == 0:
-            validFrames = 1
+        validFrames = self.frameQueue.__len__() + 1
 
         positions_out = deepcopy(positions_in)
         # Check that the incoming positions have legal values
         for obj in positions_out.items():
-            if (obj[0] is "ball"):
-                # If we have no ball data at all, fuck it; abort
-                if obj[1] is None:
-                    return positions_in
-                if (positions_out[obj[0]]["velocity"] is None):
-                    positions_out[obj[0]]["velocity"] = 0
-            if positions_out[obj[0]]["x"] is None:
-                positions_out[obj[0]]["x"] = 0
-            if positions_out[obj[0]]["y"] is None:
-                positions_out[obj[0]]["y"] = 0
-            if positions_out[obj[0]]["angle"] is None:
-                positions_out[obj[0]]["angle"] = 0
+            if (positions_out[obj[0]].velocity is None):
+                positions_out[obj[0]].velocity = 0
+            if positions_out[obj[0]].x is None:
+                positions_out[obj[0]].x = 0
+            if positions_out[obj[0]].y is None:
+                positions_out[obj[0]].y = 0
+            if positions_out[obj[0]].angle is None:
+                positions_out[obj[0]].angle = 0
 
         # Loop over queue
         for positions in self.frameQueue:
@@ -113,16 +107,13 @@ class VisionWrapper:
             isFrameValid = True
             for obj in positions.items():
                 # Check if the current object's positions have legal values
-                if (obj[1]["x"] is None) or (obj[1]["y"] is None) or (obj[1]["angle"] is None) or \
-                    (obj[0] is "ball" and obj[1]["velocity"] is None):
+                if (obj[1].x is None) or (obj[1].y is None) or (obj[1].angle is None) or (obj[1].velocity is None):
                     isFrameValid = False
                 else:
-                    positions_out[obj[0]]["x"] += obj[1]["x"]
-                    positions_out[obj[0]]["y"] += obj[1]["y"]
-                    positions_out[obj[0]]["angle"] += obj[1]["angle"]
-
-                    if obj[0] is "ball":
-                        positions_out[obj[0]]["velocity"] += obj[1]["velocity"]
+                    positions_out[obj[0]].x += obj[1].x
+                    positions_out[obj[0]].y += obj[1].y
+                    positions_out[obj[0]].angle += obj[1].angle
+                    positions_out[obj[0]].velocity += obj[1].velocity
 
             if not isFrameValid and validFrames > 1:
                 #validFrames -= 1
@@ -130,13 +121,10 @@ class VisionWrapper:
 
         # Loop over each object in the position dictionary and average the values
         for obj in positions_out.items():
-            # Does not smooth ball data at the moment, difficult to deal with frames where it is not present
-            if obj is "ball":
-                positions_out[obj[0]]["velocity"] /= validFrames
-
-            positions_out[obj[0]]["x"] /= validFrames
-            positions_out[obj[0]]["y"] /= validFrames
-            positions_out[obj[0]]["angle"] /= validFrames
+            positions_out[obj[0]].velocity /= validFrames
+            positions_out[obj[0]].x /= validFrames
+            positions_out[obj[0]].y /= validFrames
+            positions_out[obj[0]].angle /= validFrames
 
 
         # If frameQueue is already full then pop the top entry off
