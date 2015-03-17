@@ -15,6 +15,7 @@ class Robot(PitchObject):
         self._zone = zone
         self._catcher = 'open'
         self.out_of_bounds_counter = 5
+	self.target_y = 320
 
 
     @property
