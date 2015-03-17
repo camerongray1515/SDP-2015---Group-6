@@ -15,8 +15,7 @@ class Robot(PitchObject):
         self._zone = zone
         self._catcher = 'open'
         self.out_of_bounds_counter = 5
-	self.target_y = 320 # somewhere close to the middle of the goal. May need to be changed
-
+	self.target_y = None
 
     @property
     def zone(self):
