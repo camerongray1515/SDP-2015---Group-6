@@ -23,9 +23,9 @@ class GrabBallPlan(Plan):
         return False
 
     def nextCommand(self):
-        # if self.robot.catcher != "prepared":
-        #     self.robot.catcher = "prepared"
-        #     return CommandDict.prepare()
+        if self.robot.catcher != "prepared":
+            self.robot.catcher = "prepared"
+            return CommandDict.prepare()
 
         # If we need to move to the ball, then get the command and return it
         command = self.go_to(self.world.ball.x, self.world.ball.y, speed=75)
