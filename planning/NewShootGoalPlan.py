@@ -80,18 +80,7 @@ class NewShootGoalPlan(Plan):
 
 
 
-        # for each 5 pixels between start of goal to end of goal 
-        # check if isBLocked
-        # if false, rotate towards the unblocked point and shoot
-
-        # store position we are aiming at, if it becomes blocked pick a new one
-
-        # if we go through the whole loop without finding a spot
-        # move to a different positon and try agian
-
-        #find their robot position pick top or bottom, move in that direction (make sure not to go into the wall)
-
-
+        
     def blocked(self, target_x, target_y, obstacle_x, obstacle_y, obstacle_width=25):
         d_y = self.robot.y - target_y
         d_x = self.robot.x - target_x
