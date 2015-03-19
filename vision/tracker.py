@@ -53,7 +53,7 @@ class Tracker(object):
             frame_mask = cv2.inRange(frame_hsv,
                                      adjustments['min'],
                                      adjustments['max'])
-            
+
             # Find contours
             if adjustments['open'] >= 1:
                 kernel = np.ones((2,2),np.uint8)
@@ -70,10 +70,10 @@ class Tracker(object):
 
             if adjustments['erode'] >= 1:
                 kernel = np.ones((2,2),np.uint8)
-                frame_mask = cv2.dilate(frame_mask,
+                frame_mask = cv2.erode(frame_mask,
                                         kernel,
                                         iterations=adjustments['erode'])
-            
+
             contours, hierarchy = cv2.findContours(
                 frame_mask,
                 cv2.RETR_TREE,
@@ -83,7 +83,7 @@ class Tracker(object):
             return (contours, hierarchy, frame_mask)
         except:
             # bbbbb
-            raise 
+            raise
 
 
     def get_contour_extremes(self, cnt):
@@ -231,29 +231,42 @@ class RobotTracker(Tracker):
         if height > 0 and width > 0:
             mask_frame = frame.copy()
 
+            green_dummy = frame.copy()
             # Fill the dummy frame
             cv2.rectangle(mask_frame,
                           (0, 0),
                           (width, height),
                           (0, 0, 0),
                           -1)
+
+            cv2.rectangle(green_dummy,
+                           (0, 0),
+                           (width, height),
+                           (0, 255, 0),
+                           -1)
+
             cv2.circle(mask_frame,
                        (width / 2, height / 2),
-                       13,
+                       14,
                        (255, 255, 255),
                        -1)
+            cv2.circle(green_dummy,
+                        (width / 2, height / 2),
+                        14,
+                        (0, 0, 0),
+                        -1)
 
             # Mask the original image
             mask_frame = cv2.cvtColor(mask_frame,
                                       cv2.COLOR_BGR2GRAY)
             frame = cv2.bitwise_and(frame,
                                     frame,
-                                    mask=mask_frame)
+                                    mask=mask_frame) + green_dummy
             adjustment = self.calibration['dot']
             contours = self.get_contours(frame,self.crop, adjustment,'dot')[0]
             if contours and len(contours) > 0:
                 # Take the largest contour
-                contour = self.get_smallest_contour(contours)
+                contour = self.get_largest_contour(contours)
                 (x, y), radius = self.get_contour_centre(contour)
                 return Center(x + x_offset, y + y_offset)
 
