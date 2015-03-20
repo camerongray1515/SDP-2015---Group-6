@@ -19,6 +19,7 @@ class Robot(PitchObject):
         self._catcher = 'open'
         self.out_of_bounds_counter = 5
         self.target_y = None
+        self.predicted_vector = self.vector
 
     @property
     def zone(self):
