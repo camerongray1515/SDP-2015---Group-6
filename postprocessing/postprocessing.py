@@ -1,7 +1,8 @@
-from planning.Coordinate import Vector
 from copy import deepcopy
 from math import atan2, pi, hypot
-from planning.Coordinate import Vector
+
+from worldstate.Coordinate import Vector
+
 
 class Postprocessing(object):
 

@@ -1,5 +1,4 @@
-
-from World import  World
+from worldstate.World import World
 from IdlePlan import IdlePlan
 from GrabBallPlan import GrabBallPlan
 from NewShootGoalPlan import NewShootGoalPlan

@@ -1,5 +1,7 @@
 import math
-from planning.Coordinate import Vector
+
+from worldstate.Coordinate import Vector
+
 
 class Simulator(object):
     FPS = 120 # Simulator frames per second to aim for

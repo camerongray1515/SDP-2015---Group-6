@@ -1,6 +1,8 @@
-from PitchObject import PitchObject
 from Polygon.cPolygon import Polygon
+
+from worldstate.PitchObject import PitchObject
 from planning.utilities import get_croppings
+
 
 BALL_WIDTH = 5
 BALL_LENGTH = 5

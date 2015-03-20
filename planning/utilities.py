@@ -1,7 +1,9 @@
-from math import tan, pi, hypot, log
-from Robot import Robot
+from math import tan, pi, hypot
 import json
 import os
+
+from worldstate import Robot
+
 
 DISTANCE_MATCH_THRESHOLD = 15
 ANGLE_MATCH_THRESHOLD = pi/10

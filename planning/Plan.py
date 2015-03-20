@@ -1,10 +1,9 @@
-
 from abc import ABCMeta, abstractmethod
-from World import World
-from Utility.CommandDict import CommandDict
 import math
 from math import pi, fabs
-import threading
+
+from Utility.CommandDict import CommandDict
+
 
 # Constants for the rotation/distance movement fudge factors
 ROTATION_ERROR = pi/12

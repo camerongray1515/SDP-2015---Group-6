@@ -1,6 +1,9 @@
-from PitchObject import PitchObject
+from math import pi, hypot, atan2
+
 from Polygon.cPolygon import Polygon
-from math import pi, hypot, atan2, sin, cos
+
+from worldstate.PitchObject import PitchObject
+
 
 # Width measures the front and back of an object
 # Length measures along the sides of an object
@@ -15,7 +18,7 @@ class Robot(PitchObject):
         self._zone = zone
         self._catcher = 'open'
         self.out_of_bounds_counter = 5
-	self.target_y = None
+        self.target_y = None
 
     @property
     def zone(self):

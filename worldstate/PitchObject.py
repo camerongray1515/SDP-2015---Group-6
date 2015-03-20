@@ -1,5 +1,7 @@
-from Coordinate import Vector
 from Polygon.cPolygon import Polygon
+
+from worldstate.Coordinate import Vector
+
 
 class PitchObject(object):
     '''

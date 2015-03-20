@@ -1,6 +1,7 @@
-from math import cos, sin, hypot, pi, atan2
-from planning.Robot import Robot
-from planning.OtherPitchObjects import Pitch, Goal, Ball
+from math import pi
+
+from worldstate.Robot import Robot
+from worldstate.OtherPitchObjects import Pitch, Goal, Ball
 
 
 class World(object):
