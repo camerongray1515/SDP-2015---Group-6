@@ -32,11 +32,9 @@ class MatchY(Plan):
         zone = self.world.pitch.zones[self.robot.zone]
         #return self.go_to_asym(zone.center()[0], ball_y)
 
-
         robot_y = self.robot.y
         robot_angle = self.robot.angle
         predicted_x = (ball_y-robot_y) * math.atan(robot_angle)
-        print predicted_x
         goto_x = self.robot.x + predicted_x
         distance = self.robot.get_euclidean_distance_to_point(goto_x, robot_y)
 

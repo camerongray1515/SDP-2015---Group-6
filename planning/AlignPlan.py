@@ -46,18 +46,19 @@ class AlignPlan(Plan):
             if command:
                 return command
 
+        r1 = math.fabs(current_angle - math.pi/2) 
+        r2 = math.fabs(current_angle - 3 * math.pi/2) 
 
-        # Turn either left or right, depending on which requires the least turning
-        if current_angle < math.pi:
-            if current_angle < math.pi/2:
-                return CommandDict(57, "Left", "None")
-            else:
-                return CommandDict(57, "Right", "None")
-        else: 
-            if current_angle < 3 * math.pi /2:
-                return CommandDict(57, "Left", "None")
-            else: 
-                return CommandDict(57, "Right", "None")
+        if r1 < r2:
+            command = self.rotate_to(current_angle - math.pi/2)
+        else:
+            command = self.rotate_to(3*math.pi/2 - current_angle)
+        if command:
+            return command
+        else:
+            return CommandDict.stop()
+
+       
 
     def __str__(self):
         return "align plan"

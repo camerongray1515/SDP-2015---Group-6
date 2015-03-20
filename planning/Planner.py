@@ -6,6 +6,7 @@ from Utility.CommandDict import CommandDict
 from AlignPlan import AlignPlan
 from MatchY import MatchY
 from PassPlan import PassPlan
+from ReturnToCentrePlan import ReturnToCentrePlan
 
 class Planner(object):
     """Finite State Machine-Based planner. Generates commands for the robot based on plan classes derived from Plan"""
@@ -25,10 +26,9 @@ class Planner(object):
 
         # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
         p = (lambda plan: plan(self.world, self.robot))
-        if (attacker):
-            self.plans = [p(NewShootGoalPlan), p(GrabBallPlan), p(AlignPlan), p(MatchY), p(IdlePlan)]
-        else:
-            self.plans = [p(PassPlan), p(GrabBallPlan), p(IdlePlan)]
+        
+        self.plans = [p(ReturnToCentrePlan), p(NewShootGoalPlan), p(GrabBallPlan), p(AlignPlan), p(MatchY), p(IdlePlan)]
+        
 
         self.current_plan = self.plans[0]
 
