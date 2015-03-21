@@ -1,6 +1,8 @@
 from Plan import Plan
 from Utility.CommandDict import CommandDict
 
+
+DISTANCE_ERROR = 43
 class GrabBallPlan(Plan):
     """Plan for the robot navigating to and grabbing the ball."""
 
@@ -28,16 +30,24 @@ class GrabBallPlan(Plan):
             return CommandDict.prepare()
 
         # If we need to move to the ball, then get the command and return it
-        command = self.go_to(self.world.ball.x, self.world.ball.y, speed=75)
-        if not command == False:
-            return command
+        # command = self.go_to(self.world.ball.x, self.world.ball.y, speed=75)
 
-        # Otherwise we are finished with this plan
-        else:
+        command = self.go_to_asym(self.world.ball.x, self.world.ball.y, forward=True, min_speed=60)
+
+        distance = self.robot.get_euclidean_distance_to_point(self.world.ball.x, self.world.ball.y)
+
+
+        # this is a useful function that tells you how rotation aligns with wanted rotation
+        dot = self.robot.get_dot_to_target(self.world.ball.x, self.world.ball.y)
+
+
+        # if very close to ball
+        if distance < DISTANCE_ERROR and dot > 0.96:
             self.finished = True
             self.robot.catcher = "closed"
             return CommandDict.catch()
 
+        return command
 
     def __str__(self):
         return "grab ball plan"

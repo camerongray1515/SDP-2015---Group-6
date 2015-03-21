@@ -134,7 +134,6 @@ class VisionWrapper:
         # Add our new positions to the end
         self.frameQueue.append(positions_in)
 
-        print validFrames
         return positions_out
 
 

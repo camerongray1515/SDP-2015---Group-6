@@ -3,8 +3,8 @@ from math import pi, hypot, atan2
 from Polygon.cPolygon import Polygon
 
 from worldstate.PitchObject import PitchObject
-
-
+import numpy as np
+import math
 # Width measures the front and back of an object
 # Length measures along the sides of an object
 ROBOT_WIDTH = 30
@@ -98,6 +98,24 @@ class Robot(PitchObject):
         delta_y = y - self.y
         displacement = hypot(delta_x, delta_y)
         return displacement
+
+    @staticmethod
+    def angle_to_vector(angle):
+        x = math.cos(angle)
+        y = math.sin(angle)
+        return np.array([x,y])
+
+
+    def get_dot_to_target(self, x, y):
+        rob_pos = np.array([self.x, self.y])
+        target_pos = np.array([x, y])
+        vec = target_pos - rob_pos
+        av = vec / np.linalg.norm(vec)
+
+        rv = Robot.angle_to_vector(self.angle)
+        return np.dot(av, rv)
+
+
 
     def get_direction_to_point(self, x, y):
         '''

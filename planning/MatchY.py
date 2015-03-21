@@ -21,49 +21,23 @@ class MatchY(Plan):
             - Robot must be aligned (as per the AlignPlan)
         """
 
-        if (self.world.ball is not None) and \
-                (not self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y) or self.world.ball.velocity > 3) and \
-                (self.isAligned(self.robot)):
-            return not self.isMatched(self.robot, self.world.ball)
-        return False
+        ball = self.world.ball is not None
+        within_bounds = self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y)
+
+        is_matched = self.isMatched(self.robot, self.world.ball)
+
+        return ball and not within_bounds and not is_matched
+
 
     def nextCommand(self):
         ball_y = self.world.ball.y
         zone = self.world.pitch.zones[self.robot.zone]
-        #return self.go_to_asym(zone.center()[0], ball_y)
 
 
-        robot_y = self.robot.y
-        robot_angle = self.robot.angle
-        predicted_x = (ball_y-robot_y) * math.atan(robot_angle)
-        print predicted_x
-        goto_x = self.robot.x + predicted_x
-        distance = self.robot.get_euclidean_distance_to_point(goto_x, robot_y)
+        zone = self.world.pitch.zones[self.robot.zone]
+        command = self.go_to_asym(zone.center()[0], ball_y)
+        return command
 
-        # check if the x,y coordinate we would end up in if we matched y is within bounds
-        # if it's outside use go_to to match the y position and a central x position
-        if (not self.world.pitch.is_within_bounds(self.robot,goto_x, ball_y)):
-            zone = self.world.pitch.zones[self.robot.zone]
-            command = self.go_to(zone.center()[0], ball_y)
-            if command:
-                return command
-            else:
-                return CommandDict.stop()
-        if robot_angle <= math.pi:
-            if ball_y > robot_y:
-                command = self.go_forward(distance)
-                # Pass the distance to go forward and backward so it slows down closer to the target
-            else:
-                command = self.go_backward(distance)
-        else:
-            if ball_y < robot_y:
-                command = self.go_forward(distance)
-            else:
-                command = self.go_backward(distance)
-        if command:
-            return command
-        else:
-            return CommandDict.stop()
 
     def isMatched(self, robot, ball):
         return math.fabs(robot.y - ball.y) < ERROR 

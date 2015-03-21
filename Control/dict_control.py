@@ -33,11 +33,12 @@ class Controller():
 
 
         if (direction == "Forward"):
-            self.robot_api.go_forward(speed)
             log_time('dict_control', 'time go forward called')
             if 'speedr' in command:
                 speed_right = command["speedr"]
                 self.robot_api.go_forward_asym(speed, speed_right)
+            else:
+                self.robot_api.go_forward(speed)
 
         elif (direction == "Backward"):
             self.robot_api.go_backward(speed)

@@ -36,7 +36,7 @@ def log_time(group, name = 'time'):
 
 
 def draw():
-    clear = "\n" * 100
+    clear = "\n" * 50
     print clear
     print(special_str('NOTE: ', bcolors.BOLD) + 'vision window has to be active window in order for key input to work')
 

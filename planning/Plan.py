@@ -1,6 +1,9 @@
 from abc import ABCMeta, abstractmethod
 import math
 from math import pi, fabs
+import consol
+import numpy as np
+from random import random
 
 from Utility.CommandDict import CommandDict
 
@@ -55,36 +58,138 @@ class Plan(object):
     def isAligned(self, robot):
         return math.fabs(robot.angle - math.pi/2) < ROTATION_ERROR or math.fabs(robot.angle - 3 * math.pi/2) < ROTATION_ERROR
 
-    def go_to_asym(self, x, y, speed = 100, coef = 1):
+     # rotate to a specific angle with angle dependent speed (auto calibrating)
+    # angle input is absolute angle not relative like in rotate_to
+
+
+
+    def rotate_fade(self, angle, fudge=1):
+        """
+        Generates commands for the robot to rotate to a specific angle
+        :param angle: Radians to turn to
+        :param fudge: optional multiplier of the rotation error - e.g use 0.5 for double precision
+        :return: False if :angle: is within ROTATION_ERROR otherwise returns a CommandDict with the next command
+        """
+
+        min_rot_speed = 50
+        max_rot_speed = 80
+
+        av = Plan.angle_to_vector(angle)
+        rv = Plan.angle_to_vector(self.robot.angle)
+
+
+        dot = np.dot(av, rv)
+        cross = np.cross(rv, av)
+
+        consol.log('dot', dot, 'Plan')
+        consol.log('cross', cross, 'Plan')
+
+        speed = np.interp(dot, [0.0, 1.0], [max_rot_speed, min_rot_speed])
+
+        direction = "Right" if cross < 0 else "Left"
+        kick = "None"
+        return CommandDict(speed, direction, kick)
+
+
+    # use forward true when you want to pick up ball or so (kicker comes forward)
+    def go_to_asym(self, x, y, forward = False, max_speed = 100, min_speed = 70):
+
+
+        # slow down at pi rotation
+        #slow_down = 50
+
+        fade_distance = 100
+        fade_distance_min = 20
+
+
+
         distance = self.robot.get_euclidean_distance_to_point(x, y)
+
+
+        angle = self.robot.get_rotation_to_point(x, y)
+
+
+        consol.log('distance', distance, 'Plan')
+
+        rob_pos = np.array([self.robot.x, self.robot.y])
+        target_pos = np.array([x, y])
+        vec = target_pos - rob_pos
+        av = vec / np.linalg.norm(vec)
+
+        rv = Plan.angle_to_vector(self.robot.angle)
+
+        consol.log('rotating to(vec)', av, 'Plan')
+        consol.log('robot rotation(vec)', rv, 'Plan')
+
+
+        dot = self.robot.get_dot_to_target(x, y)
+
+        # if forward is not enforced and it is closer to go backwards
+
+
+        dir = 1.0
+
+        if not forward and dot < 0:
+            rv *= -1.0
+            dot = np.dot(av, rv)
+            dir = -1.0
+
+
+
+        cross = np.cross(rv, av)
+
+
+        avr_speed = np.interp(distance, [fade_distance_min, fade_distance], [min_speed, max_speed]) * dir
+
+        consol.log('avr speed', avr_speed, 'Plan')
+
+
+
+        scale_speed_far = np.interp(dot, [0.0, 1.0], [-1.0, 0.9])
+
+        scale_speed_near = np.interp(dot, [0.0, 0.9, 1.0], [-1.0, -0.8, 0.9])
+
+        scale_speed = np.interp(distance, [fade_distance_min, fade_distance], [ scale_speed_near, scale_speed_far])
+
+        consol.log('scale speed', scale_speed, 'Plan')
+
         delta_angle = self.robot.get_rotation_to_point(x, y)
-
-        c_asy = fabs(coef * delta_angle)
-
-        cd = {}
+        consol.log('delta angle', delta_angle, 'Plan')
 
 
-        speed = speed if distance > 2 * DISTANCE_ERROR else 40
+        consol.log('dot', dot, 'Plan')
+        consol.log('cross', cross, 'Plan')
+
+
+
+        sl = avr_speed
+        sr = avr_speed
+
+        if cross * dir > 0:
+            sl *= scale_speed
+        else:
+            sr *= scale_speed
+
+
+
         direction = "Forward"
         kick = "None"
-
-
-        if delta_angle > 0:
-            sr = speed
-            sl = speed * c_asy
-        else:
-            sl = speed
-            sr = speed * c_asy
+        cd = {}
 
         cd["speed"] = sl
         cd["direction"] = direction
         cd["kick"] = kick
-        cd["speed_right"] = sr
+        cd["speedr"] = sr
 
         return cd
 
+    @staticmethod
+    def angle_to_vector(angle):
+        x = math.cos(angle)
+        y = math.sin(angle)
+        return np.array([x,y])
 
-    
+
     def go_to(self, x, y, speed=100, distance_fudge=1):
         """
         Generates commands for the robot to navigate to a point
@@ -118,7 +223,7 @@ class Plan(object):
         speed = 50 if angle > 3 * ROTATION_ERROR else 40
         direction = "Right" if angle < 0 else "Left"
         kick = "None"
-        return CommandDict(speed, direction, kick)
+        return CommandDict(91, direction, kick)
 
     def go_backward(self, distance, speed=100):
         """

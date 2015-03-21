@@ -95,8 +95,6 @@ class GUI(object):
         robot = self.launch.controller.robot_api
 
         if key == ord('c'):
-            print('toggle serial')
-
             robot.enabled = not robot.enabled
 
         if key == 27:

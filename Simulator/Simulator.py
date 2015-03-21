@@ -136,7 +136,6 @@ class Simulator(object):
         #bounce if there is contact with a robot
         for robot in [self.LEFTDEF, self.LEFTATK, self.RIGHTATK, self.RIGHTDEF]:
             if self.in_collision_range(robot):
-                print "BOUNCE!"
                 self.BALL['angle'] = self.BALL['angle'] + math.pi
 
         while self. BALL['angle'] >= 2 * math.pi:

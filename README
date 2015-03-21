@@ -41,4 +41,11 @@ If using 32 bit python (not on DICE), the SHOWLABELS flag can be changed to True
 
 Other simulator variables can be changed in Simulator/Simulator.py
 =======
+
+Example how to launch program
+
 python launch.py -q 0 right blue /dev/ttyACM0 attack
+
+python launch.py -q 0 left blue /dev/ttyACM0 attack
+
+python launch.py -q 0 left blue /dev/ttyACM0 attack

@@ -18,7 +18,7 @@ class RobotAPI(object):
     def enabled(self):
         return self._enabled
 
-    @enabled.setter
+    @enabled.setter 
     def enabled(self, e):
         if not e:
             self.stop()
@@ -95,7 +95,7 @@ class RobotAPI(object):
             try:
                 self.serial = Serial(device_path, baud_rate, timeout=0.1)
             except:
-                print "Error in initalizing serial connection. Is the path correct?"
+                log("Error in initalizing serial connection. Is the path correct?", False, 'Comms')
                 #alias the _write_serial function so we don't throw errors
                 self._write_serial = self._write_serial_debug
 
@@ -104,13 +104,60 @@ class RobotAPI(object):
 
     #debug/error function if we're not using serial
     def _write_serial_debug(self, data):
-        print data
+        log("Debug data", data, "Comms")
+        pass
+
 
 
 
     def _write_serial(self, data):
         if not self.enabled:
            return
+
+
+        ack = False
+
+        num_attempts = 0
+        # Test code that will drop the majority of commands to test fault tollerance
+
+        data_bytes = str.encode(data)
+        data_bytes += '\r'
+        self.serial.write(data_bytes)
+
+        log("Sent command", format(data), "Comms")
+        log_time('Comms')
+
+        return
+
+        while not ack:
+            data_bytes = str.encode(data)
+            data_bytes += '\r'
+            self.serial.write(data_bytes)
+            num_attempts += 1
+
+            log("Sent command", format(data), "Comms")
+            log_time('Comms')
+
+            try:
+                ack_str = self.serial.read(4)
+                log("Ack string", ack_str, "Comms")
+                if ack_str == "ack6":
+                    ack = True
+                else:
+                    ack = False
+            except SerialException as ex:
+                ack = False
+
+            log("Ack", ack, "Comms")
+            
+            if num_attempts >= 40:
+                raise Exception("Too many attempts to send command")
+    '''
+
+
+    def _write_serial(self, data):
+        if not self.enabled:
+            return
 
 
         ack = False
@@ -130,9 +177,13 @@ class RobotAPI(object):
                 ack = self.serial.read()
             except SerialException as ex:
                 ack = False
-            
-            if num_attempts >= 100:
+
+            if num_attempts >= 40:
+                print('data' + str(data))
                 raise Exception("Too many attempts to send command")
+
+
+    '''
 
 
     def go_forward(self, speed=100):
@@ -141,8 +192,10 @@ class RobotAPI(object):
 
 
     def go_forward_asym(self, speed_left=100, speed_right=100):
-        self.set_motor("left", speed)
-        self.set_motor("right", speed)
+        log('left sp aym', speed_left, "Comms")
+        log('right sp aym', speed_right, "Comms")
+        self.set_motor("left", speed_left)
+        self.set_motor("right", speed_right)
 
 
     def go_backward(self, speed=100):
@@ -194,18 +247,30 @@ class RobotAPI(object):
         self.set_motor("left", left, False)
         self.set_motor("right", right, False)
 
-    def set_motor(self, motor, speed, scale=True, delay=0):
+    def set_motor(self, motor, speed, scale=False, delay=0):
         # If the motor is already running at this speed, do not send the command
         # this creates bugs when enabling comms so i commented it out
         #if speed == self.current_motor_speeds[motor]:
          #   return
+
         
         if scale:
             scaled_speed = self.get_scaled_speed(motor, speed)
         else:
             scaled_speed = speed
 
-        self._write_serial("set {0} {1} {2}".format(self.motorPins[motor], scaled_speed, delay))
+
+        if motor == 'left':
+            log("Left speed", speed, "Comms")
+
+        if motor == 'right':
+            log("Right speed", speed, "Comms")
+
+
+        # floats are to large to transfer over serial as sting
+        int_val = int(scaled_speed)
+
+        self._write_serial("set {0} {1} {2}".format(self.motorPins[motor], int_val, delay))
         self.current_motor_speeds[motor] = speed
 
     def get_scaled_speed(self, motor, speed):
@@ -254,3 +319,8 @@ class RobotAPI(object):
         scaling_value = m * speed + c
 
         return int(round(speed * scaling_value))
+
+if __name__ == "__main__":
+    r = RobotAPI("/dev/ttyACM0", 115200)
+    r.enabled = True
+    r.prepare_catch()

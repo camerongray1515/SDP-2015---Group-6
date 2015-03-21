@@ -2,6 +2,7 @@ from Plan import Plan
 import math
 from Utility.CommandDict import CommandDict
 import pdb
+import consol
 
 class ShootGoalPlan(Plan):
     """Plan for the robot shooting the ball."""
@@ -32,6 +33,8 @@ class ShootGoalPlan(Plan):
         (gx, gy) = (self.world.their_goal.get_polygon()[0][0], self.world.pitch.height / 2)
 
         isBlocked = self.blocked(gx, gy, their_defender.x, their_defender.y)
+
+        consol.log('Blocked', isBlocked, 'Shoot Goal Plan')
         if not isBlocked:
             angle = self.robot.get_rotation_to_point(gx, gy)
             command = self.rotate_to(angle, fudge=0.2)
@@ -44,7 +47,7 @@ class ShootGoalPlan(Plan):
                 self.robot.catcher = "open"
                 return self.kick()
 
-        print "BLOCKED!"
+
         close_to_goal = False
         center = self.world.pitch.zones[self.world.their_defender.zone].center()
         if their_defender.x < 250:

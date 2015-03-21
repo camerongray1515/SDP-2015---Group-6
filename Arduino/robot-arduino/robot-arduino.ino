@@ -110,6 +110,7 @@ void setup() {
   scomm.addCommand("prepare_catch", prepare_catch); // args: []
   scomm.addCommand("kick", kick); // args: [speed]
   scomm.addCommand("catch", catch_ball); // args: [speed]
+  scomm.addCommand("ping6", ping);
   scomm.addCommand("led_on", command_led_on); // args: []
   scomm.addCommand("led_off", command_led_off); // args: []
   scomm.addCommand("blink_n_times", command_blink_n_times); // args: [n]
@@ -128,7 +129,7 @@ void loop() {
 
 // Command callback functions
 void store_motor_action() {
-    Serial.println("ack");
+    Serial.println("ack6");
     char *motorarg = scomm.next();
     char *speedarg = scomm.next();
     char *delayarg = scomm.next();
@@ -141,7 +142,7 @@ void store_motor_action() {
 }
 
 void prepare_catch() {
-  Serial.println("ack");
+  Serial.println("ack6");
   // Start the kicker immediately, after 1 second stop it and then reverse it at a reduced speed then stop it 200ms after that
   event_loop::add_command_head(kicker, 100, millis());
   event_loop::add_command_head(kicker, 0, millis()+1000);
@@ -150,7 +151,7 @@ void prepare_catch() {
 }
 
 void kick() {
-  Serial.println("ack");
+  Serial.println("ack6");
   char *speedarg = scomm.next();
   
   int speed = atoi(speedarg);
@@ -158,8 +159,13 @@ void kick() {
   event_loop::add_command_head(kicker, 0, millis()+1000);
 }
 
+
+void ping(){
+  Serial.println("ack6");
+}
+
 void catch_ball() {
-  Serial.println("ack");
+  Serial.println("ack6");
   char *speedarg = scomm.next();
   
   int speed = atoi(speedarg);

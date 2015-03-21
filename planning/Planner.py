@@ -3,7 +3,6 @@ from IdlePlan import IdlePlan
 from GrabBallPlan import GrabBallPlan
 from NewShootGoalPlan import NewShootGoalPlan
 from Utility.CommandDict import CommandDict
-from AlignPlan import AlignPlan
 from MatchY import MatchY
 from PassPlan import PassPlan
 
@@ -26,7 +25,8 @@ class Planner(object):
         # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
         p = (lambda plan: plan(self.world, self.robot))
         if (attacker):
-            self.plans = [p(NewShootGoalPlan), p(GrabBallPlan), p(AlignPlan), p(MatchY), p(IdlePlan)]
+            #self.plans = [p(NewShootGoalPlan), p(GrabBallPlan), p(AlignPlan), p(MatchY), p(IdlePlan)]
+            self.plans = [p(NewShootGoalPlan), p(GrabBallPlan), p(MatchY), p(IdlePlan)]
         else:
             self.plans = [p(PassPlan), p(GrabBallPlan), p(IdlePlan)]
 

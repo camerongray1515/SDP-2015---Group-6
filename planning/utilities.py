@@ -1,6 +1,7 @@
 from math import tan, pi, hypot
 import json
 import os
+import consol
 
 from worldstate import Robot
 
@@ -23,9 +24,10 @@ def is_shot_blocked(world, our_robot, their_robot):
         world, their_robot.x, our_robot, full_width=True, bounce=True)
     if predicted_y is None:
         return True
-    print '##########', predicted_y, their_robot.y, their_robot.length
-    print abs(predicted_y - their_robot.y) < their_robot.length
-    return abs(predicted_y - their_robot.y) < their_robot.length
+    consol.log('##########', (predicted_y, their_robot.y, their_robot.length), 'Utils')
+    b = abs(predicted_y - their_robot.y) < their_robot.length
+    consol.log('is blocked', b, 'Utils')
+    return b
 
 
 def is_attacker_shot_blocked(world, our_attacker, their_defender):
