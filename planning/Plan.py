@@ -220,7 +220,7 @@ class Plan(object):
         """
         if abs(angle) < fudge * ROTATION_ERROR:
             return False
-        speed = 50 if angle > 3 * ROTATION_ERROR else 40
+        speed = 50 if angle > 3 * ROTATION_ERROR else 45
         direction = "Right" if angle < 0 else "Left"
         kick = "None"
         return CommandDict(91, direction, kick)
