@@ -82,7 +82,7 @@ class Robot(PitchObject):
         if displacement == 0:
             theta = 0
         else:
-            theta = atan2(delta_y, delta_x) - self.angle # Used to be atan2(sin(self.angle), cos(self.angle)) instead of self.angle. Keeping note in case it does something magic.
+            theta = atan2(delta_y, delta_x) - self.angle 
             if theta > pi:
                 theta -= 2*pi
             elif theta < -pi:
@@ -130,6 +130,9 @@ class Robot(PitchObject):
         robot_poly = self.get_polygon()
         target_poly = target.get_polygon()
         return Polygon(robot_poly[0], robot_poly[1], target_poly[0], target_poly[1])
+
+    
+
 
     def __repr__(self):
         return ('zone: %s\nx: %s\ny: %s\nangle: %s\nvelocity: %s\ndimensions: %s\n' %

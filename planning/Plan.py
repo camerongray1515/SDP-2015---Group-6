@@ -84,7 +84,7 @@ class Plan(object):
 
 
 
-    def rotate_fade(self, angle):
+    def rotate_fade(self, angle, min_speed = 50, max_speed = 80):
         """
         Generates commands for the robot to rotate to a specific angle
         :param angle: Radians to turn to
@@ -92,8 +92,8 @@ class Plan(object):
         :return: False if :angle: is within ROTATION_ERROR otherwise returns a CommandDict with the next command
         """
 
-        min_rot_speed = 50
-        max_rot_speed = 80
+        min_rot_speed = min_speed
+        max_rot_speed = max_speed
 
         av = Plan.angle_to_vector(angle)
         rv = Plan.angle_to_vector(self.robot.angle)
@@ -134,8 +134,8 @@ class Plan(object):
 
 
         distance = self.robot.get_euclidean_distance_to_point(x, y)
-        dist_edge = self.get_distance_from_edges()
-        distance = min(distance,dist_edge)
+        #dist_edge = self.get_distance_from_edges()
+        #distance = min(distance,dist_edge)
 
 
         angle = self.robot.get_rotation_to_point(x, y)

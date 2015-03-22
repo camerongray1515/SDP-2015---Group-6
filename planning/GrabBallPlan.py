@@ -32,7 +32,7 @@ class GrabBallPlan(Plan):
         # If we need to move to the ball, then get the command and return it
         # command = self.go_to(self.world.ball.x, self.world.ball.y, speed=75)
 
-        command = self.go_to_asym(self.world.ball.x, self.world.ball.y, forward=True, min_speed=60)
+        command = self.go_to_asym(self.world.ball.x, self.world.ball.y, forward=True, max_speed = 70, min_speed=50)
 
         distance = self.robot.get_euclidean_distance_to_point(self.world.ball.x, self.world.ball.y)
 

@@ -35,7 +35,7 @@ class MatchY(Plan):
 
 
         zone = self.world.pitch.zones[self.robot.zone]
-        command = self.go_to_asym(zone.center()[0], ball_y)
+        command = self.go_to_asym(zone.center()[0], ball_y, max_speed=100, min_speed=50)
         return command
 
 
