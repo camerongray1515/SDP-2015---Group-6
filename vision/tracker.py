@@ -42,6 +42,13 @@ class Tracker(object):
                 # plt.imshow(frame)
                 # plt.show()
 
+            hp = adjustments.get('highpass')
+            hp = hp if hp is not None else 0
+            if(hp >= 1):
+                lap = cv2.Laplacian(frame, ddepth=cv2.CV_16S, ksize=hp*5)
+                lap = cv2.convertScaleAbs( lap );
+                frame = lap
+
             if adjustments['contrast'] >= 1.0:
                 frame = cv2.add(frame,
                                 np.array([float(adjustments['contrast'])]))

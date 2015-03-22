@@ -13,7 +13,8 @@ CONTROL = ["Lower threshold for hue",
            "Gaussian blur",
            "Open",
            "Dilation",
-           "Erode"]
+           "Erode",
+           'High pass']
 
 MAXBAR = {"Lower threshold for hue":360,
           "Upper threshold for hue":360,
@@ -25,7 +26,8 @@ MAXBAR = {"Lower threshold for hue":360,
           "Gaussian blur":100,
           "Open": 100,
           "Dilation": 100,
-          "Erode":100
+          "Erode":100,
+          'High pass':1
         }
 
 INDEX = {"Lower threshold for hue":0,
@@ -102,6 +104,11 @@ class CalibrationGUI(object):
         createTrackbar('Erode',
                        self.calibration[self.color]['erode'])
 
+
+        hp = self.calibration[self.color].get('highpass')
+        hp = hp if hp is not None else 0
+        createTrackbar('High pass', hp)
+
     def change_color(self, color):
         """
         Changes the color mask within the GUI
@@ -114,7 +121,7 @@ class CalibrationGUI(object):
 
 
     def show(self, frame, key=None):
-        self.frame = frame
+
 
         if key != 255:
             try:
@@ -142,6 +149,7 @@ class CalibrationGUI(object):
         self.calibration[self.color]['open'] = values['Open']
         self.calibration[self.color]['close'] = values['Dilation']
         self.calibration[self.color]['erode'] = values['Erode']
+        self.calibration[self.color]['highpass'] = values['High pass']
 
         mask = self.get_mask(frame)
         cv2.imshow(self.maskWindowName, mask)
@@ -172,15 +180,28 @@ class CalibrationGUI(object):
         """
         # plt.imshow(frame)
         # plt.show()
+
+        # high pass filter
+
+
+
         blur = self.calibration[self.color]['blur']
         if blur >= 1:
             if blur % 2 == 0:
                 blur += 1
             frame = cv2.GaussianBlur(frame, (blur, blur), 0)
 
+        hp = self.calibration[self.color]['highpass']
+        if(hp >= 1):
+            lap = cv2.Laplacian(frame, ddepth=cv2.CV_16S, ksize=hp*5)
+            lap = cv2.convertScaleAbs( lap );
+            frame = lap
+
         contrast = self.calibration[self.color]['contrast']
         if contrast >= 1.0:
             frame = cv2.add(frame, np.array([contrast]))
+
+        self.frame = frame
 
         frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -210,7 +231,13 @@ class CalibrationGUI(object):
         #return frame
         #return frame_mask
 
-        img1_bg = cv2.bitwise_and(frame,frame,mask = frame_mask)
+
+
+        out = frame
+
+        mask_inv = cv2.bitwise_not(frame_mask)
+
+        img1_bg = cv2.bitwise_and(out,out,mask = mask_inv)
 
         return img1_bg
 
@@ -234,7 +261,7 @@ class CalibrationGUI(object):
             hsv = frame_hsv[y][x]
             consol.log('pixel color (hsv)', hsv, 'Find HSV')
 
-            hsv_delta = np.array([30, 50, 50])
+            hsv_delta = np.array([15, 50, 50])
 
 
             hsv_min = hsv - hsv_delta
