@@ -36,6 +36,7 @@ class GUI(object):
 
     def __init__(self, calibration, pitch, launch):
         self.zones = None
+        self.consol_enabled = True
         # print calibration
         self.calibration_gui = CalibrationGUI(calibration)
         # self.arduino = arduino
@@ -77,6 +78,8 @@ class GUI(object):
     def cast_binary(self, x):
         return x == 1
 
+
+
     def draw(self, frame, model_positions, actions, regular_positions, fps,
              dState, aState, a_action, d_action, grabbers, our_color, our_side,
              key=None, preprocess=None):
@@ -97,12 +100,17 @@ class GUI(object):
         if key == ord('c'):
             robot.enabled = not robot.enabled
 
+
+        if key == ord('k'):
+            self.consol_enabled = not self.consol_enabled
+
         if key == 27:
             robot.enabled = False
 
-
+        consol.log('Press k to disable/enable consol', True)
         #draw console
-        consol.draw()
+        if(self.consol_enabled):
+            consol.draw()
 
 
 

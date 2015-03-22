@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import consol
 
 CONTROL = ["Lower threshold for hue",
            "Upper threshold for hue",
@@ -51,16 +52,23 @@ class CalibrationGUI(object):
     blur threshold trackbars
     """
     def __init__(self, calibration):
+        consol.log('use y r b d p and click on objects in video to calibrate', None)
         self.color = 'plate'
         # self.pre_options = pre_options
         self.calibration = calibration
         self.maskWindowName = "Mask " + self.color
+        self.frame = None
 
         self.setWindow()
 
     def setWindow(self):
 
+
+
         cv2.namedWindow(self.maskWindowName)
+
+        cv2.setMouseCallback(self.maskWindowName, self.mouse_call)
+
         # print self.calibration
         createTrackbar = lambda setting, \
                                 value: \
@@ -69,6 +77,7 @@ class CalibrationGUI(object):
                                         self.maskWindowName,
                                         int(value),
                                         MAXBAR[setting], nothing)
+
         createTrackbar('Lower threshold for hue',
                        self.calibration[self.color]['min'][0])
         createTrackbar('Upper threshold for hue',
@@ -83,6 +92,7 @@ class CalibrationGUI(object):
                        self.calibration[self.color]['max'][2])
         createTrackbar('Contrast',
                        self.calibration[self.color]['contrast'])
+
         createTrackbar('Gaussian blur',
                        self.calibration[self.color]['blur'])
         createTrackbar('Open',
@@ -101,7 +111,10 @@ class CalibrationGUI(object):
         self.maskWindowName = "Mask " + self.color
         self.setWindow()
 
+
+
     def show(self, frame, key=None):
+        self.frame = frame
 
         if key != 255:
             try:
@@ -174,6 +187,7 @@ class CalibrationGUI(object):
         min_color = self.calibration[self.color]['min']
         max_color = self.calibration[self.color]['max']
         frame_mask = cv2.inRange(frame_hsv, min_color, max_color)
+
         if self.calibration[self.color]['open'] >= 1:
                 kernel = np.ones((2,2 ),np.uint8)
                 frame_mask = cv2.morphologyEx(frame_mask,
@@ -192,4 +206,73 @@ class CalibrationGUI(object):
                                         iterations=self.calibration[self.color]['erode'])
 
 
-        return frame_mask
+        #frame_mask = cv2.inRange(frame_hsv, 0.0,0.0)
+        #return frame
+        #return frame_mask
+
+        img1_bg = cv2.bitwise_and(frame,frame,mask = frame_mask)
+
+        return img1_bg
+
+
+    # mouse callback function
+    def mouse_call(self, event,x,y,flags,param):
+        #global ix,iy,drawing,mode
+        consol.log('param', param, 'Find HSV')
+
+        if event == cv2.EVENT_LBUTTONDOWN:
+            consol.log_time('Find HSV', 'mouse click')
+
+            frame_hsv = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
+
+
+
+            col = self.get_pixel_col(x, y)
+
+
+            # fliped on purpose
+            hsv = frame_hsv[y][x]
+            consol.log('pixel color (hsv)', hsv, 'Find HSV')
+
+            hsv_delta = np.array([30, 50, 50])
+
+
+            hsv_min = hsv - hsv_delta
+            hsv_max = hsv + hsv_delta
+
+            consol.log('max (hsv)', hsv_max, 'Find HSV')
+            consol.log('min (hsv)', hsv_min, 'Find HSV')
+
+
+            self.set_slider(hsv_min, hsv_max)
+
+
+
+
+            consol.log('pixel color', col, 'Find HSV')
+            consol.log('pixel xy', [x, y], 'Find HSV')
+            consol.log('frame size', [len(self.frame[0]), len(self.frame)], 'Find HSV')
+
+
+    def set_slider(self, hsv_min, hsv_max):
+        setTrackbarPos = lambda setting, pos: cv2.setTrackbarPos(setting, self.maskWindowName, pos)
+        values = {}
+
+        setTrackbarPos('Lower threshold for hue', hsv_min[0])
+        setTrackbarPos('Lower threshold for saturation', hsv_min[1])
+        setTrackbarPos('Lower threshold for value', hsv_min[2])
+
+        setTrackbarPos('Upper threshold for hue', hsv_max[0])
+        setTrackbarPos('Upper threshold for saturation', hsv_max[1])
+        setTrackbarPos('Upper threshold for value', hsv_max[2])
+
+
+    def get_pixel_col(self, x, y):
+        if self.frame != None:
+            return self.frame[y][x]
+        else:
+            return np.array([0.0,0,0])
+
+
+
+
