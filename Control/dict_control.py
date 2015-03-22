@@ -51,10 +51,10 @@ class Controller():
 
         if (kick == "Kick"):
             self.kick_wait = 20
-            self.robot_api.kick(speed)
+            self.robot_api.kick(100)
         elif (kick == "Prepare"):
             self.prepare_wait = 5
             self.robot_api.prepare_catch()
         elif (kick == "Catch"):
             self.catch_wait = 5
-            self.robot_api.catch(speed)
+            self.robot_api.catch(100)
