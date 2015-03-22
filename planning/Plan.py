@@ -91,9 +91,18 @@ class Plan(object):
         return CommandDict(speed, direction, kick)
 
 
-    # use forward true when you want to pick up ball or so (kicker comes forward)
+    # When forward is true the robot will not consider going backwards to reach its target. 
+    # Useful for when 
     def go_to_asym(self, x, y, forward = False, max_speed = 100, min_speed = 70):
-
+        """
+    if forward is set to true the robot will only attempt to reach its goal going forward
+    useful for picking up the ball and shooting etc
+    :param: x
+    :param: y
+    :param: forward
+    :param: max_speed
+    :param: min_speed
+        """
 
         # slow down at pi rotation
         #slow_down = 50

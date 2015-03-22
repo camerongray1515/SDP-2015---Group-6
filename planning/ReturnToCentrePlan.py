@@ -40,6 +40,8 @@ class ReturnToCentrePlan(Plan):
         
         mid_x = (self.min_x + self.max_x) / 2
 
+        return self.go_to_asym(mid_x,self.robot.y)
+
         # If the robot is pointing left
         if current_angle > math.pi / 2 and current_angle < 3*math.pi / 2:
             # If the robot is on the right side of the zone

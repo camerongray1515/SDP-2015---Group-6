@@ -5,6 +5,8 @@ from NewShootGoalPlan import NewShootGoalPlan
 from Utility.CommandDict import CommandDict
 from MatchY import MatchY
 from PassPlan import PassPlan
+from ReturnToCentrePlan import ReturnToCentrePlan
+import consol
 
 class Planner(object):
     """Finite State Machine-Based planner. Generates commands for the robot based on plan classes derived from Plan"""
@@ -20,15 +22,12 @@ class Planner(object):
         #TODO catcher_areas need tweaking for our robot, they are currently set to team 7's
         self.world.our_defender.catcher_area = {'width' : 30, 'height' : 30, 'front_offset' : 12}
         self.world.our_attacker.catcher_area = {'width' : 30, 'height' : 30, 'front_offset' : 14}
-        self.robot = self.world.our_attacker #if attacker else self.world.our_defender
+        self.robot = self.world.our_attacker 
 
         # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
         p = (lambda plan: plan(self.world, self.robot))
-        if (attacker):
-            #self.plans = [p(NewShootGoalPlan), p(GrabBallPlan), p(AlignPlan), p(MatchY), p(IdlePlan)]
-            self.plans = [p(NewShootGoalPlan), p(GrabBallPlan), p(MatchY), p(IdlePlan)]
-        else:
-            self.plans = [p(PassPlan), p(GrabBallPlan), p(IdlePlan)]
+        
+        self.plans = [p(ReturnToCentrePlan), p(NewShootGoalPlan), p(GrabBallPlan), p(MatchY), p(IdlePlan)]
 
         self.current_plan = self.plans[0]
 
@@ -42,6 +41,7 @@ class Planner(object):
         self.world.update_positions(model_positions)
 
         if self.world.ball != None:
+            consol.log("Catcher",self.robot.catcher,"Robot")
             if(self.current_plan.isValid() and not self.current_plan.isFinished()):
                 return self.current_plan.nextCommand()
             else:
