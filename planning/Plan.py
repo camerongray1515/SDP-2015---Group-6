@@ -33,6 +33,27 @@ class Plan(object):
         self.world = world
         self.robot = robot
         self.finished = False
+        zone = self.world.pitch.zones[self.robot.zone][0] 
+        self.min_x = 10000
+        self.max_x = 0
+        for point in zone:
+            x_coord = point[0]
+            if self.min_x > x_coord:
+                self.min_x = x_coord
+            if self.max_x < x_coord:
+                self.max_x = x_coord
+        self.min_y = 10000
+        self.max_y = 0
+        for point in zone:
+            y_coord = point[1]
+            if self.min_y > y_coord:
+                self.min_y = y_coord
+            if self.max_y < y_coord:
+                self.max_y = y_coord
+
+
+
+
 
     #virtual functions
     @abstractmethod
@@ -91,9 +112,18 @@ class Plan(object):
         return CommandDict(speed, direction, kick)
 
 
-    # use forward true when you want to pick up ball or so (kicker comes forward)
+    # When forward is true the robot will not consider going backwards to reach its target. 
+    # Useful for when 
     def go_to_asym(self, x, y, forward = False, max_speed = 100, min_speed = 70):
-
+        """
+    if forward is set to true the robot will only attempt to reach its goal going forward
+    useful for picking up the ball and shooting etc
+    :param: x
+    :param: y
+    :param: forward
+    :param: max_speed
+    :param: min_speed
+        """
 
         # slow down at pi rotation
         #slow_down = 50
@@ -104,6 +134,8 @@ class Plan(object):
 
 
         distance = self.robot.get_euclidean_distance_to_point(x, y)
+        dist_edge = self.get_distance_from_edges()
+        distance = min(distance,dist_edge)
 
 
         angle = self.robot.get_rotation_to_point(x, y)
@@ -257,6 +289,16 @@ class Plan(object):
         Generates a kick command with optional speed.
         """
         return CommandDict(speed, "None", "Kick")
+
+    
+    def get_distance_from_edges(self):
+        close_max_x = self.max_x - self.robot.x
+        close_min_x = self.robot.x - self.min_x
+        close_max_y = self.max_y - self.robot.y
+        close_min_y = self.robot.y - self.min_y
+        return min(min(close_max_x,close_min_x), min(close_max_y, close_min_y))
+
+    
 
     # def __str__(self):
     #     return self.__name__
