@@ -27,7 +27,7 @@ class Planner(object):
         # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
         p = (lambda plan: plan(self.world, self.robot))
         
-        self.plans = [p(ReturnToCentrePlan), p(NewShootGoalPlan), p(GrabBallPlan), p(MatchY), p(IdlePlan)]
+        self.plans = [p(NewShootGoalPlan), p(GrabBallPlan), p(MatchY), p(IdlePlan)]
 
         self.current_plan = self.plans[0]
 
