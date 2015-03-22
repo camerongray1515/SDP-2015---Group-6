@@ -80,10 +80,7 @@ class World(object):
         predicted_angle = self.Ka.n_frames(6,[pos_dict['our_attacker'].angle,0,dangle,0])
         self.our_attacker.predicted_vector = Vector(predicted_pos[0],predicted_pos[1],predicted_angle[0],0)
         # Currently doesnt use any predicted velocity. If any reason to use this were to be found feel free to add
-        consol.log("predicted", self.our_attacker.predicted_vector,"World")
-        consol.log("predicted pos", predicted_pos,"World")
-        consol.log("predicted angle", predicted_angle,"World")
-
+        
 
 
         for key in robots.keys():
