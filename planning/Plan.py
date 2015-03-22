@@ -84,7 +84,7 @@ class Plan(object):
 
 
 
-    def rotate_fade(self, angle, fudge=1):
+    def rotate_fade(self, angle):
         """
         Generates commands for the robot to rotate to a specific angle
         :param angle: Radians to turn to

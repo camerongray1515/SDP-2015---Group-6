@@ -37,8 +37,18 @@ class NewShootGoalPlan(Plan):
 
         # Center of the goal
         (gx, gy) = ((x_max + x_min)/2, (y_min + y_max)/2)
+        angle1 = self.robot.get_rotation_to_point(gx, gy)
+        angle = (self.robot.angle + angle1) % 2 * math.pi
+        command = self.rotate_fade(angle)
 
         # Shoot for the centre of the goal if possible
+    	if angle1 > (math.pi / 12):
+            return command
+        # Otherwise kick the ball
+        else:
+            self.finished = True
+            self.robot.catcher = "open"
+            return self.kick()
         if not self.blocked(gx, gy, their_defender.x, their_defender.y):
             return self.shoot(gx, gy)
         
