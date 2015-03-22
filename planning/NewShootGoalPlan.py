@@ -3,6 +3,8 @@ import math
 from Utility.CommandDict import CommandDict
 from Polygon.cPolygon import Polygon
 import consol
+import pdb
+
 class NewShootGoalPlan(Plan):
     """Plan for the robot shooting the ball."""
 
@@ -37,14 +39,12 @@ class NewShootGoalPlan(Plan):
 
         # Center of the goal
         (gx, gy) = ((x_max + x_min)/2, (y_min + y_max)/2)
-        angle1 = self.robot.get_rotation_to_point(gx, gy)
-        angle = (self.robot.angle + angle1) % 2 * math.pi
+        angle = self.angle_to_goal(self.robot.x, self.robot.y, gx, gy)
         command = self.rotate_fade(angle, min_speed = 50, max_speed = 70)
         consol.log("Goal angle",angle,"Attacking")
+
         # Shoot for the centre of the goal if possible
-        a = abs(angle-self.robot.angle)
-        consol.log("Angle", a, "Attacking")
-    	if abs(angle-self.robot.angle) > (math.pi / 12):
+    	if abs(angle-self.robot.angle) > (math.pi / 24):
             return command
         # Otherwise kick the ball
         else:
@@ -116,6 +116,17 @@ class NewShootGoalPlan(Plan):
             self.robot.catcher = "open"
             self.robot.target_y = None
             return self.kick()
+
+    @staticmethod
+    def angle_to_goal(startx, starty, gx, gy):
+        """Returns the absolute angle in range 0 <= 2pi to the given point"""
+        d_y = gy - starty
+        d_x = gx - startx        
+        angle = math.atan2(d_y, d_x) #atan2 returns the angle with +ive x-axis between -pi and pi
+        if angle < 0:
+            angle += 2*math.pi
+        return angle
+
 
     def __str__(self):
         return "shoot goal plan"
