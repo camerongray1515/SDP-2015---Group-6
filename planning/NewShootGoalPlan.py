@@ -26,6 +26,7 @@ class NewShootGoalPlan(Plan):
 
     def nextCommand(self):
         their_defender = self.world.their_defender
+        consol.log("Moving to y", None, "Attacking")        
 
         # Center of the robot's zone
         (x, y) = self.world.pitch.zones[self.robot.zone].center()
@@ -39,23 +40,16 @@ class NewShootGoalPlan(Plan):
 
         # Center of the goal
         (gx, gy) = ((x_max + x_min)/2, (y_min + y_max)/2)
-        angle = self.angle_to_goal(self.robot.x, self.robot.y, gx, gy)
-        command = self.rotate_fade(angle, min_speed = 50, max_speed = 70)
-        consol.log("Goal angle",angle,"Attacking")
 
-        # Shoot for the centre of the goal if possible
-    	if abs(angle-self.robot.angle) > (math.pi / 24):
-            return command
-        # Otherwise kick the ball
-        else:
-            self.finished = True
-            self.robot.catcher = "open"
-            return self.kick()
+        # Shoot for the centre if possible
         if not self.blocked(gx, gy, their_defender.x, their_defender.y):
-            return self.shoot(gx, gy)
+            consol.log("alt_target_y", None, "Attacking")
+            consol.log("Blocked", False, "Attacking")
+            self.shoot(gx, gy)        	
         
         # If that isn't possble check if
         # a target has been set, try that first
+        consol.log("Blocked", True, "Attacking")
         if self.robot.target_y is not None:
             if not self.blocked(gx, self.robot.target_y, their_defender.x, their_defender.y):
                 return self.shoot(gx, self.robot.target_y)
@@ -63,9 +57,10 @@ class NewShootGoalPlan(Plan):
         # If the previous target is no longer clear, try again
         # Searches the goal in 5 pixel intervals for a clear spot
         current_y = y_min + 5
-        while current_y < y_max:
+        while current_y < y_max - 5:
             if not self.blocked(gx, current_y, their_defender.x, their_defender.y):
                 self.robot.target_y = current_y
+                consol.log("alt_target_y", current_y, "Attacking")
                 return self.shoot(gx, current_y)
             current_y += 5
 
@@ -77,6 +72,8 @@ class NewShootGoalPlan(Plan):
 
         command = self.go_to(self.world.pitch.zones[self.robot.zone].center()[0], move_to_y, speed=80)
         if not command == False:
+            consol.log("Moving to y", move_to_y, "Attacking")
+            consol.log("Command", None, "Attacking")
             return command
         else:
             # If we're already there and still blocked, swap sides:
@@ -84,13 +81,13 @@ class NewShootGoalPlan(Plan):
                 move_to_y = self.world.pitch.zones[self.robot.zone].boundingBox()[3] - 60
             else:
                 move_to_y = 60
-            command = self.go_to(self.world.pitch.zones[self.robot.zone].center()[0], move_to_y, speed=80)
+            command = go_to(self.world.pitch.zones[self.robot.zone].center()[0], move_to_y, speed=80)
             if not command == False:
+                consol.log("Moving to y", move_to_y, "Attacking")
+                consol.log("Command", None, "Attacking")
                 return command
             else:
                 print "NewShootGoalPlan failed!"
-
-
 
         
     def blocked(self, target_x, target_y, obstacle_x, obstacle_y, obstacle_width=25):
@@ -105,16 +102,20 @@ class NewShootGoalPlan(Plan):
         return False
 
     def shoot(self, gx, gy):
-        angle = self.robot.get_rotation_to_point(gx, gy)
-        command = self.rotate_to(angle, fudge=0.2)
+        angle = self.angle_to_goal(self.robot.x, self.robot.y, gx, gy)
+        command = self.rotate_fade(angle, min_speed = 50, max_speed = 70)
+        consol.log("Goal angle",angle,"Attacking")
         # Check if we're done rotating
-        if command is not False:
+        consol.log("Delta_angle", math.fabs(angle - self.robot.angle), "Attacking")
+        if math.fabs(angle - self.robot.angle) > math.pi/24:
+            consol.log("Command", command, "Attacking")
             return command
-        # Otherwise kick the ball
+        # If we are then kick the ball
         else:
             self.finished = True
             self.robot.catcher = "open"
             self.robot.target_y = None
+            consol.log("Command", "Kick", "Attacking")
             return self.kick()
 
     @staticmethod
