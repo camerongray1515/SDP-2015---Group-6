@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from collections import namedtuple
 import warnings
+from findHSV import CalibrationGUI
 import matplotlib.pyplot as plt
 
 # Turn off warnings for PolynomialFit
@@ -30,6 +31,9 @@ class Tracker(object):
         keys in adjustments dictionary.
         """
         try:
+
+
+
             if o_type == 'BALL':
                 frame = frame[crop[2]:crop[3], crop[0]:crop[1]]
             if frame is None:
@@ -42,12 +46,11 @@ class Tracker(object):
                 # plt.imshow(frame)
                 # plt.show()
 
+
             hp = adjustments.get('highpass')
-            hp = hp if hp is not None else 0
-            if(hp >= 1):
-                lap = cv2.Laplacian(frame, ddepth=cv2.CV_16S, ksize=hp*5)
-                lap = cv2.convertScaleAbs( lap );
-                frame = lap
+
+            if hp is None:
+                hp = 0
 
             if adjustments['contrast'] >= 1.0:
                 frame = cv2.add(frame,
@@ -60,6 +63,10 @@ class Tracker(object):
             frame_mask = cv2.inRange(frame_hsv,
                                      adjustments['min'],
                                      adjustments['max'])
+
+
+
+            frame_mask = CalibrationGUI.highpass(frame_mask, frame, hp)
 
             # Find contours
             if adjustments['open'] >= 1:
@@ -80,6 +87,11 @@ class Tracker(object):
                 frame_mask = cv2.erode(frame_mask,
                                         kernel,
                                         iterations=adjustments['erode'])
+
+
+
+
+
 
             contours, hierarchy = cv2.findContours(
                 frame_mask,

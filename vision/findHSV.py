@@ -27,7 +27,7 @@ MAXBAR = {"Lower threshold for hue":360,
           "Open": 100,
           "Dilation": 100,
           "Erode":100,
-          'High pass':1
+          'High pass':255
         }
 
 INDEX = {"Lower threshold for hue":0,
@@ -191,11 +191,7 @@ class CalibrationGUI(object):
                 blur += 1
             frame = cv2.GaussianBlur(frame, (blur, blur), 0)
 
-        hp = self.calibration[self.color]['highpass']
-        if(hp >= 1):
-            lap = cv2.Laplacian(frame, ddepth=cv2.CV_16S, ksize=hp*5)
-            lap = cv2.convertScaleAbs( lap );
-            frame = lap
+
 
         contrast = self.calibration[self.color]['contrast']
         if contrast >= 1.0:
@@ -235,11 +231,46 @@ class CalibrationGUI(object):
 
         out = frame
 
-        mask_inv = cv2.bitwise_not(frame_mask)
+
+        hp = int(self.calibration[self.color]['highpass'])
+        f_mask = CalibrationGUI.highpass(frame_mask, frame, hp)
+
+
+
+        mask_inv = cv2.bitwise_not(f_mask)
 
         img1_bg = cv2.bitwise_and(out,out,mask = mask_inv)
 
         return img1_bg
+
+
+    @staticmethod
+    def highpass(frame_mask, frame, hp):
+        hp = int(hp)
+        if(hp >= 1):
+            blur = 10
+            if blur % 2 == 0:
+                blur += 1
+            f2 = cv2.GaussianBlur(frame, (blur, blur), 0)
+
+
+            lap = cv2.Laplacian(f2, ddepth=cv2.CV_16S, ksize=5, scale=2)
+            lap = cv2.convertScaleAbs( lap );
+
+            blur = 5
+            if blur % 2 == 0:
+                blur += 1
+            lap = cv2.GaussianBlur(lap, (blur, blur), 0)
+
+
+            frame_mask_lap = cv2.inRange(lap, np.array([0,0,hp]), np.array([360,255,255]))
+            f_mask = cv2.bitwise_and(frame_mask, frame_mask_lap)
+
+
+            return f_mask
+
+        return frame_mask
+
 
 
     # mouse callback function
