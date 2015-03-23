@@ -4,6 +4,7 @@ from worldstate.Coordinate import Vector
 from worldstate.Robot import Robot
 from worldstate.OtherPitchObjects import Pitch, Goal, Ball
 from vision.Kalman import Kalman
+import numpy as np
 import consol
 
 
@@ -63,6 +64,20 @@ class World(object):
     def pitch(self):
         return self._pitch
 
+
+
+    @staticmethod
+    def low_pass(new_val, old_val, coef = 0.8):
+        return coef * new_val + (1.0 - coef) * old_val
+
+    x = 0.0
+    y = 0.0
+    a = 0.0
+    dx = 0.0
+    dy = 0.0
+    dangle = 0.0
+
+
     def update_positions(self, pos_dict):
         ''' This method will update the positions of the pitch objects
             that it gets passed by the vision system '''
@@ -73,11 +88,26 @@ class World(object):
         last_x = self.our_attacker.vector.x
         last_y = self.our_attacker.vector.y
         last_angle = self.our_attacker.vector.angle
-        dx = pos_dict['our_attacker'].x - last_x
-        dy = pos_dict['our_attacker'].y - last_y
-        dangle = pos_dict['our_attacker'].angle - last_angle
-        predicted_pos = self.Kp.n_frames(20, [pos_dict['our_attacker'].x,pos_dict['our_attacker'].y,dx,dy])
-        predicted_angle = self.Ka.n_frames(20, [pos_dict['our_attacker'].angle,0,dangle,0])
+
+        x = pos_dict['our_attacker'].x
+        y = pos_dict['our_attacker'].y
+        a = pos_dict['our_attacker'].angle
+        dx = x - last_x
+        dy = y - last_y
+        dangle = a - last_angle
+
+
+
+        x = World.low_pass(x, self.x)
+        y = World.low_pass(y, self.x)
+        a = World.low_pass(a, self.x)
+        dx = World.low_pass(dx, self.x)
+        dy = World.low_pass(dy, self.x)
+        dangle = World.low_pass(dangle, self.x)
+
+
+        predicted_pos = self.Kp.n_frames(20, [x,y,dx,dy])
+        predicted_angle = self.Ka.n_frames(20, [a,0,dangle,0])
         self.our_attacker.predicted_vector = Vector(predicted_pos[0],predicted_pos[1],predicted_angle[0],0)
         # Currently doesnt use any predicted velocity. If any reason to use this were to be found feel free to add
 
