@@ -6,8 +6,6 @@ import numpy as np
 import consol
 from collections import namedtuple
 
-
-
 """
 Some of these stupid constants are not used
 ANYWHERE LIKE  PROCESSING_DEBUG FFS.
@@ -201,6 +199,13 @@ class GUI(object):
             cv2.circle(
                 frame, (int(position_dict['dot'][0]), int(position_dict['dot'][1])),
                 4, BGR_COMMON['black'], -1)
+
+        #Draw predicted position
+        if position_dict['dot']:
+            cv2.circle(
+                frame, (self.launch.planner.world.our_attacker.predicted_vector.x,
+                        len(frame) - self.launch.planner.world.our_attacker.predicted_vector.y),
+                4, BGR_COMMON['yellow'], -1)
 
         if position_dict['direction']:
             cv2.line(
