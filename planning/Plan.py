@@ -134,8 +134,11 @@ class Plan(object):
 
 
         distance = self.robot.get_euclidean_distance_to_point(x, y)
-        #dist_edge = self.get_distance_from_edges()
-        #distance = min(distance,dist_edge)
+        dist_edge = self.get_distance_from_edges()
+
+        consol.log('edge distance', dist_edge, 'Plan')
+        if dist_edge < 20:
+            distance = min(distance,dist_edge)
 
 
         angle = self.robot.get_rotation_to_point(x, y)
