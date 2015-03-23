@@ -112,6 +112,39 @@ class Plan(object):
         return CommandDict(speed, direction, kick)
 
 
+    def look_at(self, x, y, min_speed = 50, max_speed = 80):
+        """
+        Generates commands for the robot to rotate to a specific angle
+        :param angle: Radians to turn to
+        :param fudge: optional multiplier of the rotation error - e.g use 0.5 for double precision
+        :return: False if :angle: is within ROTATION_ERROR otherwise returns a CommandDict with the next command
+        """
+
+        min_rot_speed = min_speed
+        max_rot_speed = max_speed
+
+
+        rob_pos = np.array([self.robot.x, self.robot.y])
+        target_pos = np.array([x, y])
+        vec = target_pos - rob_pos
+        av = vec / np.linalg.norm(vec)
+
+        rv = Plan.angle_to_vector(self.robot.angle)
+
+
+        dot = np.dot(av, rv)
+        cross = np.cross(rv, av)
+
+        consol.log('dot', dot, 'Plan')
+        consol.log('cross', cross, 'Plan')
+
+        speed = np.interp(dot, [0.0, 1.0], [max_rot_speed, min_rot_speed])
+
+        direction = "Right" if cross < 0 else "Left"
+        kick = "None"
+        return CommandDict(speed, direction, kick)
+
+
     # When forward is true the robot will not consider going backwards to reach its target. 
     # Useful for when 
     def go_to_asym(self, x, y, forward = False, max_speed = 100, min_speed = 70):
