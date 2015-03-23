@@ -67,8 +67,5 @@ class ReturnToCentrePlan(Plan):
             return command
         return CommandDict.stop()
 
-        
-       
-
     def __str__(self):
         return "Return to centre"
