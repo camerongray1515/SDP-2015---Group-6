@@ -106,6 +106,13 @@ class Robot(PitchObject):
 
 
     def get_dot_to_target(self, x, y):
+        """
+        Returns the scalar product of the unit vectors representing
+        the robot's current angle and the angle between the robot's position
+        and position (x,y)
+        Return is float in range -1 to 1.
+        1 when the robot is facing the point, 0 if 90deg away, -1 if 180deg away.    
+        """
         rob_pos = np.array([self.x, self.y])
         target_pos = np.array([x, y])
         vec = target_pos - rob_pos

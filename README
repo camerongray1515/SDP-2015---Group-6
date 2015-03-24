@@ -32,6 +32,7 @@ Defender is the pass ball plan while attacker is the align and shoot at goal pla
 ==================
 Running the simulator
 ==================
+NOTE: The simulator was broken by recent changes to the codebase and it has not yet been updated.
 
 Run the simulator using
     python Simulate.py
