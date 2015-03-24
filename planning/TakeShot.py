@@ -24,14 +24,16 @@ class TakeShot(Plan):
         rotation_error = math.pi/15         
         their_defender = self.world.their_defender
         (gx, gy) = self.goalCentre()
+        consol.log("(gx, gy)", (gx,gy), "TakeShot")
 
         #If we are facing the goal, shoot!
-        if self.robot.get_dot_to_target(gx, gy) > 0.9:
+        consol.log("Scalar product", self.robot.get_dot_to_target(gx, gy), "TakeShot")
+        if self.robot.get_dot_to_target(gx, gy) > 0.95:
             self.finished = True
             self.robot.catcher = "open"
             return self.kick()
         else:
-            command = self.look_at(gx, gy, max_speed=65, min_speed=50)
+            command = self.look_at(gx, gy, max_speed=55, min_speed=40)
             return command
 
     def goalCentre(self):
@@ -40,7 +42,6 @@ class TakeShot(Plan):
         """
         # boundingBox returns list of points in order: xmin, xmax, ymin, ymax
         goal_points = Polygon(self.world.their_goal.get_polygon()).boundingBox()
-
         x_min = goal_points[0]
         x_max = goal_points[1]
         y_min = goal_points[2]
@@ -48,30 +49,7 @@ class TakeShot(Plan):
 
         # Centre of the goal
         (gx, gy) = ((x_max + x_min)/2, (y_min + y_max)/2)
-        consol.log_dot([gx, gy], 'yellow', 'thedot')
         return (gx, gy)
 
     def __str__(self):
         return "TakeShot plan"
-
-
-    
-
-
-
-
-
-
-
-
-    # def blocked(self, target_x, target_y, obstacle_x, obstacle_y, obstacle_width=25):
-        # "Tests if the obstacle is in the way of a shot to the target point"
-        # d_y = self.robot.y - target_y
-        # d_x = self.robot.x - target_x
-        # m = d_y/d_x
-        # c = self.robot.y - m*self.robot.x
-        # #Compare y-coords when x is equal:
-        # ball_y_at_obstacle = m*obstacle_x + c
-        # if math.fabs(ball_y_at_obstacle - obstacle_y)<obstacle_width:
-        #     return True
-        # return False
