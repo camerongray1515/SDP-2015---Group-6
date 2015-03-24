@@ -180,7 +180,10 @@ class Plan(object):
         if(distance):
             distance = 0.1
 
-        #x = np.interp(distance, [fade_distance_min, fade_distance], [x, midX])
+
+        dy = fabs(self.robot.y - y)
+
+        x = np.interp(dy, [fade_distance_min, 50], [x, self.midX])
 
         dist_edge = self.get_distance_from_edges()
 

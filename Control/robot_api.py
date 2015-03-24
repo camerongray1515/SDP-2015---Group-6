@@ -123,7 +123,7 @@ class RobotAPI(object):
 
         num_attempts = 0
         # Test code that will drop the majority of commands to test fault tollerance
-        '''
+
         data_bytes = str.encode(data)
         data_bytes += '\r'
         self.serial.write(data_bytes)
@@ -132,7 +132,7 @@ class RobotAPI(object):
         log_time('Comms')
 
         return
-        '''
+
 
         while not ack:
             data_bytes = str.encode(data)
