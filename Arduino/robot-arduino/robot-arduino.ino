@@ -129,7 +129,7 @@ void loop() {
 
 // Command callback functions
 void store_motor_action() {
-    Serial.println("ack6");
+//    Serial.println("ack6");
     char *motorarg = scomm.next();
     char *speedarg = scomm.next();
     char *delayarg = scomm.next();
