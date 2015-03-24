@@ -180,7 +180,7 @@ class Plan(object):
         if(distance):
             distance = 0.1
 
-        #x = np.interp(distance, [fade_distance_min, fade_distance], [self.midX, x])
+        #x = np.interp(distance, [fade_distance_min, fade_distance], [x, midX])
 
         dist_edge = self.get_distance_from_edges()
 
