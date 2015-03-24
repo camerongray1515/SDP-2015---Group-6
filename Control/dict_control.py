@@ -35,14 +35,15 @@ class Controller():
             self.robot_api.stop()
 
         if (kick == "Kick"):
-            for i in range(0, 5):
+            for i in range(0, 10):
                 self.robot_api.kick(100)
                 time.sleep(.001)
         elif (kick == "Prepare"):
-            for i in range(0, 5):
+            log_time("dict_control", "prepare")
+            for i in range(0, 10):
                 self.robot_api.prepare_catch()
                 time.sleep(.001)
         elif (kick == "Catch"):
-            for i in range (0, 5):
+            for i in range (0, 10):
                 self.robot_api.catch(100)
                 time.sleep(.001)
