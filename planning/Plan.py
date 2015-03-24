@@ -88,8 +88,7 @@ class Plan(object):
         """
         Generates commands for the robot to rotate to a specific angle
         :param angle: Radians to turn to
-        :param fudge: optional multiplier of the rotation error - e.g use 0.5 for double precision
-        :return: False if :angle: is within ROTATION_ERROR otherwise returns a CommandDict with the next command
+        :return: a CommandDict with the next command
         """
 
         min_rot_speed = min_speed
@@ -115,9 +114,9 @@ class Plan(object):
     def look_at(self, x, y, min_speed = 50, max_speed = 80):
         """
         Generates commands for the robot to rotate to a specific angle
-        :param angle: Radians to turn to
-        :param fudge: optional multiplier of the rotation error - e.g use 0.5 for double precision
-        :return: False if :angle: is within ROTATION_ERROR otherwise returns a CommandDict with the next command
+        :param x: X coordinate of the point to turn to
+        :param y: Y coordinate of the point to turn to
+        :return:  returns a CommandDict with the next command
         """
 
         min_rot_speed = min_speed
