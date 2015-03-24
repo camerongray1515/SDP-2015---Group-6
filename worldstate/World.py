@@ -32,6 +32,13 @@ class World(object):
                            #different values are required for internal variables
                            #it could be useful to be able to change them here easily
 
+        self.x = 0.0
+        self.y = 0.0
+        self.a = 0.0
+        self.dx = 0.0
+        self.dy = 0.0
+        self.dangle = 0.0
+
     @property
     def our_attacker(self):
         return self._robots[2] if self._our_side == 'left' else self._robots[1]
@@ -67,15 +74,10 @@ class World(object):
 
 
     @staticmethod
-    def low_pass(new_val, old_val, coef = 0.8):
+    def low_pass(new_val, old_val, coef = 0.6):
         return coef * new_val + (1.0 - coef) * old_val
 
-    x = 0.0
-    y = 0.0
-    a = 0.0
-    dx = 0.0
-    dy = 0.0
-    dangle = 0.0
+
 
 
     def update_positions(self, pos_dict):
