@@ -31,7 +31,7 @@ class TakeShot(Plan):
             self.robot.catcher = "open"
             return self.kick()
         else:
-            command = self.look_at(gx, gy, max_speed=65)
+            command = self.look_at(gx, gy, max_speed=65, min_speed=50)
             return command
 
     def goalCentre(self):
@@ -40,6 +40,7 @@ class TakeShot(Plan):
         """
         # boundingBox returns list of points in order: xmin, xmax, ymin, ymax
         goal_points = Polygon(self.world.their_goal.get_polygon()).boundingBox()
+
         x_min = goal_points[0]
         x_max = goal_points[1]
         y_min = goal_points[2]
@@ -47,6 +48,7 @@ class TakeShot(Plan):
 
         # Centre of the goal
         (gx, gy) = ((x_max + x_min)/2, (y_min + y_max)/2)
+        consol.log_dot([gx, gy], 'yellow', 'thedot')
         return (gx, gy)
 
     def __str__(self):

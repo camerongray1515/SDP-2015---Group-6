@@ -2,6 +2,8 @@ __author__ = 's1210443'
 
 import os
 import time
+import cv2
+from vision.colors import BGR_COMMON
 
 # use log function to print something that changes often
 
@@ -33,6 +35,31 @@ def log_time(group, name = 'time'):
         groups[group] = {}
     localtime = time.asctime( time.localtime(time.time()) )
     groups[group][name] = localtime
+
+
+
+
+
+dots = {}
+
+
+class Dot:
+    def __init__(self, pos, col):
+        self.pos = pos
+        self.col = col
+
+def log_dot(position, color, id):
+    bla = Dot(position, color)
+    dots[id] = bla
+
+
+def draw_dots(frame):
+    for k,v in dots.iteritems():
+        cv2.circle(
+                frame, (v.pos[0], v.pos[1]),
+                4, BGR_COMMON[v.col], -1)
+
+    return frame
 
 
 def draw():
