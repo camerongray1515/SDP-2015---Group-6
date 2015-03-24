@@ -9,7 +9,7 @@ class TakeShot(Plan):
         """
         Constructor. Calls superclass constructor.
         """
-        return super(NewShootGoalPlan, self).__init__(world, robot)
+        return super(TakeShot, self).__init__(world, robot)
 
     def isValid(self):
         """
@@ -19,7 +19,7 @@ class TakeShot(Plan):
         """
         return self.robot.has_ball(self.world.ball) #and self.has_clear_shot()
 
-     def nextCommand(self):
+    def nextCommand(self):
         rotation_error = math.pi/15         
         their_defender = self.world.their_defender
         (gx, gy) = self.goalCentre()
