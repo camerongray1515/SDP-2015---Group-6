@@ -98,8 +98,7 @@ class VisionWrapper:
                 positions_out[obj[0]].x = 0
             if positions_out[obj[0]].y is None:
                 positions_out[obj[0]].y = 0
-            if positions_out[obj[0]].angle is None:
-                positions_out[obj[0]].angle = 0
+            positions_out[obj[0]].angle = positions_in[obj[0]].angle
 
         # Loop over queue
         for positions in self.frameQueue:
@@ -112,7 +111,6 @@ class VisionWrapper:
                 else:
                     positions_out[obj[0]].x += obj[1].x
                     positions_out[obj[0]].y += obj[1].y
-                    positions_out[obj[0]].angle += obj[1].angle
                     positions_out[obj[0]].velocity += obj[1].velocity
 
             if not isFrameValid and validFrames > 1:
@@ -124,7 +122,6 @@ class VisionWrapper:
             positions_out[obj[0]].velocity /= validFrames
             positions_out[obj[0]].x /= validFrames
             positions_out[obj[0]].y /= validFrames
-            positions_out[obj[0]].angle /= validFrames
 
 
         # If frameQueue is already full then pop the top entry off
