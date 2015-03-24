@@ -188,6 +188,8 @@ class GUI(object):
         if position_dict['box']:
             cv2.polylines(frame, [np.array(position_dict['box'])], True, BGR_COMMON[color], 2)
 
+        frame = consol.draw_dots(frame)
+
         if position_dict['front']:
             p1 = (position_dict['front'][0][0], position_dict['front'][0][1])
             p2 = (position_dict['front'][1][0], position_dict['front'][1][1])
@@ -201,11 +203,15 @@ class GUI(object):
                 4, BGR_COMMON['black'], -1)
 
         #Draw predicted position
-        if position_dict['dot']:
-            cv2.circle(
-                frame, (self.launch.planner.world.our_attacker.predicted_vector.x,
-                        len(frame) - self.launch.planner.world.our_attacker.predicted_vector.y),
-                4, BGR_COMMON['yellow'], -1)
+        '''
+        cv2.circle(
+            frame, (,
+                    ),
+            4, BGR_COMMON['yellow'], -1)
+        '''
+        px = self.launch.planner.world.our_attacker.predicted_vector.x
+        py = len(frame) - self.launch.planner.world.our_attacker.predicted_vector.y
+        consol.log_dot([px,py], 'yellow', 'kalman')
 
         if position_dict['direction']:
             cv2.line(
