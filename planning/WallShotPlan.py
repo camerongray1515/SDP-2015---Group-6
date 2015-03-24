@@ -21,12 +21,12 @@ class WallShotPlan(Plan):
 
     def nextCommand(self):
         (move_x, move_y) = self.get_move_point()
-        consol.log("(mx, my)", (gx,gy), "WallShotPlan")
+        consol.log("(mx, my)", (move_x,move_y), "WallShotPlan")
 
         #If we are not at the move target, move there:
         distance = self.robot.get_euclidean_distance_to_point(move_x, move_y)
         consol.log("Distance to move target", distance, "WallShotPlan")
-        if distance < 25:
+        if distance < 10:
             command = self.go_to_asym(move_x, move_y, forward=False, max_speed = 85, min_speed=50)
             return command
         #Otherwise, make a wall shot:
