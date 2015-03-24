@@ -247,6 +247,7 @@ class CalibrationGUI(object):
     @staticmethod
     def highpass(frame_mask, frame, hp):
         hp = int(hp)
+
         if(hp >= 1):
             blur = 10
             if blur % 2 == 0:
@@ -254,8 +255,10 @@ class CalibrationGUI(object):
             f2 = cv2.GaussianBlur(frame, (blur, blur), 0)
 
 
-            lap = cv2.Laplacian(f2, ddepth=cv2.CV_16S, ksize=5, scale=2)
+            lap = cv2.Laplacian(f2, ddepth=cv2.CV_16S, ksize=5, scale=1)
             lap = cv2.convertScaleAbs( lap );
+
+
 
             blur = 5
             if blur % 2 == 0:
@@ -263,7 +266,11 @@ class CalibrationGUI(object):
             lap = cv2.GaussianBlur(lap, (blur, blur), 0)
 
 
-            frame_mask_lap = cv2.inRange(lap, np.array([0,0,hp]), np.array([360,255,255]))
+
+            frame_hsv = cv2.cvtColor(lap, cv2.COLOR_BGR2HSV)
+
+
+            frame_mask_lap = cv2.inRange(frame_hsv, np.array([0,0,hp]), np.array([360,255,255]))
             f_mask = cv2.bitwise_and(frame_mask, frame_mask_lap)
 
 
