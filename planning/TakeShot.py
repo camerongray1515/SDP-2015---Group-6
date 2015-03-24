@@ -61,7 +61,9 @@ class TakeShot(Plan):
 
         d_y = self.robot.y - target_y
         d_x = self.robot.x - target_x
-        m = d_y/d_x
+        if d_x == 0:
+            d_x = 0.1
+        m = d_y/float(d_x)
         c = self.robot.y - m*self.robot.x
         #Compare y-coords when x is equal:
         ball_y_at_obstacle = m*obstacle_x + c
