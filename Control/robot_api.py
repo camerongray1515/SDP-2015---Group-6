@@ -90,6 +90,7 @@ class RobotAPI(object):
 
     def __init__(self, device_path=None, baud_rate=None):
         # check if there are valid parameters
+
         self._enabled = False
         if (device_path is not None and baud_rate is not None):
             try:
@@ -101,6 +102,9 @@ class RobotAPI(object):
 
         #just for printing
         self.enabled = False
+
+        global robot_api
+        robot_api = self
 
     #debug/error function if we're not using serial
     def _write_serial_debug(self, data):
@@ -119,7 +123,7 @@ class RobotAPI(object):
 
         num_attempts = 0
         # Test code that will drop the majority of commands to test fault tollerance
-
+        '''
         data_bytes = str.encode(data)
         data_bytes += '\r'
         self.serial.write(data_bytes)
@@ -128,6 +132,7 @@ class RobotAPI(object):
         log_time('Comms')
 
         return
+        '''
 
         while not ack:
             data_bytes = str.encode(data)
@@ -141,6 +146,8 @@ class RobotAPI(object):
             try:
                 ack_str = self.serial.read(4)
                 log("Ack string", ack_str, "Comms")
+                print ('ack:' +ack_str)
+
                 if ack_str == "ack6":
                     ack = True
                 else:
@@ -211,7 +218,7 @@ class RobotAPI(object):
         self.set_motor("left", speed)
 
     def kick(self, speed=100):
-        self._write_serial("kick {0}".format(speed))
+        self._write_serial("kick {0}".format(100))
 
 
     def prepare_catch(self):  # This may be needed if we remove side bars from the robot

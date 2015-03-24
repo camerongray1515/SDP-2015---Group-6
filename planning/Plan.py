@@ -13,6 +13,9 @@ ROTATION_ERROR = pi/12
 DISTANCE_ERROR = 43
 
 class Plan(object):
+    def initi(self, prevPlan):
+        pass
+
     """
     Base class for all plans. Contains virtual method stubs that child classes must implement and concrete implementations of general functions.
     Notes:
@@ -30,6 +33,8 @@ class Plan(object):
         :param world: A World object that contains the world state. Note: the given World should be updated externally, it should not happen in this class.
         :param robot: A Robot object that defines the robot this plan is attached to.
         """
+
+
         self.world = world
         self.robot = robot
         self.finished = False
@@ -50,6 +55,11 @@ class Plan(object):
                 self.min_y = y_coord
             if self.max_y < y_coord:
                 self.max_y = y_coord
+
+
+    @property
+    def midX(self):
+        return self.world.pitch.zones[self.robot.zone].center()[0]
 
 
 
@@ -165,7 +175,13 @@ class Plan(object):
 
 
 
+
         distance = self.robot.get_euclidean_distance_to_point(x, y)
+        if(distance):
+            distance = 0.1
+
+        #x = np.interp(distance, [fade_distance_min, fade_distance], [self.midX, x])
+
         dist_edge = self.get_distance_from_edges()
 
         consol.log('edge distance', dist_edge, 'Plan')

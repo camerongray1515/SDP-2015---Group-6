@@ -1,10 +1,19 @@
 from Plan import Plan
 from Utility.CommandDict import CommandDict
-
+from Control import robot_api
+import consol
 
 DISTANCE_ERROR = 43
 class GrabBallPlan(Plan):
     """Plan for the robot navigating to and grabbing the ball."""
+
+    def initi(self, prevPlan):
+        robot_api.robot_api.prepare_catch()
+        self.robot.catcher = "prepared"
+        consol.log_time('GRAB', 'initi')
+
+
+
 
     def __init__(self, world, robot):
         """
@@ -25,9 +34,12 @@ class GrabBallPlan(Plan):
         return False
 
     def nextCommand(self):
+
+        '''
         if self.robot.catcher != "prepared":
             self.robot.catcher = "prepared"
             return CommandDict.prepare()
+        '''
 
         # If we need to move to the ball, then get the command and return it
         # command = self.go_to(self.world.ball.x, self.world.ball.y, speed=75)
