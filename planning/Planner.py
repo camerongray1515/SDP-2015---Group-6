@@ -5,6 +5,7 @@ from NewShootGoalPlan import NewShootGoalPlan
 from Utility.CommandDict import CommandDict
 from MatchY import MatchY
 from PassPlan import PassPlan
+from TakeShot import TakeShot
 from ReturnToCentrePlan import ReturnToCentrePlan
 import consol
 
@@ -27,7 +28,7 @@ class Planner(object):
         # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
         p = (lambda plan: plan(self.world, self.robot))
         
-        self.plans = [p(NewShootGoalPlan), p(GrabBallPlan), p(MatchY), p(IdlePlan)]
+        self.plans = [p(TakeShot), p(GrabBallPlan), p(MatchY), p(IdlePlan)]
 
         self.current_plan = self.plans[0]
 
