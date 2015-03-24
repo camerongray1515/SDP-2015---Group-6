@@ -16,13 +16,13 @@ class TakeShot(Plan):
         """
         Current constraints are:
             - Robot must have the ball
-            (- Shot must not be blocked) - not implemented now for simplicity
+            - Shot must not be blocked
         """
-        return self.robot.has_ball(self.world.ball) #and self.has_clear_shot()
+        consol.log("Clear shot", self.has_clear_shot(), "TakeShot")
+        return self.robot.has_ball(self.world.ball) and self.has_clear_shot()
 
     def nextCommand(self):
         rotation_error = math.pi/15         
-        their_defender = self.world.their_defender
         (gx, gy) = self.goalCentre()
         consol.log("(gx, gy)", (gx,gy), "TakeShot")
 
@@ -50,6 +50,26 @@ class TakeShot(Plan):
         # Centre of the goal
         (gx, gy) = ((x_max + x_min)/2, (y_min + y_max)/2)
         return (gx, gy)
+
+    def has_clear_shot(self):
+        obstacle_width=25
+
+        (target_x, target_y) = self.goalCentre()
+        their_defender = self.world.their_defender
+        obstacle_x = their_defender.x
+        obstacle_y = their_defender.y
+
+        d_y = self.robot.y - target_y
+        d_x = self.robot.x - target_x
+        if d_x == 0:
+            d_x = 0.1
+        m = d_y/float(d_x)
+        c = self.robot.y - m*self.robot.x
+        #Compare y-coords when x is equal:
+        ball_y_at_obstacle = m*obstacle_x + c
+        if math.fabs(ball_y_at_obstacle - obstacle_y)<obstacle_width:
+            return False
+        return True
 
     def __str__(self):
         return "TakeShot plan"
