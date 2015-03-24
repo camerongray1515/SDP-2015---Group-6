@@ -50,11 +50,15 @@ class Planner(object):
             # If self.current_plan is invalid, then choose a new plan and return a command from it
                 for plan in self.plans:
                     if(plan.isValid()):
+                        prevPlan = self.current_plan
+
                         self.current_plan = plan
+                        self.current_plan.initi(prevPlan)
                         #self.current_plan.reset()
                         return self.current_plan.nextCommand()
         else:
             return CommandDict.stop()
+
 
 
 

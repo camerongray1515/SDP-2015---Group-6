@@ -78,7 +78,7 @@ class VisionWrapper:
         self.model_positions, self.regular_positions = self.vision.locate(self.frame)
         self.model_positions = self.postprocessing.analyze(self.model_positions)
 
-        self.model_positions = self.averagePositions(3, self.model_positions)
+        #self.model_positions = self.averagePositions(3, self.model_positions)
 
     def averagePositions(self, frames, positions_in):
         """
