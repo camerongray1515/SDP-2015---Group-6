@@ -107,10 +107,10 @@ void setup() {
   Serial.println("radio_initialised");
   
   // Add callbacks for all commands
-  scomm.addCommand("set", store_motor_action); // args: [motor, speed, delay]
-  scomm.addCommand("prepare_catch", prepare_catch); // args: []
-  scomm.addCommand("kick", kick); // args: [speed]
-  scomm.addCommand("catch", catch_ball); // args: [speed]
+  scomm.addCommand("s", store_motor_action); // args: [motor, speed, delay]
+  scomm.addCommand("p", prepare_catch); // args: []
+  scomm.addCommand("k", kick); // args: [speed]
+  scomm.addCommand("c", catch_ball); // args: [speed]
   scomm.addCommand("ping6", ping);
   scomm.addCommand("led_on", command_led_on); // args: []
   scomm.addCommand("led_off", command_led_off); // args: []
