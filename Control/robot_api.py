@@ -218,15 +218,15 @@ class RobotAPI(object):
         self.set_motor("left", speed)
 
     def kick(self, speed=100):
-        self._write_serial("kick {0}".format(100))
+        self._write_serial("k {0}".format(100))
 
 
     def prepare_catch(self):  # This may be needed if we remove side bars from the robot
         # It closes grabber just a bit so we can collect the ball without kicker in the way
-        self._write_serial("prepare_catch")
+        self._write_serial("p")
 
     def catch(self, speed=100):
-        self._write_serial("catch {0}".format(speed))
+        self._write_serial("c {0}".format(speed))
 
 
     def stop(self):
@@ -277,7 +277,7 @@ class RobotAPI(object):
         # floats are to large to transfer over serial as sting
         int_val = int(scaled_speed)
 
-        self._write_serial("set {0} {1} {2}".format(self.motorPins[motor], int_val, delay))
+        self._write_serial("s {0} {1} {2}".format(self.motorPins[motor], int_val, delay))
         self.current_motor_speeds[motor] = speed
 
     def get_scaled_speed(self, motor, speed):
