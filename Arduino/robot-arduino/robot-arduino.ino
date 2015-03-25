@@ -15,6 +15,7 @@
 SerialCommand scomm;
 
 int blink = 1;
+String kicker_position = "open";
 
 namespace event_loop {
   typedef struct command_entry {
@@ -117,7 +118,9 @@ void setup() {
   scomm.addCommand("blink", command_start_blinking); // args: [blinkDelay]
   scomm.addCommand("stop_blinking", command_stop_blinking); // args: []
   scomm.addDefaultHandler(command_unknown);
-    
+
+  open_kicker();
+        
   Serial.println("ready"); 
 }
 
@@ -129,7 +132,7 @@ void loop() {
 
 // Command callback functions
 void store_motor_action() {
-//    Serial.println("ack6");
+    Serial.println("ack6");
     char *motorarg = scomm.next();
     char *speedarg = scomm.next();
     char *delayarg = scomm.next();
@@ -138,25 +141,51 @@ void store_motor_action() {
     int speed = atoi(speedarg);
     int delay = atoi(delayarg);
     
-    event_loop::add_command_head(motor, speed, millis()+delay);
+    // Only use the event loop if there is a delay involved
+    if (delay == 0) {
+      set_motor_speed(motor, speed);
+    } else {
+      event_loop::add_command_head(motor, speed, millis()+delay);
+    }
 }
 
 void prepare_catch() {
   Serial.println("ack6");
+  
+  if (kicker_position == "prepared") {
+    return;
+  }
+  
   // Start the kicker immediately, after 1 second stop it and then reverse it at a reduced speed then stop it 200ms after that
   event_loop::add_command_head(kicker, 100, millis());
   event_loop::add_command_head(kicker, 0, millis()+1000);
-  event_loop::add_command_head(kicker, -50, millis()+1500);
+  event_loop::add_command_head(kicker, -40, millis()+1500);
   event_loop::add_command_head(kicker, 0, millis()+1700);
+  
+  kicker_position = "prepared";
 }
 
 void kick() {
   Serial.println("ack6");
   char *speedarg = scomm.next();
   
+  if (kicker_position == "open") {
+    return;
+  }
+  
   int speed = atoi(speedarg);
   event_loop::add_command_head(kicker, speed, millis());
   event_loop::add_command_head(kicker, 0, millis()+1000);
+  
+  kicker_position = "open";
+}
+
+void open_kicker() {
+  motorForward(kicker, 100);
+  delay(1000);
+  motorStop(kicker);
+  
+  kicker_position = "open";
 }
 
 
@@ -168,11 +197,17 @@ void catch_ball() {
   Serial.println("ack6");
   char *speedarg = scomm.next();
   
+  if (kicker_position == "closed") {
+    return;
+  }
+  
   int speed = atoi(speedarg);
   
   // Start the catch immediately, after 1 second stop the motor
   event_loop::add_command_head(kicker, -1 * speed, millis());
   event_loop::add_command_head(kicker, 0, millis()+1000);
+  
+  kicker_position = "closed";
 }
 
 void set_motor_speed(int motor, int speed) {
