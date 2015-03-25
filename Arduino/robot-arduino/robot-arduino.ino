@@ -124,7 +124,21 @@ void setup() {
   Serial.println("ready"); 
 }
 
+int blink_count = 0;
+boolean led_on = false;
 void loop() {
+  if (blink_count == 20000) {
+    if (led_on) {
+      digitalWrite(boardLED, LOW);
+      led_on = false;
+    } else {
+      digitalWrite(boardLED, HIGH);
+      led_on = true;
+    }
+    blink_count = 0;
+  }
+  blink_count++;
+  
   scomm.readSerial();
     
   event_loop::process_list();
