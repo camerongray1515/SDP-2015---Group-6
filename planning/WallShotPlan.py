@@ -20,6 +20,10 @@ class WallShotPlan(Plan):
         return self.robot.has_ball(self.world.ball) and (not self.robot.is_busy())
 
     def nextCommand(self):
+        # Plan is always finished to allow switching to other plans at any point
+        # E.g. making a shot if an opening is available.
+        self.finished = True
+
         (move_x, move_y) = self.get_move_point()
         consol.log("(mx, my)", (move_x,move_y), "WallShotPlan")
 
