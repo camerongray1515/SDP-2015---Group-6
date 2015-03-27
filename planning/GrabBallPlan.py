@@ -3,7 +3,7 @@ from Utility.CommandDict import CommandDict
 from Control import robot_api
 import consol
 
-DISTANCE_ERROR = 43
+DISTANCE_ERROR = 47
 class GrabBallPlan(Plan):
     """Plan for the robot navigating to and grabbing the ball."""
 
