@@ -55,7 +55,7 @@ class WallShotPlan(Plan):
         centre_y = self.world.pitch.zones[self.robot.zone].center()[1]
         robot_y = self.robot.y
 
-        if robot_y < robot_y:
+        if robot_y < centre_y:
             my = 0.25 * self.max_y
         else:
             my = 0.75 * self.max_y
