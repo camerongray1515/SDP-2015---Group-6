@@ -30,7 +30,7 @@ class GrabBallPlan(Plan):
         """
 
         if self.world.ball is not None and self.world.ball.velocity <= 3:
-            return self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y) and (not self.robot.has_ball(self.world.ball))
+            return self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y) and (not self.robot.has_ball(self.world.ball)) and (not self.robot.is_busy())
         return False
 
     def nextCommand(self):
@@ -57,6 +57,7 @@ class GrabBallPlan(Plan):
         if distance < DISTANCE_ERROR and dot > 0.96:
             self.finished = True
             self.robot.catcher = "closed"
+            self.robot.set_busy_for(1.1)
             return CommandDict.catch()
 
         return command

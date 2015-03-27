@@ -19,7 +19,7 @@ class TakeShot(Plan):
             - Shot must not be blocked
         """
         consol.log("Clear shot", self.has_clear_shot(), "TakeShot")
-        return self.robot.has_ball(self.world.ball) and self.has_clear_shot()
+        return self.robot.has_ball(self.world.ball) and self.has_clear_shot() and (not self.robot.is_busy())
 
     def nextCommand(self):
         rotation_error = math.pi/15         
@@ -31,6 +31,7 @@ class TakeShot(Plan):
         if self.robot.get_dot_to_target(gx, gy) > 0.95:
             self.finished = True
             self.robot.catcher = "open"
+            self.robot.set_busy_for(1.1)
             return self.kick()
         else:
             command = self.look_at(gx, gy, max_speed=55, min_speed=40)

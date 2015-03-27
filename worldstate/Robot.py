@@ -5,6 +5,8 @@ from Polygon.cPolygon import Polygon
 from worldstate.PitchObject import PitchObject
 import numpy as np
 import math
+import datetime
+import consol
 # Width measures the front and back of an object
 # Length measures along the sides of an object
 ROBOT_WIDTH = 30
@@ -137,8 +139,17 @@ class Robot(PitchObject):
         target_poly = target.get_polygon()
         return Polygon(robot_poly[0], robot_poly[1], target_poly[0], target_poly[1])
 
-    
+    def set_busy_for(self, busy_delay):
+        self.busy_until = datetime.datetime.now() + datetime.timedelta(0, busy_delay)
 
+    def is_busy(self):
+        if hasattr(self, 'busy_until'):
+            busy = datetime.datetime.now() < self.busy_until
+        else:
+            busy = False
+
+        consol.log("Is Busy", busy, "Robot")
+        return busy
 
     def __repr__(self):
         return ('zone: %s\nx: %s\ny: %s\nangle: %s\nvelocity: %s\ndimensions: %s\n' %

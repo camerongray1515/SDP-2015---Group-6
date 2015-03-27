@@ -17,7 +17,7 @@ class WallShotPlan(Plan):
         Current constraints are:
             - Robot must have the ball
         """
-        return self.robot.has_ball(self.world.ball) 
+        return self.robot.has_ball(self.world.ball) and (not self.robot.is_busy())
 
     def nextCommand(self):
         (move_x, move_y) = self.get_move_point()
@@ -41,6 +41,7 @@ class WallShotPlan(Plan):
             if self.robot.get_dot_to_target(target_x, target_y) > 0.95:
                 self.finished = True
                 self.robot.catcher = "open"
+                self.robot.set_busy_for(1.1)
                 return self.kick()
             else:
                 command = self.look_at(target_x, target_y, max_speed=55, min_speed=40)

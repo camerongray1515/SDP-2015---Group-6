@@ -42,6 +42,9 @@ class Planner(object):
         # Update the world state with the given positions
         self.world.update_positions(model_positions)
 
+        # Update whether the robot is marked as busy on consol
+        self.robot.is_busy()
+
         if self.world.ball != None:
             consol.log("Catcher",self.robot.catcher,"Robot")
             if(self.current_plan.isValid() and not self.current_plan.isFinished()):

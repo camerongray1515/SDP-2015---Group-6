@@ -1,3 +1,4 @@
+import time
 from robot_api import RobotAPI
 from consol import log, log_time
 
