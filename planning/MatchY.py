@@ -18,7 +18,6 @@ class MatchY(Plan):
         Current constraints are:
             - Ball must not be in the robot's zone OR the ball is in the robot's zone and has a velocity > 3
             - Robot is not already matching the ball's position
-            - Robot must be aligned (as per the AlignPlan)
         """
 
         ball = self.world.ball is not None
@@ -26,7 +25,7 @@ class MatchY(Plan):
 
         is_matched = self.isMatched(self.robot, self.world.ball)
 
-        return ball and not within_bounds and not is_matched
+        return ball and not within_bounds and not is_matched and (not self.robot.is_busy())
 
 
     def nextCommand(self):
