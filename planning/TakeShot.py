@@ -22,6 +22,8 @@ class TakeShot(Plan):
         return self.robot.has_ball(self.world.ball) and self.has_clear_shot() and (not self.robot.is_busy())
 
     def nextCommand(self):
+        # Plan is always finished to allow switching to other plans at any point.
+        self.finished = True
         rotation_error = math.pi/15         
         (gx, gy) = self.goalCentre()
         consol.log("(gx, gy)", (gx,gy), "TakeShot")
