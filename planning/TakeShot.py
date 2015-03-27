@@ -59,6 +59,11 @@ class TakeShot(Plan):
 
         (target_x, target_y) = self.goalCentre()
         their_defender = self.world.their_defender
+
+        #If their defender is not on the pitch, return True:
+        if their_defender.x == their_defender.y and their_defender.x == 0:
+            return True
+
         obstacle_x = their_defender.x
         obstacle_y = their_defender.y
 
