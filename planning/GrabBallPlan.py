@@ -26,11 +26,14 @@ class GrabBallPlan(Plan):
         Current constraints are:
             - Ball must be within the robot's zone
             - Robot must not have the ball
+            - Ball must not be near the walls
             - NOT IMPLEMENTED : Robot must be within its zone - though this -should- be handled by the go_to function. This may be useful for some kind of state-reset if we get out of the zone somehow
         """
-
+        near_dist = 40 # Note DO NOT CHANGE WITHOUT ALSO CHANGING IN GrabBallNearWallPlan
         if self.world.ball is not None and self.world.ball.velocity <= 3:
-            return self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y) and (not self.robot.has_ball(self.world.ball)) and (not self.robot.is_busy())
+            return self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y) and \
+            (not self.robot.has_ball(self.world.ball)) and self.ball_distance_from_wall > near_dist and \
+            not self.robot.is_busy()
         return False
 
     def nextCommand(self):
@@ -61,6 +64,16 @@ class GrabBallPlan(Plan):
             return CommandDict.catch()
 
         return command
+
+    def ball_distance_from_wall(self):
+        "Returns the distance of the ball from the wall nearest to it."
+        cur_y = self.world.ball.y
+        bottom_dist = self.robot.y
+        top_dist = self.max_y - self.robot.y
+        if top_dist < bottom_dist:
+            return top_dist
+        else:
+            return bottom_dis
 
     def __str__(self):
         return "grab ball plan"
