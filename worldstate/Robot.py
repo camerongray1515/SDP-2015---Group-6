@@ -7,6 +7,7 @@ import numpy as np
 import math
 import datetime
 import consol
+import World
 # Width measures the front and back of an object
 # Length measures along the sides of an object
 ROBOT_WIDTH = 30
@@ -59,6 +60,25 @@ class Robot(PitchObject):
     def catcher(self, new_position):
         assert new_position in ['open', 'closed', 'prepared']
         self._catcher = new_position
+
+
+    @property
+    def angle(self):
+        d, a = World.world.get_future()
+
+        return a
+
+    @property
+    def x(self):
+        d, a = World.world.get_future()
+        return d[0]
+
+    @property
+    def y(self):
+        d, a = World.world.get_future()
+        return d[1]
+
+
 
     def can_catch_ball(self, ball):
         '''

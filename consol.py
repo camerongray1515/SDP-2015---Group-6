@@ -41,7 +41,7 @@ def log_time(group, name = 'time'):
 
 
 dots = {}
-
+lines = {}
 
 class Dot:
     def __init__(self, pos, col):
@@ -52,12 +52,28 @@ def log_dot(position, color, id):
     bla = Dot(position, color)
     dots[id] = bla
 
+def log_line(pos2d, id):
+    lines[id] = pos2d
+
+
+def draw_line(frame, points, thickness=2):
+    p0 = points[0]
+    p1 = points[1]
+    if points is not None:
+        cv2.line(frame, flip_pos(frame,p0), flip_pos(frame,p1), BGR_COMMON['red'], thickness)
+
+
+def flip_pos(frame, t):
+    return (t[0], len(frame)-t[1])
 
 def draw_dots(frame):
     for k,v in dots.iteritems():
         cv2.circle(
-                frame, (v.pos[0], v.pos[1]),
+                frame, (v.pos[0], len(frame)-v.pos[1]),
                 4, BGR_COMMON[v.col], -1)
+
+    for k,v in lines.iteritems():
+        draw_line(frame, v)
 
     return frame
 
