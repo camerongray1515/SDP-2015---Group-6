@@ -19,43 +19,71 @@ class WallShotPlan(Plan):
         """
         return self.robot.has_ball(self.world.ball) and (not self.robot.is_busy())
 
+    def initi(self, prev_plan):
+        if str(prev_plan) == "WallShot plan":
+            self.mx = prev_plan.mx
+            self.my = prev_plan.my
+            self.in_position = prev_plan.in_position # Flags when the robot has rotated to the correct angle
+            self.has_moved = prev_plan.has_moved     # Flags when the robot has moved to the correct position
+        else:
+            (self.mx, self.my) = self.get_move_point()
+            self.in_position = False
+            self.has_moved = False
+
     def nextCommand(self):
         # Plan is always finished to allow switching to other plans at any point
         # E.g. making a shot if an opening is available.
         self.finished = True
 
-        (move_x, move_y) = self.get_move_point()
-        consol.log("(mx, my)", (move_x,move_y), "WallShotPlan")
+        consol.log("(mx, my)", (self.mx,self.my), "WallShotPlan")
 
         #If we are not at the move target, move there:
-        distance = self.robot.get_euclidean_distance_to_point(move_x, move_y)
+        distance = self.robot.get_euclidean_distance_to_point(self.mx, self.my)
         consol.log("Distance to move target", distance, "WallShotPlan")
-        if distance < 10:
-            command = self.go_to_asym(move_x, move_y, forward=False, max_speed = 85, min_speed=50)
+        if distance > 18 and not self.has_moved:
+            command = self.go_to_asym(self.mx, self.my, forward=False, max_speed = 85, min_speed=50)
             return command
         #Otherwise, make a wall shot:
-        else:
-            rotation_error = math.pi/15         
-            #Aim at x=centre of opponents zone, y=nearer edge of pitch
-            target_x = self.world.pitch.zones[self.world.their_defender.zone].center()[0]
+        else:    
+            #Flag that move is complete:
+            self.has_moved = True
+            #Aim at x= slightly in fron of centre of opponents zone, y=nearer edge of pitch
+            centre_x = self.world.pitch.zones[self.world.their_defender.zone].center()[0]
+            if self.world.their_defender.zone == 0:
+                target_x = centre_x 
+            elif self.world.their_defender.zone == 3:
+                target_x = centre_x 
             if self.robot.y > self.world.pitch.zones[self.robot.zone].center()[1]:
-                target_y = self.max_y
+                target_y = self.max_y + 10
             else:
-                target_y = 0
-            if self.robot.get_dot_to_target(target_x, target_y) > 0.98:
-                self.finished = True
-                self.robot.catcher = "open"
-                self.robot.set_busy_for(1.1)
-                return self.kick()
+                target_y = -10
+
+            consol.log("Shoot_target", (target_x, target_y), "WallShotPlan")
+            consol.log("Dot to target", self.robot.get_dot_to_target(target_x, target_y), "WallShotPlan")
+            if self.robot.get_dot_to_target(target_x, target_y) > 0.991:
+                if self.in_position:
+                    self.finished = True
+                    self.robot.catcher = "open"
+                    self.robot.set_busy_for(1.1)
+                    return self.kick()
+                else:
+                    self.finished = False
+                    self.in_position = True
+                    return self.stop()
             else:
+                self.in_position = False
                 command = self.look_at(target_x, target_y, max_speed=55, min_speed=40)
                 return command
 
     def get_move_point(self):
         """
-        Returns (mx, my), the closer point of (centre, 1/4 height) and (centre, 3/4 height)
+        Returns (mx, my), the closer point of (centre(ish), 1/4 height) and (centre(ish), 3/4 height)
         """
-        mx = self.world.pitch.zones[self.robot.zone].center()[0]
+        centre_x = self.world.pitch.zones[self.robot.zone].center()[0]
+        if self.world.our_attacker.zone == 1:
+            mx = centre_x - 10
+        elif self.world.our_attacker.zone == 2:
+            mx = centre_x + 10
         centre_y = self.world.pitch.zones[self.robot.zone].center()[1]
         robot_y = self.robot.y
 
