@@ -344,6 +344,12 @@ class Plan(object):
         """
         return CommandDict(speed, "None", "Kick")
 
+    def stop(self):
+        """
+        Generates a stop command
+        """
+        return CommandDict.stop()
+
     
     def get_distance_from_edges(self):
         close_max_x = self.max_x - self.robot.x
