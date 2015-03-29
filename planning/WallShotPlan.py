@@ -23,8 +23,10 @@ class WallShotPlan(Plan):
         if str(prev_plan) == "WallShot plan":
             self.mx = prev_plan.mx
             self.my = prev_plan.my
+            self.in_position = prev_plan.in_position
         else:
             (self.mx, self.my) = self.get_move_point()
+            self.in_position = False
 
     def nextCommand(self):
         # Plan is always finished to allow switching to other plans at any point
@@ -40,28 +42,44 @@ class WallShotPlan(Plan):
             command = self.go_to_asym(self.mx, self.my, forward=False, max_speed = 85, min_speed=50)
             return command
         #Otherwise, make a wall shot:
-        else:
-            rotation_error = math.pi/15         
-            #Aim at x=centre of opponents zone, y=nearer edge of pitch
-            target_x = self.world.pitch.zones[self.world.their_defender.zone].center()[0]
+        else:    
+            #Aim at x= slightly in fron of centre of opponents zone, y=nearer edge of pitch
+            centre_x = self.world.pitch.zones[self.world.their_defender.zone].center()[0]
+            if self.world.their_defender.zone == 0:
+                target_x = centre_x 
+            elif self.world.their_defender.zone == 3:
+                target_x = centre_x 
             if self.robot.y > self.world.pitch.zones[self.robot.zone].center()[1]:
-                target_y = self.max_y
+                target_y = self.max_y + 10
             else:
-                target_y = 0
-            if self.robot.get_dot_to_target(target_x, target_y) > 0.98:
-                self.finished = True
-                self.robot.catcher = "open"
-                self.robot.set_busy_for(1.1)
-                return self.kick()
+                target_y = -10
+
+            consol.log("Shoot_target", (target_x, target_y), "WallShotPlan")
+            consol.log("Dot to target", self.robot.get_dot_to_target(target_x, target_y), "WallShot")
+            if self.robot.get_dot_to_target(target_x, target_y) > 0.995:
+                if self.in_position:
+                    self.finished = True
+                    self.robot.catcher = "open"
+                    self.robot.set_busy_for(1.1)
+                    return self.kick()
+                else:
+                    self.finished = False
+                    self.in_position = True
+                    return self.stop()
             else:
+                self.in_position = False
                 command = self.look_at(target_x, target_y, max_speed=55, min_speed=40)
                 return command
 
     def get_move_point(self):
         """
-        Returns (mx, my), the closer point of (centre, 1/4 height) and (centre, 3/4 height)
+        Returns (mx, my), the closer point of (centre(ish), 1/4 height) and (centre(ish), 3/4 height)
         """
-        mx = self.world.pitch.zones[self.robot.zone].center()[0]
+        centre_x = self.world.pitch.zones[self.robot.zone].center()[0]
+        if self.world.our_attacker.zone == 1:
+            mx = centre_x - 10
+        elif self.world.our_attacker.zone == 2:
+            mx = centre_x + 10
         centre_y = self.world.pitch.zones[self.robot.zone].center()[1]
         robot_y = self.robot.y
 
