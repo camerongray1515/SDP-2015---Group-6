@@ -30,7 +30,7 @@ class TakeShot(Plan):
 
         #If we are facing the goal, shoot!
         consol.log("Scalar product", self.robot.get_dot_to_target(gx, gy), "TakeShot")
-        if self.robot.get_dot_to_target(gx, gy) > 0.98:
+        if self.robot.get_dot_to_target(gx, gy) > 0.991:
             self.finished = True
             self.robot.catcher = "open"
             self.robot.set_busy_for(1.1)
