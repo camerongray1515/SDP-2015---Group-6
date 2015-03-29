@@ -42,7 +42,7 @@ class WallShotPlan(Plan):
                 target_y = self.max_y
             else:
                 target_y = 0
-            if self.robot.get_dot_to_target(target_x, target_y) > 0.95:
+            if self.robot.get_dot_to_target(target_x, target_y) > 0.98:
                 self.finished = True
                 self.robot.catcher = "open"
                 self.robot.set_busy_for(1.1)
