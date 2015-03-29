@@ -19,19 +19,25 @@ class WallShotPlan(Plan):
         """
         return self.robot.has_ball(self.world.ball) and (not self.robot.is_busy())
 
+    def initi(self, prev_plan):
+        if str(prev_plan) == "WallShot plan":
+            self.mx = prev_plan.mx
+            self.my = prev_plan.my
+        else:
+            (self.mx, self.my) = self.get_move_point()
+
     def nextCommand(self):
         # Plan is always finished to allow switching to other plans at any point
         # E.g. making a shot if an opening is available.
         self.finished = True
 
-        (move_x, move_y) = self.get_move_point()
-        consol.log("(mx, my)", (move_x,move_y), "WallShotPlan")
+        consol.log("(mx, my)", (self.mx,self.my), "WallShotPlan")
 
         #If we are not at the move target, move there:
-        distance = self.robot.get_euclidean_distance_to_point(move_x, move_y)
+        distance = self.robot.get_euclidean_distance_to_point(self.mx, self.my)
         consol.log("Distance to move target", distance, "WallShotPlan")
-        if distance < 10:
-            command = self.go_to_asym(move_x, move_y, forward=False, max_speed = 85, min_speed=50)
+        if distance > 20:
+            command = self.go_to_asym(self.mx, self.my, forward=False, max_speed = 85, min_speed=50)
             return command
         #Otherwise, make a wall shot:
         else:
