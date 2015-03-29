@@ -73,7 +73,9 @@ class TakeShot(Plan):
         their_defender = self.world.their_defender
 
         #If their defender is not on the pitch, return True:
-        if their_defender.x == their_defender.y and their_defender.x == 0:
+        consol.log("defender pos", (their_defender.x, their_defender.y), "TakeShot")
+        consol.log("defender angle", their_defender.angle, "TakeShot")
+        if their_defender._vector.x == their_defender._vector.y and their_defender._vector.x == 0:
             return True
 
         obstacle_x = their_defender.x
