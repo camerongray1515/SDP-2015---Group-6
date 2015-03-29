@@ -7,6 +7,9 @@
 #define boardLED 13 // This is the LED on the Arduino board itself
 #define radioPin 8 // This is the pin used to control the radio
 
+// Define sensor digital pins
+#define reedPin 3
+
 // Define motor connectors
 #define leftMotor 0
 #define rightMotor 1
@@ -16,6 +19,7 @@ SerialCommand scomm;
 
 int blink = 1;
 String kicker_position = "open";
+boolean kicker_running = false;
 
 namespace event_loop {
   typedef struct command_entry {
@@ -98,6 +102,8 @@ void setup() {
   
   // Set input and output pins
   pinMode(boardLED, OUTPUT);
+  pinMode(reedPin, INPUT);
+  digitalWrite(reedPin, HIGH); // Activate internal pullup resistor
   
   // Set up the serial port
   pinMode(radioPin, OUTPUT); // Initialise the radio
@@ -126,8 +132,11 @@ void setup() {
 
 int blink_count = 0;
 boolean led_on = false;
+int blink_interval = 20000;
+int sensor_read_count = 0;
+int sensor_read_interval = 20000;
 void loop() {
-  if (blink_count == 20000) {
+  if (blink_count == blink_interval) {
     if (led_on) {
       digitalWrite(boardLED, LOW);
       led_on = false;
@@ -139,9 +148,35 @@ void loop() {
   }
   blink_count++;
   
+  if (sensor_read_count == sensor_read_interval) {
+    // The time has come to read values from the sensors and process them as required
+    handle_closed_catcher_sensor();
+    sensor_read_count = 0;
+  }
+  sensor_read_count++;
+  
   scomm.readSerial();
     
   event_loop::process_list();
+}
+
+void handle_closed_catcher_sensor() {
+  int position = 0;
+  position = digitalRead(reedPin);  
+  boolean closed = position == LOW;
+  
+  if (closed && !kicker_running) {
+    // Todo: tidy dupicated code
+    if (kicker_position == "prepared") {
+        event_loop::add_command_head(kicker, 100, millis());
+        event_loop::add_command_head(kicker, 0, millis()+1000);
+        event_loop::add_command_head(kicker, -40, millis()+1500);
+        event_loop::add_command_head(kicker, 0, millis()+1700);
+    } else if (kicker_position == "open") {
+      event_loop::add_command_head(kicker, 100, millis());
+      event_loop::add_command_head(kicker, 0, millis()+1000); 
+    }
+  }
 }
 
 // Command callback functions
@@ -202,7 +237,6 @@ void open_kicker() {
   kicker_position = "open";
 }
 
-
 void ping(){
   Serial.println("ack6");
 }
@@ -225,6 +259,15 @@ void catch_ball() {
 }
 
 void set_motor_speed(int motor, int speed) {
+  // Update whether the kicker is running or not
+  if (motor == kicker) {
+    if (speed == 0) {
+      kicker_running = false;
+    } else {
+      kicker_running = true;
+    }
+  }
+  
   if (speed > 0) {
       motorForward(motor, speed);
     } else if (speed < 0) {
