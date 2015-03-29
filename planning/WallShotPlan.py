@@ -23,10 +23,12 @@ class WallShotPlan(Plan):
         if str(prev_plan) == "WallShot plan":
             self.mx = prev_plan.mx
             self.my = prev_plan.my
-            self.in_position = prev_plan.in_position
+            self.in_position = prev_plan.in_position # Flags when the robot has rotated to the correct angle
+            self.has_moved = prev_plan.has_moved     # Flags when the robot has moved to the correct position
         else:
             (self.mx, self.my) = self.get_move_point()
             self.in_position = False
+            self.has_moved = False
 
     def nextCommand(self):
         # Plan is always finished to allow switching to other plans at any point
@@ -38,11 +40,13 @@ class WallShotPlan(Plan):
         #If we are not at the move target, move there:
         distance = self.robot.get_euclidean_distance_to_point(self.mx, self.my)
         consol.log("Distance to move target", distance, "WallShotPlan")
-        if distance > 20:
+        if distance > 18 and not self.has_moved:
             command = self.go_to_asym(self.mx, self.my, forward=False, max_speed = 85, min_speed=50)
             return command
         #Otherwise, make a wall shot:
         else:    
+            #Flag that move is complete:
+            self.has_moved = True
             #Aim at x= slightly in fron of centre of opponents zone, y=nearer edge of pitch
             centre_x = self.world.pitch.zones[self.world.their_defender.zone].center()[0]
             if self.world.their_defender.zone == 0:
@@ -55,8 +59,8 @@ class WallShotPlan(Plan):
                 target_y = -10
 
             consol.log("Shoot_target", (target_x, target_y), "WallShotPlan")
-            consol.log("Dot to target", self.robot.get_dot_to_target(target_x, target_y), "WallShot")
-            if self.robot.get_dot_to_target(target_x, target_y) > 0.995:
+            consol.log("Dot to target", self.robot.get_dot_to_target(target_x, target_y), "WallShotPlan")
+            if self.robot.get_dot_to_target(target_x, target_y) > 0.991:
                 if self.in_position:
                     self.finished = True
                     self.robot.catcher = "open"
