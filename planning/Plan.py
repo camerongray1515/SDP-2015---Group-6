@@ -177,19 +177,19 @@ class Plan(object):
 
 
         distance = self.robot.get_euclidean_distance_to_point(x, y)
-        if(distance):
-            distance = 0.1
+        #if(distance):
+        #    distance = 0.1
 
 
         dy = fabs(self.robot.y - y)
 
-        x = np.interp(dy, [fade_distance_min, 50], [x, self.midX])
+        x = np.interp(dy, [50, 100], [x, self.midX])
 
         dist_edge = self.get_distance_from_edges()
 
         consol.log('edge distance', dist_edge, 'Plan')
-        if dist_edge < 20:
-            distance = min(distance,dist_edge)
+        #if dist_edge < 20:
+        #    distance = min(distance,dist_edge)
 
 
         angle = self.robot.get_rotation_to_point(x, y)
@@ -343,6 +343,12 @@ class Plan(object):
         Generates a kick command with optional speed.
         """
         return CommandDict(speed, "None", "Kick")
+
+    def stop(self):
+        """
+        Generates a stop command
+        """
+        return CommandDict.stop()
 
     
     def get_distance_from_edges(self):

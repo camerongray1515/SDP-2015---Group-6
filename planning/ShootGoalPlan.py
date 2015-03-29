@@ -21,7 +21,7 @@ class ShootGoalPlan(Plan):
         """
         # TODO/DISCUSS how are we going to do this? Options currently are either a set state or read directly from the vision system
         # Either way the grabber state is not currently updated, need to look through the team 7 code and fix this
-        return self.robot.has_ball(self.world.ball)
+        return self.robot.has_ball(self.world.ball) and (not self.robot.is_busy())
 
     def nextCommand(self):
         their_defender = self.world.their_defender
@@ -45,6 +45,7 @@ class ShootGoalPlan(Plan):
             else:
                 self.finished = True
                 self.robot.catcher = "open"
+                self.robot.set_busy_for(1.1)
                 return self.kick()
 
 
@@ -68,6 +69,7 @@ class ShootGoalPlan(Plan):
             else:
                 self.finished = True
                 self.robot.catcher = "open"
+                self.robot.set_busy_for(1.1)
                 return self.kick()
 
         else:

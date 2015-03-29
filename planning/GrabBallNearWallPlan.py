@@ -3,15 +3,18 @@ from Utility.CommandDict import CommandDict
 from Control import robot_api
 import consol
 
-DISTANCE_ERROR = 47
-class GrabBallPlan(Plan):
-    """Plan for the robot navigating to and grabbing the ball."""
+DISTANCE_ERROR = 42
+class GrabBallNearWallPlan(Plan):
+    """
+    Plan for the robot navigating to and grabbing the ball when it is near the wall
+    by closing the grabber and driving into the wall.
+    """
 
     def initi(self, prevPlan):
-        robot_api.robot_api.prepare_catch()
-        self.robot.catcher = "prepared"
-        consol.log_time('GRAB', 'initi')
-
+        # Need to record has_ball here as the check for having the ball is closed grabber - which we will need
+        self.has_ball = False 
+        robot_api.robot_api.catch()
+        self.robot.catcher = "closed"
 
 
 
@@ -19,22 +22,29 @@ class GrabBallPlan(Plan):
         """
         Constructor. Calls superclass constructor.
         """
-        super(GrabBallPlan, self).__init__(world, robot)
+        super(GrabBallNearWallPlan, self).__init__(world, robot)
 
     def isValid(self):
         """
         Current constraints are:
             - Ball must be within the robot's zone
             - Robot must not have the ball
-            - Ball must not be near the walls
-            - NOT IMPLEMENTED : Robot must be within its zone - though this -should- be handled by the go_to function. This may be useful for some kind of state-reset if we get out of the zone somehow
-        """
-        near_dist = 40 # Note DO NOT CHANGE WITHOUT ALSO CHANGING IN GrabBallNearWallPlan
+            - Ball must be near a wall
+        """        
+        # See if self.has_ball exists:
+        if not hasattr(self, 'has_ball'):
+            self.has_ball = True
+            
+        consol.log("Ball dist from wall", self.ball_distance_from_wall(), "GrabNearWall")
+        near_dist = 40 # Note DO NOT CHANGE WITHOUT ALSO CHANGING IN GRABBALLPLAN
         if self.world.ball is not None and self.world.ball.velocity <= 3:
-            return self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y) and \
-            (not self.robot.has_ball(self.world.ball)) and self.ball_distance_from_wall > near_dist and \
-            not self.robot.is_busy()
-        return False
+            isValid = self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y) and \
+                   ((not self.robot.has_ball(self.world.ball)) or (not self.has_ball)) and \
+                   self.ball_distance_from_wall <= near_dist and (not self.robot.is_busy())
+        else:
+            isValid = False
+        consol.log("isValid", isValid, "GrabNearWall")
+        return isValid
 
     def nextCommand(self):
 
@@ -59,10 +69,6 @@ class GrabBallPlan(Plan):
         # if very close to ball
         if distance < DISTANCE_ERROR and dot > 0.96:
             self.finished = True
-            self.robot.catcher = "closed"
-            self.robot.set_busy_for(1.1)
-            return CommandDict.catch()
-
         return command
 
     def ball_distance_from_wall(self):
@@ -73,7 +79,7 @@ class GrabBallPlan(Plan):
         if top_dist < bottom_dist:
             return top_dist
         else:
-            return bottom_dis
+            return bottom_dist
 
     def __str__(self):
-        return "grab ball plan"
+        return "GrabBallNearWallPlan"

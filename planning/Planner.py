@@ -8,6 +8,7 @@ from PassPlan import PassPlan
 from TakeShot import TakeShot
 from ReturnToCentrePlan import ReturnToCentrePlan
 from WallShotPlan import WallShotPlan
+from RetreatFromWall import RetreatFromWall
 import consol
 
 class Planner(object):
@@ -29,7 +30,7 @@ class Planner(object):
         # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
         p = (lambda plan: plan(self.world, self.robot))
         
-        self.plans = [p(TakeShot), p(WallShotPlan), p(GrabBallPlan), p(MatchY), p(IdlePlan)]
+        self.plans = [p(RetreatFromWall), p(TakeShot), p(WallShotPlan), p(GrabBallPlan), p(MatchY), p(IdlePlan)]
 
         self.current_plan = self.plans[0]
 
@@ -42,6 +43,8 @@ class Planner(object):
         # Update the world state with the given positions
         self.world.update_positions(model_positions)
 
+        # Update whether the robot is marked as busy on consol
+        self.robot.is_busy()
         if self.world.ball != None:
             consol.log("Catcher",self.robot.catcher,"Robot")
             if(self.current_plan.isValid() and not self.current_plan.isFinished()):

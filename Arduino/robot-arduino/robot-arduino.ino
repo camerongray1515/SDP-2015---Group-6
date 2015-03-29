@@ -15,6 +15,9 @@
 #define rightMotor 1
 #define kicker 2
 
+// Define event buffer paramters
+#define EVENT_BUFFER_SIZE 50
+
 SerialCommand scomm;
 
 int blink = 1;
@@ -22,80 +25,60 @@ String kicker_position = "open";
 boolean kicker_running = false;
 
 namespace event_loop {
-  typedef struct command_entry {
+  struct command_entry {
     int motor;
     int speed;
     unsigned long start_time;
+    bool todo;
+  };
   
-    struct command_entry *next;
-  } command_entry_t;
+  struct command_entry event_buffer[EVENT_BUFFER_SIZE];
   
-  void add_command(command_entry_t **head, int motor, int speed, unsigned long start_time)
-  {
-    // Add the command to the start of the list for simplicity sake
-    command_entry_t *new_entry;
-    new_entry = (command_entry_t *) malloc(sizeof(command_entry_t));
-  
-    new_entry->motor = motor;
-    new_entry->speed = speed;
-    new_entry->start_time = start_time;
-    new_entry->next = *head;
-    *head = new_entry;
-  }
-  
-  void remove_command(command_entry_t **head, int n)
-  {
-    command_entry_t *current = *head;
-    command_entry_t *temp = NULL;
-  
-    if (n == 0)
-    {
-      temp = (*head)->next;
-      free(*head);
-      *head = temp;
-      return;
-    }
-  
-    int i;
-    for (i = 0; i < n-1; i++)
-    {
-      if (current->next != NULL)
-      {
-        current = current->next;
-      }
-    }
-  
-    temp = current->next;
-    current->next = temp->next;
-    free(temp);
-  } 
-  
-  command_entry_t *head = NULL;
-  
-  void add_command_head(int motor, int speed, unsigned long start_time)
-  {
-    add_command(&head, motor, speed, start_time); 
-  }
-  
-  void process_list()
-  {
-    command_entry_t *current = head;
-    int i = 0;
-    while (current != NULL)
-    {
-      if (current->start_time <= millis())
-      {
-        set_motor_speed(current->motor, current->speed);
-        remove_command(&head, i);
-      }
+  void add_command_head(int motor, int speed, unsigned long start_time) {
+   // Loop through the array and put this command in the first non-todo
+   int i;
+   int empty_slot = -1;
+   for (i = 0; i < EVENT_BUFFER_SIZE; i++) {
+     if (event_buffer[i].todo == false) {
+       empty_slot = i;
+       break;
+     }
+   }
+   
+   // If there is no empty slot, drop the command and print error to serial
+   if (empty_slot == -1) {
+     Serial.println("error: command buffer full, command dropped");
+     onerror();
+     return;
+   }
       
-      current = current->next;
-      i++;
+   event_buffer[empty_slot].motor = motor;
+   event_buffer[empty_slot].speed = speed;
+   event_buffer[empty_slot].start_time = start_time;
+   event_buffer[empty_slot].todo = true;
+  }
+  
+  // Sets the value of "todo" to false in each buffer entry
+  void initialise_buffer() {
+    int i;
+    for (i = 0; i < EVENT_BUFFER_SIZE; i++)
+    {
+      event_buffer[i].todo = false;
+    }
+  }
+  
+  void process_list() {
+    int i;
+    for (i = 0; i < EVENT_BUFFER_SIZE; i++) {
+      if (event_buffer[i].todo && event_buffer[i].start_time <= millis()) {
+        set_motor_speed(event_buffer[i].motor, event_buffer[i].speed);
+  
+        // Set todo to false so this buffer slot can be reused
+        event_buffer[i].todo = false;
+      }
     }
   }
 }
-
-
 
 void setup() { 
   SDPsetup();
@@ -181,7 +164,7 @@ void handle_closed_catcher_sensor() {
 
 // Command callback functions
 void store_motor_action() {
-    Serial.println("ack6");
+//    Serial.println("ack6");
     char *motorarg = scomm.next();
     char *speedarg = scomm.next();
     char *delayarg = scomm.next();
@@ -198,8 +181,12 @@ void store_motor_action() {
     }
 }
 
+void onerror() {
+  blink_interval = 2000;
+}
+
 void prepare_catch() {
-  Serial.println("ack6");
+//  Serial.println("ack6");
   
   if (kicker_position == "prepared") {
     return;
@@ -215,7 +202,7 @@ void prepare_catch() {
 }
 
 void kick() {
-  Serial.println("ack6");
+//  Serial.println("ack6");
   char *speedarg = scomm.next();
   
   if (kicker_position == "open") {
@@ -242,7 +229,7 @@ void ping(){
 }
 
 void catch_ball() {
-  Serial.println("ack6");
+//  Serial.println("ack6");
   char *speedarg = scomm.next();
   
   if (kicker_position == "closed") {

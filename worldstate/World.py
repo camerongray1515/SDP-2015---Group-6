@@ -4,7 +4,7 @@ from worldstate.Coordinate import Vector
 from worldstate.Robot import Robot
 from worldstate.OtherPitchObjects import Pitch, Goal, Ball
 from vision.Kalman import Kalman
-import numpy as np
+import FrameEst
 import consol
 
 
@@ -12,6 +12,8 @@ class World(object):
     '''
     This class describes the environment
     '''
+
+
 
     def __init__(self, our_side, pitch_num):
         assert our_side in ['left', 'right']
@@ -38,6 +40,19 @@ class World(object):
         self.dx = 0.0
         self.dy = 0.0
         self.dangle = 0.0
+        global world
+        world = self
+
+
+
+
+
+
+    def get_future(self):
+        oa = self.our_attacker
+        cd, ca = ([oa._vector.x, oa._vector.y], oa._vector.angle)
+
+        return FrameEst.get_rot_future(cd, ca)
 
     @property
     def our_attacker(self):
@@ -119,3 +134,8 @@ class World(object):
 
         # Update ball
         self.ball.vector = pos_dict['ball']
+
+
+        FrameEst.update()
+
+        self.get_future()

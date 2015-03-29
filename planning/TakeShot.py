@@ -5,12 +5,20 @@ import consol
 
 class TakeShot(Plan):
     "Plan for the robot to take a shot at goal"
-
+    
     def __init__(self, world, robot):
         """
         Constructor. Calls superclass constructor.
         """
         return super(TakeShot, self).__init__(world, robot)
+
+    def initi(self, prev_plan):
+        self.frames_before_shot = 4 #Frames to wait before shooting, to stop overshooting
+        if str(prev_plan) == str(self):
+            self.frames_passed = prev_plan.frames_passed
+        else:
+            self.frames_passed = 0
+            
 
     def isValid(self):
         """
@@ -19,19 +27,26 @@ class TakeShot(Plan):
             - Shot must not be blocked
         """
         consol.log("Clear shot", self.has_clear_shot(), "TakeShot")
-        return self.robot.has_ball(self.world.ball) and self.has_clear_shot()
+        return self.robot.has_ball(self.world.ball) and self.has_clear_shot() and (not self.robot.is_busy())
 
     def nextCommand(self):
+        # Plan is always finished to allow switching to other plans at any point.
+        self.finished = True
         rotation_error = math.pi/15         
         (gx, gy) = self.goalCentre()
         consol.log("(gx, gy)", (gx,gy), "TakeShot")
 
         #If we are facing the goal, shoot!
         consol.log("Scalar product", self.robot.get_dot_to_target(gx, gy), "TakeShot")
-        if self.robot.get_dot_to_target(gx, gy) > 0.95:
-            self.finished = True
-            self.robot.catcher = "open"
-            return self.kick()
+        if self.robot.get_dot_to_target(gx, gy) > 0.985:
+            if self.frames_passed >= self.frames_before_shot:
+                self.finished = True
+                self.robot.catcher = "open"
+                self.robot.set_busy_for(1.1)
+                return self.kick()
+            else:
+                self.frames_passed += 1
+                return self.stop()
         else:
             command = self.look_at(gx, gy, max_speed=55, min_speed=40)
             return command
@@ -56,6 +71,13 @@ class TakeShot(Plan):
 
         (target_x, target_y) = self.goalCentre()
         their_defender = self.world.their_defender
+
+        #If their defender is not on the pitch, return True:
+        consol.log("defender pos", (their_defender.x, their_defender.y), "TakeShot")
+        consol.log("defender angle", their_defender.angle, "TakeShot")
+        if their_defender._vector.x == their_defender._vector.y and their_defender._vector.x == 0:
+            return True
+
         obstacle_x = their_defender.x
         obstacle_y = their_defender.y
 
