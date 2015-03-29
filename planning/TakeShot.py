@@ -5,12 +5,20 @@ import consol
 
 class TakeShot(Plan):
     "Plan for the robot to take a shot at goal"
-
+    
     def __init__(self, world, robot):
         """
         Constructor. Calls superclass constructor.
         """
         return super(TakeShot, self).__init__(world, robot)
+
+    def initi(self, prev_plan):
+        self.frames_before_shot = 4 #Frames to wait before shooting, to stop overshooting
+        if str(prev_plan) == str(self):
+            self.frames_passed = prev_plan.frames_passed
+        else:
+            self.frames_passed = 0
+            
 
     def isValid(self):
         """
@@ -30,11 +38,15 @@ class TakeShot(Plan):
 
         #If we are facing the goal, shoot!
         consol.log("Scalar product", self.robot.get_dot_to_target(gx, gy), "TakeShot")
-        if self.robot.get_dot_to_target(gx, gy) > 0.991:
-            self.finished = True
-            self.robot.catcher = "open"
-            self.robot.set_busy_for(1.1)
-            return self.kick()
+        if self.robot.get_dot_to_target(gx, gy) > 0.985:
+            if self.frames_passed >= self.frames_before_shot:
+                self.finished = True
+                self.robot.catcher = "open"
+                self.robot.set_busy_for(1.1)
+                return self.kick()
+            else:
+                self.frames_passed += 1
+                return self.stop()
         else:
             command = self.look_at(gx, gy, max_speed=55, min_speed=40)
             return command
