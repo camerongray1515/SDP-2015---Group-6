@@ -73,7 +73,7 @@ class GrabBallPlan(Plan):
         if top_dist < bottom_dist:
             return top_dist
         else:
-            return bottom_dis
+            return bottom_dist
 
     def __str__(self):
         return "grab ball plan"

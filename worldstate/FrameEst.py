@@ -61,10 +61,7 @@ def get_rot_future(cd, ca):
     na = (a + ca)%(2.0*pi)
 
     #consol.log('future abs', (nd, na), 'Future')
-    consol.log_dot(nd, 'yellow', 'fut')
-
-    da = np.array([cos(na), sin(na)]) * 40.0
-    consol.log_line([nd, nd +da], 'futl')
+    consol.log_pos_angle(nd, na, 'fut')
 
 
     return (nd, na)

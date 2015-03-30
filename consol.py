@@ -4,6 +4,8 @@ import os
 import time
 import cv2
 from vision.colors import BGR_COMMON
+import numpy as np
+from math import cos, sin, pi
 
 # use log function to print something that changes often
 
@@ -55,6 +57,13 @@ def log_dot(position, color, id):
 def log_line(pos2d, id):
     lines[id] = pos2d
 
+
+def log_pos_angle(pos, angle, id, length = 40.0):
+    log_dot(pos, 'yellow', id)
+
+
+    da = np.array([cos(angle), sin(angle)]) * length
+    log_line([pos, pos +da], id)
 
 def draw_line(frame, points, thickness=2):
     p0 = points[0]

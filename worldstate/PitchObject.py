@@ -1,7 +1,10 @@
 from Polygon.cPolygon import Polygon
 
 from worldstate.Coordinate import Vector
-
+import consol
+import numpy as np
+from time import time
+from math import sin, cos, atan2,pi
 
 class PitchObject(object):
     '''
@@ -19,6 +22,10 @@ class PitchObject(object):
             self._height = height
             self._angle_offset = angle_offset
             self._vector = Vector(x, y, angle, velocity)
+            self.last_time = time()
+
+            self.real_vel = np.array([0,0])
+
 
     @property
     def width(self):
@@ -44,6 +51,7 @@ class PitchObject(object):
     def velocity(self):
         return self._vector.velocity
 
+    '''
     @property
     def x(self):
         return self._vector.x
@@ -51,17 +59,66 @@ class PitchObject(object):
     @property
     def y(self):
         return self._vector.y
+    '''
+    latency = 0.3
+    @property
+    def x(self):
+        nx = self._vector.x + self.real_vel[0] * PitchObject.latency
+        return nx
+
+    @property
+    def y(self):
+        return self._vector.y + self.real_vel[1] * PitchObject.latency
 
     @property
     def vector(self):
         return self._vector
 
+
+
     @vector.setter
     def vector(self, new_vector):
+        low_pass = 0.5
         if new_vector == None or not isinstance(new_vector, Vector):
             raise ValueError('The new vector can not be None and must be an instance of a Vector')
         else:
-            self._vector = Vector(new_vector.x, new_vector.y, new_vector.angle - self._angle_offset, new_vector.velocity)
+            nv1 = np.array([new_vector.x, new_vector.y, new_vector.angle - self._angle_offset, new_vector.velocity])
+            nv2 = np.array([self._vector.x, self._vector.y, self._vector.angle, self._vector.velocity])
+
+            dt = time() - self.last_time
+            #vec1 = Vector(new_vector.x, new_vector.y, new_vector.angle - self._angle_offset, new_vector.velocity)
+            #vec2 = self._vector
+
+            #this won't work when stepping over 2pi in angle
+            nv3 = low_pass * nv1 + (1.0 - low_pass) * nv2
+
+            lpos = np.array(nv2[:2])
+            pos = np.array(nv3[:2])
+
+            self.real_vel = np.array((pos - lpos) / dt)
+
+            ang = atan2(self.real_vel[1], self.real_vel[0])
+
+
+            x = self.real_vel
+            mag = np.sqrt(x.dot(x))
+
+
+            consol.log_pos_angle([self.x, self.y], ang, self, mag)
+
+
+
+            #nv3[0] = pos[0]
+            #nv3[1] = pos[1]
+
+            vec3 = Vector(*(tuple(nv3)))
+
+            self._vector = vec3
+
+
+            #self.last_pos = np.array([self.x, self.y])
+            self.last_time = time()
+            #consol.log_pos_angle(d, self.angle, self, self.velocity * 1.0)
 
     def get_generic_polygon(self, width, length):
         '''
