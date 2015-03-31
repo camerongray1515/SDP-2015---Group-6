@@ -24,10 +24,10 @@ class TakeShot(Plan):
         """
         Current constraints are:
             - Robot must have the ball
-            - Shot must not be blocked
+            - Shot must not be blocked(not implemented)
         """
         consol.log("Clear shot", self.has_clear_shot(), "TakeShot")
-        return self.robot.has_ball(self.world.ball) and self.has_clear_shot() and (not self.robot.is_busy())
+        return self.robot.has_ball(self.world.ball)  and (not self.robot.is_busy())
 
     def nextCommand(self):
         # Plan is always finished to allow switching to other plans at any point.
