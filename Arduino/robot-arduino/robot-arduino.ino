@@ -9,6 +9,7 @@
 
 // Define sensor digital pins
 #define reedPin 3
+#define prepareReedPin 5
 
 // Define motor connectors
 #define leftMotor 0
@@ -16,7 +17,7 @@
 #define kicker 2
 
 // Define event buffer paramters
-#define EVENT_BUFFER_SIZE 50
+#define EVENT_BUFFER_SIZE 10
 
 SerialCommand scomm;
 
@@ -29,6 +30,8 @@ namespace event_loop {
     int motor;
     int speed;
     unsigned long start_time;
+    int reed_pin;
+    int trigger_state;
     bool todo;
   };
   
@@ -56,6 +59,34 @@ namespace event_loop {
    event_buffer[empty_slot].speed = speed;
    event_buffer[empty_slot].start_time = start_time;
    event_buffer[empty_slot].todo = true;
+   event_buffer[empty_slot].reed_pin = -1;
+   event_buffer[empty_slot].trigger_state = LOW;
+  }
+  
+  void add_command_pin_trigger(int motor, int speed, int reed_pin, int trigger_state, int do_after) {
+    // Loop through the array and put this command in the first non-todo
+   int i;
+   int empty_slot = -1;
+   for (i = 0; i < EVENT_BUFFER_SIZE; i++) {
+     if (event_buffer[i].todo == false) {
+       empty_slot = i;
+       break;
+     }
+   }
+   
+   // If there is no empty slot, drop the command and print error to serial
+   if (empty_slot == -1) {
+     Serial.println("error: command buffer full, command dropped");
+     onerror();
+     return;
+   }
+      
+   event_buffer[empty_slot].motor = motor;
+   event_buffer[empty_slot].speed = speed;
+   event_buffer[empty_slot].start_time = -1;
+   event_buffer[empty_slot].todo = true;
+   event_buffer[empty_slot].reed_pin = reed_pin;
+   event_buffer[empty_slot].trigger_state = trigger_state;
   }
   
   // Sets the value of "todo" to false in each buffer entry
@@ -64,6 +95,9 @@ namespace event_loop {
     for (i = 0; i < EVENT_BUFFER_SIZE; i++)
     {
       event_buffer[i].todo = false;
+      event_buffer[i].reed_pin = -1;
+      event_buffer[i].start_time = -1;
+      event_buffer[i].trigger_state = LOW;
     }
   }
   
@@ -75,6 +109,22 @@ namespace event_loop {
   
         // Set todo to false so this buffer slot can be reused
         event_buffer[i].todo = false;
+        
+        continue;
+      }
+      
+      // Now check if this is a reed switch event
+      if (event_buffer[i].todo && event_buffer[i].reed_pin != -1) {
+        int position = 0;
+        position = digitalRead(event_buffer[i].reed_pin);  
+        boolean triggered = position == event_buffer[i].trigger_state;
+        
+        if (triggered) {
+          set_motor_speed(event_buffer[i].motor, event_buffer[i].speed);
+  
+          // Set todo to false so this buffer slot can be reused
+          event_buffer[i].todo = false;
+        }
       }
     }
   }
@@ -87,6 +137,8 @@ void setup() {
   pinMode(boardLED, OUTPUT);
   pinMode(reedPin, INPUT);
   digitalWrite(reedPin, HIGH); // Activate internal pullup resistor
+  pinMode(prepareReedPin, INPUT);
+  digitalWrite(prepareReedPin, HIGH); // Activate internal pullup resistor
   
   // Set up the serial port
   pinMode(radioPin, OUTPUT); // Initialise the radio
@@ -137,7 +189,7 @@ void loop() {
     sensor_read_count = 0;
   }
   sensor_read_count++;
-  
+
   scomm.readSerial();
     
   event_loop::process_list();
@@ -147,19 +199,26 @@ void handle_closed_catcher_sensor() {
   int position = 0;
   position = digitalRead(reedPin);  
   boolean closed = position == LOW;
+  position = digitalRead(prepareReedPin);  
+  boolean prepared = position == LOW;
   
-  if (closed && !kicker_running) {
-    // Todo: tidy dupicated code
-    if (kicker_position == "prepared") {
-        event_loop::add_command_head(kicker, 100, millis());
-        event_loop::add_command_head(kicker, 0, millis()+1000);
-        event_loop::add_command_head(kicker, -40, millis()+1500);
-        event_loop::add_command_head(kicker, 0, millis()+1700);
-    } else if (kicker_position == "open") {
-      event_loop::add_command_head(kicker, 100, millis());
-      event_loop::add_command_head(kicker, 0, millis()+1000); 
-    }
-  }
+//  if (!kicker_running) {
+//    if (closed) {
+//      // Todo: tidy dupicated code
+//      if (kicker_position == "open") {
+//        event_loop::add_command_head(kicker, 100, millis());
+//        event_loop::add_command_head(kicker, 0, millis()+1000); 
+//      }
+//    } else if (kicker_position == "closed") {
+//      event_loop::add_command_head(kicker, -1 * 100, millis());
+//      event_loop::add_command_pin_trigger(kicker, 0, reedPin, LOW);
+//    } else if (kicker_position == "prepared" && !prepared) {
+//      event_loop::add_command_head(kicker, 100, millis());
+//      event_loop::add_command_head(kicker, 0, millis()+1000);
+//      event_loop::add_command_head(kicker, -25, millis()+1500);
+//      event_loop::add_command_pin_trigger(kicker, 0, prepareReedPin, LOW);
+//    }
+//  }
 }
 
 // Command callback functions
@@ -195,8 +254,8 @@ void prepare_catch() {
   // Start the kicker immediately, after 1 second stop it and then reverse it at a reduced speed then stop it 200ms after that
   event_loop::add_command_head(kicker, 100, millis());
   event_loop::add_command_head(kicker, 0, millis()+1000);
-  event_loop::add_command_head(kicker, -40, millis()+1500);
-  event_loop::add_command_head(kicker, 0, millis()+1700);
+  event_loop::add_command_head(kicker, -25, millis()+1500);
+  event_loop::add_command_pin_trigger(kicker, 0, prepareReedPin, LOW, millis()+1500);
   
   kicker_position = "prepared";
 }
@@ -238,9 +297,8 @@ void catch_ball() {
   
   int speed = atoi(speedarg);
   
-  // Start the catch immediately, after 1 second stop the motor
   event_loop::add_command_head(kicker, -1 * speed, millis());
-  event_loop::add_command_head(kicker, 0, millis()+1000);
+  event_loop::add_command_pin_trigger(kicker, 0, reedPin, LOW, 0);
   
   kicker_position = "closed";
 }
