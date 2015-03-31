@@ -27,7 +27,7 @@ class RetreatFromWall(Plan):
     def nextCommand(self):
         centre_x = self.world.pitch.zones[self.robot.zone].center()[0]
         centre_y = self.world.pitch.zones[self.robot.zone].center()[1]
-        command = self.go_to_asym(centre_x, centre_y, forward=False, max_speed = 85, min_speed=50)
+        command = self.go_to_asym(centre_x, centre_y, forward=False, max_speed = 55, min_speed=50)
         if self.distance_from_wall() > 50:
             self.finished = True
         return command
