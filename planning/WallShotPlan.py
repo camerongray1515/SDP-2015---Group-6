@@ -20,15 +20,17 @@ class WallShotPlan(Plan):
         return self.robot.has_ball(self.world.ball) and (not self.robot.is_busy())
 
     def initi(self, prev_plan):
-        if str(prev_plan) == "WallShot plan":
+        self.frames_before_shot = 4 #Frames to wait before shooting, to stop overshooting
+        if str(prev_plan) == str(self):
             self.mx = prev_plan.mx
             self.my = prev_plan.my
-            self.in_position = prev_plan.in_position # Flags when the robot has rotated to the correct angle
             self.has_moved = prev_plan.has_moved     # Flags when the robot has moved to the correct position
+            self.frames_passed = prev_plan.frames_passed
         else:
             (self.mx, self.my) = self.get_move_point()
             self.in_position = False
             self.has_moved = False
+            self.frames_passed = 0
 
     def nextCommand(self):
         # Plan is always finished to allow switching to other plans at any point
@@ -61,17 +63,16 @@ class WallShotPlan(Plan):
             consol.log("Shoot_target", (target_x, target_y), "WallShotPlan")
             consol.log("Dot to target", self.robot.get_dot_to_target(target_x, target_y), "WallShotPlan")
             if self.robot.get_dot_to_target(target_x, target_y) > 0.991:
-                if self.in_position:
+                if self.frames_passed >= self.frames_before_shot:
                     self.finished = True
                     self.robot.catcher = "open"
                     self.robot.set_busy_for(1.1)
                     return self.kick()
-                else:
-                    self.finished = False
-                    self.in_position = True
+                else:                    
+                    self.frames_passed += 1
                     return self.stop()
             else:
-                self.in_position = False
+                self.frames_passed = 0                
                 command = self.look_at(target_x, target_y, max_speed=55, min_speed=40)
                 return command
 

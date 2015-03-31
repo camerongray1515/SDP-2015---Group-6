@@ -64,19 +64,29 @@ class Robot(PitchObject):
 
     @property
     def angle(self):
-        d, a = World.world.get_future()
+        if self == World.world.our_attacker:
+            d, a = World.world.get_future()
+        else:
+            a = super(Robot, self).angle
 
         return a
 
     @property
     def x(self):
-        d, a = World.world.get_future()
-        return d[0]
+        if self == World.world.our_attacker:
+            d, a = World.world.get_future()
+            return d[0]
+        else:
+            return super(Robot, self).x
+
 
     @property
     def y(self):
-        d, a = World.world.get_future()
-        return d[1]
+        if self == World.world.our_attacker:
+            d, a = World.world.get_future()
+            return d[1]
+        else:
+            return super(Robot, self).y
 
 
 

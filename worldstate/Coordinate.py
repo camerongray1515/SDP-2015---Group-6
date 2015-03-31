@@ -53,6 +53,8 @@ class Vector(Coordinate):
     def velocity(self):
         return self._velocity
 
+
+
     @angle.setter
     def angle(self, new_angle):
         if new_angle == None:

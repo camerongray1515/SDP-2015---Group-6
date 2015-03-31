@@ -3,7 +3,7 @@ from Utility.CommandDict import CommandDict
 from Control import robot_api
 import consol
 
-DISTANCE_ERROR = 40
+DISTANCE_ERROR = 47
 class GrabBallPlan(Plan):
     """Plan for the robot navigating to and grabbing the ball."""
 
@@ -26,13 +26,13 @@ class GrabBallPlan(Plan):
         Current constraints are:
             - Ball must be within the robot's zone
             - Robot must not have the ball
-            - Ball must be moving slower than 8            - 
+            - Ball must not be near the walls
             - NOT IMPLEMENTED : Robot must be within its zone - though this -should- be handled by the go_to function. This may be useful for some kind of state-reset if we get out of the zone somehow
         """
         near_dist = 40 # Note DO NOT CHANGE WITHOUT ALSO CHANGING IN GrabBallNearWallPlan
-        if self.world.ball is not None and self.world.ball.velocity <= 8:
+        if self.world.ball is not None and self.world.ball.velocity <= 3:
             return self.world.pitch.is_within_bounds(self.robot, self.world.ball.x, self.world.ball.y) and \
-            (not self.robot.has_ball(self.world.ball)) and \
+            (not self.robot.has_ball(self.world.ball)) and self.ball_distance_from_wall > near_dist and \
             not self.robot.is_busy()
         return False
 

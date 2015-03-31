@@ -113,7 +113,7 @@ class World(object):
         dy = y - last_y
         dangle = a - last_angle
 
-
+        '''
 
         x = World.low_pass(x, self.x)
         y = World.low_pass(y, self.x)
@@ -127,7 +127,7 @@ class World(object):
         predicted_angle = self.Ka.n_frames(20, [a,0,dangle,0])
         self.our_attacker.predicted_vector = Vector(predicted_pos[0],predicted_pos[1],predicted_angle[0],0)
         # Currently doesnt use any predicted velocity. If any reason to use this were to be found feel free to add
-
+        '''
         # Update robot positions
         for key in robots.keys():
             robots[key].vector = pos_dict[key]

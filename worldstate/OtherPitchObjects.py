@@ -2,7 +2,8 @@ from Polygon.cPolygon import Polygon
 
 from worldstate.PitchObject import PitchObject
 from planning.utilities import get_croppings
-
+from math import cos, sin, pi
+import consol
 
 BALL_WIDTH = 5
 BALL_LENGTH = 5
@@ -18,6 +19,17 @@ class Ball(PitchObject):
     def __init__(self, x, y, angle, velocity):
         super(Ball, self).__init__(x, y, angle, velocity, BALL_WIDTH, BALL_LENGTH, BALL_HEIGHT)
 
+    '''
+    @property
+    def x(self):
+        nx = self._vector.x + cos(self.angle) * self.velocity * 1.0
+        consol.log_pos_angle([nx, self.y], self.angle, self, self.velocity * 1.0)
+        return nx
+
+    @property
+    def y(self):
+        return self._vector.y + sin(self.angle) * self.velocity * 1.0
+    '''
 
 class Goal(PitchObject):
 
