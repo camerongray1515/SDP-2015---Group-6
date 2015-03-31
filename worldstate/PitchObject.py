@@ -5,6 +5,7 @@ import consol
 import numpy as np
 from time import time
 from math import sin, cos, atan2,pi
+import World
 
 class PitchObject(object):
     '''
@@ -63,12 +64,12 @@ class PitchObject(object):
     latency = 0.3
     @property
     def x(self):
-        nx = self._vector.x + self.real_vel[0] * PitchObject.latency
+        nx = self._vector.x# + self.real_vel[0] * PitchObject.latency
         return nx
 
     @property
     def y(self):
-        return self._vector.y + self.real_vel[1] * PitchObject.latency
+        return self._vector.y# + self.real_vel[1] * PitchObject.latency
 
     @property
     def vector(self):
@@ -104,14 +105,16 @@ class PitchObject(object):
             mag = np.sqrt(x.dot(x))
 
 
-            consol.log_pos_angle([self.x, self.y], ang, self, mag)
-
+            '''
+            if self != World.world.our_attacker:
+                consol.log_pos_angle([self.x, self.y], ang, self, mag)
+            '''
 
 
             #nv3[0] = pos[0]
             #nv3[1] = pos[1]
 
-            vec3 = Vector(*(tuple(nv3)))
+            vec3 = Vector(*(tuple(nv1)))
 
             self._vector = vec3
 

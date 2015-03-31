@@ -7,6 +7,9 @@ class Controller():
         self.robot_api = RobotAPI(port,115200)
 
     def update(self, command):
+        if command is None:
+            return
+
         speed = command["speed"]
         direction = command["direction"]
         kick = command["kick"]

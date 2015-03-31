@@ -9,7 +9,9 @@ from TakeShot import TakeShot
 from ReturnToCentrePlan import ReturnToCentrePlan
 from WallShotPlan import WallShotPlan
 from RetreatFromWall import RetreatFromWall
+from GrabBallEverywhere import GrabBallEverywhere
 import consol
+from ShootAll import ShootAll
 
 class Planner(object):
     """Finite State Machine-Based planner. Generates commands for the robot based on plan classes derived from Plan"""
@@ -30,9 +32,11 @@ class Planner(object):
         # List of available plans. These should be instantiated in -descending- order of desirability. All plans -must- inherit from Plan!
         p = (lambda plan: plan(self.world, self.robot))
         
-        self.plans = [p(RetreatFromWall), p(TakeShot), p(WallShotPlan), p(GrabBallPlan), p(MatchY), p(IdlePlan)]
+        self.plans = [p(ShootAll), p(GrabBallEverywhere), p(MatchY), p(IdlePlan)]
 
-        self.current_plan = self.plans[0]
+        self.current_plan = self.plans[3]
+        global planner
+        planner = self
 
     def update(self, model_positions):
         """
@@ -54,9 +58,14 @@ class Planner(object):
                 for plan in self.plans:
                     if(plan.isValid()):
                         prevPlan = self.current_plan
+                        same_pl = False
+                        if self.current_plan is plan:
+                            same_pl = True
 
                         self.current_plan = plan
-                        self.current_plan.initi(prevPlan)
+
+                        if not same_pl:
+                            self.current_plan.initi(prevPlan)
                         #self.current_plan.reset()
                         return self.current_plan.nextCommand()
         else:

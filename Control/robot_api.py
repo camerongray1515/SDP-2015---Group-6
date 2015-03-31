@@ -4,6 +4,7 @@ import random
 from consol import log, log_time
 import time
 
+
 speed = 19.5 # speed in cm/s, this is a constant we should calibrate when we get the motors working
 
 class RobotAPI(object):
@@ -22,6 +23,9 @@ class RobotAPI(object):
     def enabled(self, e):
         if not e:
             self.stop()
+
+
+
 
         self._enabled = e
         log('Communication enabled (press C to toggle)', self.enabled, "Comms")
@@ -278,7 +282,8 @@ class RobotAPI(object):
         int_val = int(scaled_speed)
 
         self._write_serial("s {0} {1} {2}".format(self.motorPins[motor], int_val, delay))
-        self.current_motor_speeds[motor] = speed
+        lp = 0.3
+        self.current_motor_speeds[motor] = (1.0 - lp) *self.current_motor_speeds[motor] + lp *speed
 
     def get_scaled_speed(self, motor, speed):
         return speed

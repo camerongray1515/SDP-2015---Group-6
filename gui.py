@@ -5,6 +5,7 @@ from vision import tools
 import numpy as np
 import consol
 from collections import namedtuple
+from planning import Planner
 
 """
 Some of these stupid constants are not used
@@ -96,6 +97,7 @@ class GUI(object):
         robot = self.launch.controller.robot_api
 
         if key == ord('c'):
+            Planner.planner.current_plan.initi(None)
             robot.enabled = not robot.enabled
 
 

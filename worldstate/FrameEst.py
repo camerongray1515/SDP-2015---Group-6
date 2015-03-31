@@ -26,10 +26,10 @@ def get_future():
     d = [0,0]
     a = 0
 
-    #consol.log('frames', [(int(x.len *1000), int(x.sl), int(x.sr)) for x in FrameEst.est], 'Future')
+    consol.log('frames', [(int(x.len *1000), int(x.sl), int(x.sr)) for x in FrameEst.est], 'Future')
 
     for i in FrameEst.est:
-        das = np.interp((i.sr -i.sl) * 0.5, [-100, -30, 30, 100], [-FrameEst.rot_speed, 0, 0, FrameEst.rot_speed]) * i.len
+        das = np.interp((i.sr -i.sl) * 0.5, [-100, -10, 10, 100], [-FrameEst.rot_speed, 0, 0, FrameEst.rot_speed]) * i.len
         a+= das
 
         dds = np.interp((i.sl + i.sr) * 0.5, [-100, -40, 40, 100], [-FrameEst.speed, 0, 0, FrameEst.speed]) * i.len
@@ -61,7 +61,7 @@ def get_rot_future(cd, ca):
     na = (a + ca)%(2.0*pi)
 
     #consol.log('future abs', (nd, na), 'Future')
-    consol.log_pos_angle(nd, na, 'fut')
+    consol.log_pos_angle(nd, na, 'Future')
 
 
     return (nd, na)
@@ -73,8 +73,8 @@ class FrameEst:
     est = []
     last_time = time()
 
-    speed = 100.0
-    rot_speed = 3.0
+    speed = 200.0
+    rot_speed = 4
 
 
 

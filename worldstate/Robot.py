@@ -22,6 +22,7 @@ class Robot(PitchObject):
         self._catcher = 'open'
         self.target_y = None
         self.predicted_vector = self.vector
+        self.hball = False
 
     @property
     def zone(self):
@@ -64,15 +65,19 @@ class Robot(PitchObject):
 
     @property
     def angle(self):
+        '''
         if self == World.world.our_attacker:
             d, a = World.world.get_future()
         else:
             a = super(Robot, self).angle
-
+        '''
+        d, a = World.world.get_future()
         return a
 
     @property
     def x(self):
+        d, a = World.world.get_future()
+        return d[0]
         if self == World.world.our_attacker:
             d, a = World.world.get_future()
             return d[0]
@@ -82,6 +87,8 @@ class Robot(PitchObject):
 
     @property
     def y(self):
+        d, a = World.world.get_future()
+        return d[1]
         if self == World.world.our_attacker:
             d, a = World.world.get_future()
             return d[1]
@@ -101,6 +108,9 @@ class Robot(PitchObject):
         Gets if the robot has possession of the ball
         '''
         return (self._catcher == 'closed') #and self.ball_area.isInside(ball.x, ball.y)
+
+
+
 
     def get_rotation_to_point(self, x, y):
         '''

@@ -72,10 +72,13 @@ class GrabBallNearWallPlan(Plan):
         return command
 
     def ball_distance_from_wall(self):
+
         "Returns the distance of the ball from the wall nearest to it."
         cur_y = self.world.ball.y
         bottom_dist = self.robot.y
         top_dist = self.max_y - self.robot.y
+
+
         if top_dist < bottom_dist:
             return top_dist
         else:

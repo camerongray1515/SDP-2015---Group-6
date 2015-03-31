@@ -61,8 +61,13 @@ class Plan(object):
     def midX(self):
         return self.world.pitch.zones[self.robot.zone].center()[0]
 
+    @property
+    def midY(self):
+        return self.world.pitch.zones[self.robot.zone].center()[1]
 
 
+    def get_ball_pos(self):
+        return (self.world.ball.x, self.world.ball.y)
 
 
     #virtual functions
@@ -155,8 +160,10 @@ class Plan(object):
 
 
     # When forward is true the robot will not consider going backwards to reach its target. 
-    # Useful for when 
-    def go_to_asym(self, x, y, forward = False, max_speed = 100, min_speed = 70):
+    # Useful for when
+    #mid_x approach white lines orthogonally
+    #mid_y approach white walls orthogonally
+    def go_to_asym(self, x, y, forward = False, max_speed = 100, min_speed = 70, mid_x = False, mid_y = False, sharp_arc = False):
         """
     if forward is set to true the robot will only attempt to reach its goal going forward
     useful for picking up the ball and shooting etc
@@ -180,10 +187,18 @@ class Plan(object):
         #if(distance):
         #    distance = 0.1
 
+        max_e_dist = 30
+        y = np.clip(y, max_e_dist, self.max_y - max_e_dist)
 
-        dy = fabs(self.robot.y - y)
+        if(mid_x):
+            dy = fabs(self.robot.y - y)
 
-        x = np.interp(dy, [50, 100], [x, self.midX])
+            x = np.interp(dy, [50, 100], [x, self.midX])
+
+        if(mid_y):
+            dx = fabs(self.robot.x - x)
+
+            y = np.interp(dx, [30, 100], [y, self.midY])
 
         dist_edge = self.get_distance_from_edges()
 
@@ -235,7 +250,12 @@ class Plan(object):
 
         scale_speed_near = np.interp(dot, [0.0, 0.9, 1.0], [-1.0, -0.8, 0.9])
 
+
+
         scale_speed = np.interp(distance, [fade_distance_min, fade_distance], [ scale_speed_near, scale_speed_far])
+
+        if sharp_arc:
+            scale_speed = scale_speed_far
 
         consol.log('scale speed', scale_speed, 'Plan')
 
