@@ -63,7 +63,7 @@ namespace event_loop {
    event_buffer[empty_slot].trigger_state = LOW;
   }
   
-  void add_command_pin_trigger(int motor, int speed, int reed_pin, int trigger_state, int do_after) {
+  void add_command_pin_trigger(int motor, int speed, int reed_pin, int trigger_state, unsigned long do_after) {
     // Loop through the array and put this command in the first non-todo
    int i;
    int empty_slot = -1;
@@ -83,7 +83,7 @@ namespace event_loop {
       
    event_buffer[empty_slot].motor = motor;
    event_buffer[empty_slot].speed = speed;
-   event_buffer[empty_slot].start_time = -1;
+   event_buffer[empty_slot].start_time = do_after;
    event_buffer[empty_slot].todo = true;
    event_buffer[empty_slot].reed_pin = reed_pin;
    event_buffer[empty_slot].trigger_state = trigger_state;
@@ -103,25 +103,22 @@ namespace event_loop {
   
   void process_list() {
     int i;
-    for (i = 0; i < EVENT_BUFFER_SIZE; i++) {
-      if (event_buffer[i].todo && event_buffer[i].start_time <= millis()) {
-        set_motor_speed(event_buffer[i].motor, event_buffer[i].speed);
-  
-        // Set todo to false so this buffer slot can be reused
-        event_buffer[i].todo = false;
-        
-        continue;
-      }
-      
-      // Now check if this is a reed switch event
-      if (event_buffer[i].todo && event_buffer[i].reed_pin != -1) {
-        int position = 0;
-        position = digitalRead(event_buffer[i].reed_pin);  
-        boolean triggered = position == event_buffer[i].trigger_state;
-        
-        if (triggered) {
+    for (i = 0; i < EVENT_BUFFER_SIZE; i++) {       
+      if (event_buffer[i].todo && (event_buffer[i].start_time == -1 || event_buffer[i].start_time <= millis())) {
+        if (event_buffer[i].reed_pin != -1) {
+          int position = 0;
+          position = digitalRead(event_buffer[i].reed_pin);  
+          boolean triggered = position == event_buffer[i].trigger_state;
+          
+          if (triggered) {
+            set_motor_speed(event_buffer[i].motor, event_buffer[i].speed);
+    
+            // Set todo to false so this buffer slot can be reused
+            event_buffer[i].todo = false;
+          }
+        } else { // If there is no reed pin event, just set the  motor speed
           set_motor_speed(event_buffer[i].motor, event_buffer[i].speed);
-  
+    
           // Set todo to false so this buffer slot can be reused
           event_buffer[i].todo = false;
         }
@@ -251,11 +248,10 @@ void prepare_catch() {
     return;
   }
   
-  // Start the kicker immediately, after 1 second stop it and then reverse it at a reduced speed then stop it 200ms after that
   event_loop::add_command_head(kicker, 100, millis());
   event_loop::add_command_head(kicker, 0, millis()+1000);
   event_loop::add_command_head(kicker, -25, millis()+1500);
-  event_loop::add_command_pin_trigger(kicker, 0, prepareReedPin, LOW, millis()+1500);
+  event_loop::add_command_pin_trigger(kicker, 0, prepareReedPin, LOW, millis()+1000);
   
   kicker_position = "prepared";
 }
@@ -298,7 +294,7 @@ void catch_ball() {
   int speed = atoi(speedarg);
   
   event_loop::add_command_head(kicker, -1 * speed, millis());
-  event_loop::add_command_pin_trigger(kicker, 0, reedPin, LOW, 0);
+  event_loop::add_command_pin_trigger(kicker, 0, reedPin, LOW, -1);
   
   kicker_position = "closed";
 }
