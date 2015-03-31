@@ -18,6 +18,7 @@
 
 // Define event buffer paramters
 #define EVENT_BUFFER_SIZE 10
+#define PREPARE_SPEED -25
 
 SerialCommand scomm;
 
@@ -199,23 +200,28 @@ void handle_closed_catcher_sensor() {
   position = digitalRead(prepareReedPin);  
   boolean prepared = position == LOW;
   
-//  if (!kicker_running) {
-//    if (closed) {
-//      // Todo: tidy dupicated code
-//      if (kicker_position == "open") {
-//        event_loop::add_command_head(kicker, 100, millis());
-//        event_loop::add_command_head(kicker, 0, millis()+1000); 
-//      }
-//    } else if (kicker_position == "closed") {
-//      event_loop::add_command_head(kicker, -1 * 100, millis());
-//      event_loop::add_command_pin_trigger(kicker, 0, reedPin, LOW);
-//    } else if (kicker_position == "prepared" && !prepared) {
-//      event_loop::add_command_head(kicker, 100, millis());
-//      event_loop::add_command_head(kicker, 0, millis()+1000);
-//      event_loop::add_command_head(kicker, -25, millis()+1500);
-//      event_loop::add_command_pin_trigger(kicker, 0, prepareReedPin, LOW);
-//    }
-//  }
+  if (!kicker_running) {
+    // Todo: tidy dupicated code
+    if (kicker_position == "open" && (closed || prepared)) {
+      event_loop::add_command_head(kicker, 100, millis());
+      event_loop::add_command_head(kicker, 0, millis()+1000); 
+    } else if (kicker_position == "closed" && !closed) {
+      event_loop::add_command_head(kicker, -1 * 100, millis());
+      event_loop::add_command_pin_trigger(kicker, 0, reedPin, LOW, -1);
+    } else if (kicker_position == "prepared" && !prepared) {
+      event_loop::add_command_head(kicker, 100, millis());
+      event_loop::add_command_head(kicker, PREPARE_SPEED, millis()+750);
+      event_loop::add_command_pin_trigger(kicker, 0, prepareReedPin, LOW, millis()+750);
+    }
+  } else {
+    // This handles the strange case if the kicker goes past the catch target and therefore reaches the closed part
+    if (kicker_position == "prepared" && closed) {
+      set_motor_speed(kicker, 0);
+      event_loop::add_command_head(kicker, 100, millis());
+      event_loop::add_command_head(kicker, PREPARE_SPEED, millis()+750);
+      event_loop::add_command_pin_trigger(kicker, 0, prepareReedPin, LOW, millis()+750);
+    } 
+  }
 }
 
 // Command callback functions
@@ -249,9 +255,8 @@ void prepare_catch() {
   }
   
   event_loop::add_command_head(kicker, 100, millis());
-  event_loop::add_command_head(kicker, 0, millis()+1000);
-  event_loop::add_command_head(kicker, -25, millis()+1500);
-  event_loop::add_command_pin_trigger(kicker, 0, prepareReedPin, LOW, millis()+1000);
+  event_loop::add_command_head(kicker, PREPARE_SPEED, millis()+750);
+  event_loop::add_command_pin_trigger(kicker, 0, prepareReedPin, LOW, millis()+750);
   
   kicker_position = "prepared";
 }
