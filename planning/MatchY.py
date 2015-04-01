@@ -96,7 +96,7 @@ class MatchY(Plan):
             si = MyMath.seg_intersect( p1,p2, p3,p4)
             #log_dot(si, 'yellow', 'haha')
             #log('inter', si, 'MatchY')
-            command = self.go_to_asym(zone.center()[0], si[1], max_speed=100, min_speed=50)
+            command = self.go_to_asym(zone.center()[0], si[1], max_speed=80, min_speed=50)
         else:
             command = self.go_to_asym(zone.center()[0], ball_y, max_speed=100, min_speed=50)
         return command
