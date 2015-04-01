@@ -74,7 +74,7 @@ class FrameEst:
     last_time = time()
 
     speed = 200.0
-    rot_speed = 4
+    rot_speed = 2
 
 
 

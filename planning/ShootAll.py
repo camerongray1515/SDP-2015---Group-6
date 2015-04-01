@@ -55,7 +55,7 @@ class ShootAll(Plan):
         """
         #return True
         consol.log("Clear shot", self.has_clear_shot(), "ShootAll")
-        ball_dist = self.robot.get_euclidean_distance_to_point(*self.get_ball_pos()) > 80 and self.world.ball.x != 0
+        ball_dist = self.robot.get_euclidean_distance_to_point(*self.get_ball_pos()) > 200 and self.world.ball.x != 0
         if ball_dist:
             self.robot.hball = False
         return self.robot.hball and not ball_dist
@@ -65,7 +65,6 @@ class ShootAll(Plan):
 
         self.robot.catcher = "open"
         #self.robot.set_busy_for(1.1)
-        self.robot.hball = False
         return self.kick()
 
     def move_to(self,x ,y):
@@ -87,7 +86,7 @@ class ShootAll(Plan):
 
 
         dedge = 60
-        timeout = self.get_time() > 1.5
+        timeout = self.get_time() > 1.0
 
         consol.log('state', self.state, 'ShootAll')
         if self.state == 'init':
@@ -120,7 +119,7 @@ class ShootAll(Plan):
             #if not self.has_clear_shot():
             #    self.nstate = 'go1'
             #else:
-            if self.robot.get_dot_to_target(gx, gy) > 0.95:
+            if self.robot.get_dot_to_target(gx, gy) > 0.85:
                 command = self.kick_new()
                 self.res_timer()
                 self.nstate = 'wait'
@@ -193,7 +192,7 @@ class ShootAll(Plan):
 
         edge = 50
 
-        if self.robot.y < 60 or self.robot.y > self.max_y - 60:
+        if self.robot.y < 50 or self.robot.y > self.max_y - 50:
             return False
 
         obstacle_width=25
@@ -201,9 +200,13 @@ class ShootAll(Plan):
         (target_x, target_y) = self.goalCentre()
         their_defender = self.world.their_defender
 
+        pos_diff = math.fabs(their_defender._vector.y - self.robot.y)
+
+
+
 
         #if no defender
-        if their_defender._vector.x == 0:
+        if their_defender._vector.y < 1.0:
             consol.log("clear shoot", True, "ShootAll")
             return True
 
@@ -212,7 +215,7 @@ class ShootAll(Plan):
         relo = rob_y - target_y
         reld = their_defender._vector.y - target_y
         consol.log("clear shoot", relo * reld < 0.0, "ShootAll")
-        return relo * reld < 0.0
+        return relo * reld < 0.0 and pos_diff > 50
 
 
 

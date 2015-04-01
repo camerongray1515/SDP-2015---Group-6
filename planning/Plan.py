@@ -187,7 +187,7 @@ class Plan(object):
         #if(distance):
         #    distance = 0.1
 
-        max_e_dist = 30
+        max_e_dist = 10
         y = np.clip(y, max_e_dist, self.max_y - max_e_dist)
 
         if(mid_x):
@@ -198,7 +198,7 @@ class Plan(object):
         if(mid_y):
             dx = fabs(self.robot.x - x)
 
-            y = np.interp(dx, [30, 100], [y, self.midY])
+            y = np.interp(dx, [50, 100], [y, self.midY])
 
         dist_edge = self.get_distance_from_edges()
 

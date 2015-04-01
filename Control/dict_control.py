@@ -34,7 +34,9 @@ class Controller():
         elif (direction == "Left"):
             self.robot_api.turn_left(speed)
         elif (direction == "None"):
-            self.robot_api.stop()
+            for i in range(0, 10):
+                self.robot_api.stop()
+                time.sleep(.001)
 
         if (kick == "Kick"):
             for i in range(0, 10):
