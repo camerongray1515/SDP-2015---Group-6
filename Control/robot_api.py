@@ -333,6 +333,7 @@ class RobotAPI(object):
         return int(round(speed * scaling_value))
 
 if __name__ == "__main__":
+    log('called as main', True, 'Comms')
     r = RobotAPI("/dev/ttyACM0", 115200)
     r.enabled = True
     r.prepare_catch()

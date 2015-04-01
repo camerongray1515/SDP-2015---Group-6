@@ -124,7 +124,7 @@ class ShootAll(Plan):
                 self.res_timer()
                 self.nstate = 'wait'
             else:
-                command = self.look_at(gx, gy, max_speed=60, min_speed=40)
+                command = self.look_at(gx, gy, max_speed=50, min_speed=40)
 
         elif self.state == 'wait':
             if timeout:

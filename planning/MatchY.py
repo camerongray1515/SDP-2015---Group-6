@@ -5,6 +5,7 @@ from Polygon.cPolygon import Polygon
 import MyMath
 from numpy import *
 from consol import log_dot, log
+import consol
 
 ERROR = 15
 
@@ -72,6 +73,7 @@ class MatchY(Plan):
 
 
 
+
         ball_y = self.world.ball.y
         ball_x = self.world.ball.x
         zone = self.world.pitch.zones[self.robot.zone]
@@ -96,14 +98,75 @@ class MatchY(Plan):
             si = MyMath.seg_intersect( p1,p2, p3,p4)
             #log_dot(si, 'yellow', 'haha')
             #log('inter', si, 'MatchY')
-            command = self.go_to_asym(zone.center()[0], si[1], max_speed=80, min_speed=50)
+            g_to_mid = self.midX - target_x
+
+
+            y = si[1]
+            max_e_dist = 20
+            y = clip(y, max_e_dist, self.max_y - max_e_dist)
+
+            consol.log('facing', g_to_mid * ad[0] > 0.0, 'MatchY')
+
+            if g_to_mid * ad[0] > 0.0:
+                command = self.go_to_asym(zone.center()[0], y, max_speed=100, min_speed=50)
+            else:
+                command = self.go_to_asym(self.midX, self.midY, max_speed=100, min_speed=50)
+
         else:
             command = self.go_to_asym(zone.center()[0], ball_y, max_speed=100, min_speed=50)
         return command
 
 
     def isMatched(self, robot, ball):
-        return math.fabs(robot.y - ball.y) < ERROR 
+
+
+
+        their_defender = self.world.their_defender
+        (target_x, target_y) = self.goalCentre()
+
+
+
+
+        ball_y = self.world.ball.y
+        ball_x = self.world.ball.x
+        zone = self.world.pitch.zones[self.robot.zone]
+
+
+        zone = self.world.pitch.zones[self.robot.zone]
+
+
+        between = (ball_x - target_x) * (ball_x - self.midX) < 0.0
+        if between or ball_x < 1.0:
+            def_ang = their_defender._vector.angle
+            def_pos = their_defender._vector
+
+            p1 = array( [self.midX, 0.0] )
+            p2 = array( [self.midX, self.max_y] )
+
+            ad = array([math.cos(def_ang), math.sin(def_ang)])
+
+            p3 = array( [def_pos.x, def_pos.y] )
+            p4 = array( p3 + ad)
+
+            si = MyMath.seg_intersect( p1,p2, p3,p4)
+            #log_dot(si, 'yellow', 'haha')
+            #log('inter', si, 'MatchY')
+            g_to_mid = self.midX - target_x
+
+
+            y = si[1]
+            max_e_dist = 20
+            y = clip(y, max_e_dist, self.max_y - max_e_dist)
+
+            consol.log('facing', g_to_mid * ad[0] > 0.0, 'MatchY')
+
+            if g_to_mid * ad[0] > 0.0:
+                return math.fabs(robot.y - y) < ERROR
+            else:
+                return math.fabs(robot.y - self.midY) < ERROR
+
+        else:
+            return math.fabs(robot.y - ball.y) < ERROR
 
 
     def __str__(self):

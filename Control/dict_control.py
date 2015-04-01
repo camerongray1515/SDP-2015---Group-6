@@ -6,6 +6,7 @@ class Controller():
     def __init__(self, port="/dev/ttyACM1"):
         self.robot_api = RobotAPI(port,115200)
 
+
     def update(self, command):
         if command is None:
             return
