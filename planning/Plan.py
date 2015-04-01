@@ -181,14 +181,14 @@ class Plan(object):
         fade_distance_min = 20
 
 
-
+	max_e_dist = 10
+        y = np.clip(y, max_e_dist, self.max_y - max_e_dist)
 
         distance = self.robot.get_euclidean_distance_to_point(x, y)
         #if(distance):
         #    distance = 0.1
 
-        max_e_dist = 10
-        y = np.clip(y, max_e_dist, self.max_y - max_e_dist)
+        
 
         if(mid_x):
             dy = fabs(self.robot.y - y)
