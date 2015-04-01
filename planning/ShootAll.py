@@ -58,7 +58,7 @@ class ShootAll(Plan):
         ball_dist = self.robot.get_euclidean_distance_to_point(*self.get_ball_pos()) > 200 and self.world.ball.x != 0
         if ball_dist:
             self.robot.hball = False
-        return self.robot.hball and not ball_dist
+        return self.robot.hball
 
 
     def kick_new(self):

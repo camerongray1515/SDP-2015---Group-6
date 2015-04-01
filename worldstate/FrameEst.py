@@ -29,7 +29,7 @@ def get_future():
     consol.log('frames', [(int(x.len *1000), int(x.sl), int(x.sr)) for x in FrameEst.est], 'Future')
 
     for i in FrameEst.est:
-        das = np.interp((i.sr -i.sl) * 0.5, [-100, -10, 10, 100], [-FrameEst.rot_speed, 0, 0, FrameEst.rot_speed]) * i.len
+        das = np.interp((i.sr -i.sl) * 0.5, [-100, -50, -10, 10, 50, 100], [-FrameEst.rot_speed * 2.0,-FrameEst.rot_speed, 0, 0,FrameEst.rot_speed, 2.0*FrameEst.rot_speed]) * i.len
         a+= das
 
         dds = np.interp((i.sl + i.sr) * 0.5, [-100, -40, 40, 100], [-FrameEst.speed, 0, 0, FrameEst.speed]) * i.len

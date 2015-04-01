@@ -6,6 +6,7 @@ import numpy as np
 import consol
 from collections import namedtuple
 from planning import Planner
+from worldstate import World
 
 """
 Some of these stupid constants are not used
@@ -99,6 +100,8 @@ class GUI(object):
         if key == ord('c'):
             Planner.planner.current_plan.initi(None)
             robot.enabled = not robot.enabled
+            World.world.our_attacker.hball = False
+
 
 
         if key == ord('k'):

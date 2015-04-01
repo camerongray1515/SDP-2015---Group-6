@@ -79,7 +79,7 @@ class GrabBallEverywhere(Plan):
 
         wall_ball = self.ball_distance_from_wall() < 50 #input
 
-        near_center = self.robot.get_euclidean_distance_to_point(self.midX, self.midY) < 30 #input
+        near_center = self.robot.get_euclidean_distance_to_point(self.world.ball.x, self.midY) < 80 #input
 
 
         consol.log('state', self.state, 'GrabAll')
@@ -90,13 +90,14 @@ class GrabBallEverywhere(Plan):
 
 
         if self.state == 'pick':
+            '''
             if wall_ball:
 
                 self.robot.catcher = "closed"
 
                 self.nstate = 'goto center'
-
-            elif ball_catchable:
+            '''
+            if ball_catchable:
                 command = self.catch()
             else:
                 command = self.go_to_asym(self.world.ball.x, self.world.ball.y, forward=True, max_speed = maxs, min_speed=mins, mid_x=True)
@@ -116,7 +117,7 @@ class GrabBallEverywhere(Plan):
             elif not wall_ball:
                 self.nstate = 'pick'
             else:
-                command = self.go_to_asym(self.midX, self.midY, forward=True, max_speed = 90, min_speed=mins)
+                command = self.go_to_asym(self.world.ball.x, self.midY, forward=True, max_speed = 90, min_speed=mins)
 
 
 
