@@ -15,6 +15,7 @@
 #define leftMotor 0
 #define rightMotor 1
 #define kicker 2
+#define resetPin 9
 
 // Define event buffer paramters
 #define EVENT_BUFFER_SIZE 10
@@ -23,8 +24,9 @@
 SerialCommand scomm;
 
 int blink = 1;
-String kicker_position = "open";
+String kicker_position;
 boolean kicker_running = false;
+unsigned long com_time = 0;
 
 namespace event_loop {
   struct command_entry {
@@ -129,9 +131,16 @@ namespace event_loop {
 }
 
 void setup() { 
+  
+  digitalWrite(resetPin, HIGH);
+  //delay(200);
+  pinMode(resetPin, OUTPUT);   
+  
   SDPsetup();
+  com_time = millis();
   
   // Set input and output pins
+  
   pinMode(boardLED, OUTPUT);
   pinMode(reedPin, INPUT);
   digitalWrite(reedPin, HIGH); // Activate internal pullup resistor
@@ -157,8 +166,22 @@ void setup() {
   scomm.addCommand("blink", command_start_blinking); // args: [blinkDelay]
   scomm.addCommand("stop_blinking", command_stop_blinking); // args: []
   scomm.addDefaultHandler(command_unknown);
-
-  open_kicker();
+  
+  // Work out the kicker position and set the state to that
+  int position = 0;
+  position = digitalRead(reedPin);  
+  boolean closed = position == LOW;
+  position = digitalRead(prepareReedPin);  
+  boolean prepared = position == LOW;
+  
+  if (closed) {
+    kicker_position = "closed";
+  } else if (prepared) {
+    kicker_position = "prepared";
+  } else {
+    kicker_position = "open";
+    open_kicker();
+  }
         
   Serial.println("ready"); 
 }
@@ -168,7 +191,17 @@ boolean led_on = false;
 int blink_interval = 20000;
 int sensor_read_count = 0;
 int sensor_read_interval = 20000;
+
 void loop() {
+  
+  if (millis() - com_time > 3000){
+    set_motor_speed(0, 0);
+    set_motor_speed(1, 0);
+    digitalWrite(resetPin, LOW);   
+  }
+  
+  
+  
   if (blink_count == blink_interval) {
     if (led_on) {
       digitalWrite(boardLED, LOW);
@@ -227,6 +260,7 @@ void handle_closed_catcher_sensor() {
 // Command callback functions
 void store_motor_action() {
 //    Serial.println("ack6");
+    com_time = millis();
     char *motorarg = scomm.next();
     char *speedarg = scomm.next();
     char *delayarg = scomm.next();
