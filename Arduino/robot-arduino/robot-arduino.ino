@@ -15,6 +15,7 @@
 #define leftMotor 0
 #define rightMotor 1
 #define kicker 2
+#define resetPin 9
 
 // Define event buffer paramters
 #define EVENT_BUFFER_SIZE 10
@@ -25,6 +26,7 @@ SerialCommand scomm;
 int blink = 1;
 String kicker_position = "open";
 boolean kicker_running = false;
+unsigned long com_time = 0;
 
 namespace event_loop {
   struct command_entry {
@@ -129,9 +131,16 @@ namespace event_loop {
 }
 
 void setup() { 
+  
+  digitalWrite(resetPin, HIGH);
+  //delay(200);
+  pinMode(resetPin, OUTPUT);   
+  
   SDPsetup();
+  com_time = millis();
   
   // Set input and output pins
+  
   pinMode(boardLED, OUTPUT);
   pinMode(reedPin, INPUT);
   digitalWrite(reedPin, HIGH); // Activate internal pullup resistor
@@ -168,7 +177,35 @@ boolean led_on = false;
 int blink_interval = 20000;
 int sensor_read_count = 0;
 int sensor_read_interval = 20000;
+
 void loop() {
+  
+  if (millis() - com_time > 3000){
+    set_motor_speed(0, 0);
+    set_motor_speed(1, 0);
+    digitalWrite(resetPin, LOW);
+    
+    /* doesn't work
+    digitalWrite(radioPin, LOW);
+    Serial.end();
+    
+    
+    digitalWrite(boardLED, HIGH);
+    delay(100);
+    digitalWrite(boardLED, LOW);
+    delay(100);
+    digitalWrite(boardLED, HIGH);
+    
+    digitalWrite(radioPin, HIGH);
+    Serial.begin(115200);*/
+    
+    
+    
+    
+  }
+  
+  
+  
   if (blink_count == blink_interval) {
     if (led_on) {
       digitalWrite(boardLED, LOW);
@@ -227,6 +264,7 @@ void handle_closed_catcher_sensor() {
 // Command callback functions
 void store_motor_action() {
 //    Serial.println("ack6");
+    com_time = millis();
     char *motorarg = scomm.next();
     char *speedarg = scomm.next();
     char *delayarg = scomm.next();
