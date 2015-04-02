@@ -24,7 +24,7 @@
 SerialCommand scomm;
 
 int blink = 1;
-String kicker_position = "open";
+String kicker_position;
 boolean kicker_running = false;
 unsigned long com_time = 0;
 
@@ -166,8 +166,22 @@ void setup() {
   scomm.addCommand("blink", command_start_blinking); // args: [blinkDelay]
   scomm.addCommand("stop_blinking", command_stop_blinking); // args: []
   scomm.addDefaultHandler(command_unknown);
-
-  open_kicker();
+  
+  // Work out the kicker position and set the state to that
+  int position = 0;
+  position = digitalRead(reedPin);  
+  boolean closed = position == LOW;
+  position = digitalRead(prepareReedPin);  
+  boolean prepared = position == LOW;
+  
+  if (closed) {
+    kicker_position = "closed";
+  } else if (prepared) {
+    kicker_position = "prepared";
+  } else {
+    kicker_position = "open";
+    open_kicker();
+  }
         
   Serial.println("ready"); 
 }
@@ -183,25 +197,7 @@ void loop() {
   if (millis() - com_time > 3000){
     set_motor_speed(0, 0);
     set_motor_speed(1, 0);
-    digitalWrite(resetPin, LOW);
-    
-    /* doesn't work
-    digitalWrite(radioPin, LOW);
-    Serial.end();
-    
-    
-    digitalWrite(boardLED, HIGH);
-    delay(100);
-    digitalWrite(boardLED, LOW);
-    delay(100);
-    digitalWrite(boardLED, HIGH);
-    
-    digitalWrite(radioPin, HIGH);
-    Serial.begin(115200);*/
-    
-    
-    
-    
+    digitalWrite(resetPin, LOW);   
   }
   
   
