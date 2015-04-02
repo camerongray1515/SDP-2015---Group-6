@@ -81,7 +81,7 @@ class MatchY(Plan):
 
         zone = self.world.pitch.zones[self.robot.zone]
 
-
+        max_e_dist = 40
         between = (ball_x - target_x) * (ball_x - self.midX) < 0.0
         if between or ball_x < 1.0:
             def_ang = their_defender._vector.angle
@@ -102,7 +102,7 @@ class MatchY(Plan):
 
 
             y = si[1]
-            max_e_dist = 20
+
             y = clip(y, max_e_dist, self.max_y - max_e_dist)
 
             consol.log('facing', g_to_mid * ad[0] > 0.0, 'MatchY')
@@ -113,12 +113,13 @@ class MatchY(Plan):
                 command = self.go_to_asym(self.midX, self.midY, max_speed=100, min_speed=50)
 
         else:
+            y = clip(ball_y, max_e_dist, self.max_y - max_e_dist)
             command = self.go_to_asym(zone.center()[0], ball_y, max_speed=100, min_speed=50)
         return command
 
 
     def isMatched(self, robot, ball):
-
+        max_e_dist = 40
 
 
         their_defender = self.world.their_defender
@@ -155,7 +156,7 @@ class MatchY(Plan):
 
 
             y = si[1]
-            max_e_dist = 20
+
             y = clip(y, max_e_dist, self.max_y - max_e_dist)
 
             consol.log('facing', g_to_mid * ad[0] > 0.0, 'MatchY')
@@ -166,7 +167,8 @@ class MatchY(Plan):
                 return math.fabs(robot.y - self.midY) < ERROR
 
         else:
-            return math.fabs(robot.y - ball.y) < ERROR
+            y = clip(ball.y, max_e_dist, self.max_y - max_e_dist)
+            return math.fabs(robot.y - y) < ERROR
 
 
     def __str__(self):
